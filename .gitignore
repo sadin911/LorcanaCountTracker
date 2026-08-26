@@ -1,0 +1,75 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Production build
+dist
+dist-ssr
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment & Secret variables
+.env
+.env.*
+!.env.example
+*.env
+secret*.yaml
+secret*.yml
+secret*.json
+*.secret.*
+serviceAccountKey*.json
+*serviceAccount*.json
+*service-account*.json
+firebase-admin-key*.json
+*-adminsdk-*.json
+
+# Editor & IDEs
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+.idea
+*.suo
+*.sw?
+*.sublime-workspace
+.fleet
+.zed
+
+# macOS & OS artifacts
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing & Coverage
+coverage
+*.lcov
+.nyc_output
+
+# Build tool caches
+.vite
+.cache
+.turbo
+.eslintcache
+
+# Claude / Agent local configs
+.claude/settings.local.json
+
+# Local downloaded card images (large binaries — live on R2)
+public/card-images/
+public/card-images-lg/
+
+# Firebase local
+.firebase/
+firebase-debug.log
