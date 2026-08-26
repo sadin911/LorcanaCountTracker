@@ -30,7 +30,11 @@ export function cleanString(input: string): string {
 // these are computed at most once per card for the lifetime of the page.
 const searchKeyCache = new WeakMap<LorcanaCard, string>();
 
-/** Everything about a card that search should match against, pre-cleaned. */
+/**
+ * Everything about a card that search should match against, pre-cleaned.
+ * `story` is the Disney franchise, so "frozen" finds every Frozen card and
+ * "aladdin" finds both the story and the character.
+ */
 export function getCardSearchKey(card: LorcanaCard): string {
   let key = searchKeyCache.get(card);
   if (key === undefined) {
@@ -41,6 +45,7 @@ export function getCardSearchKey(card: LorcanaCard): string {
         card.collectorNumber,
         card.setCode,
         card.setName,
+        card.story,
         card.types.join(' '),
         card.classifications.join(' '),
         card.inks.join(' '),
