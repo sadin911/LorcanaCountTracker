@@ -37,27 +37,32 @@
   }
 
   html, body, #root {
-    height: 100%;
     width: 100%;
+    max-width: 100%;
     margin: 0;
     padding: 0;
   }
 
-  body {
-    @apply bg-slate-950 text-slate-100;
-    font-family: system-ui, -apple-system, sans-serif;
-    overflow-y: auto;
+  html {
+    height: 100%;
     overflow-x: hidden;
   }
 
-  #root {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    height: auto;
+  /*
+   * The document is the only scroll container. Giving `body` or `#root` their
+   * own `overflow-y: auto` on top of a 100% height turns them into nested
+   * scrollports that clip their own contents, which silently breaks any
+   * IntersectionObserver watching the viewport — including the grid's
+   * infinite-scroll sentinel.
+   */
+  body {
     min-height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+    @apply bg-slate-950 text-slate-100;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  #root {
+    min-height: 100%;
   }
 
   * {

@@ -8,6 +8,12 @@
  * tier to escalate to. Both dirs are gitignored — they live on R2 in production
  * and are only needed locally for `npm run dev`.
  *
+ * Location cards are physically landscape, but Lorcast serves them as portrait
+ * images with the artwork rotated a quarter turn counter-clockwise so they tile
+ * with everything else. We rotate them back here rather than in CSS, so the
+ * stored asset is correct for every consumer — grid, detail modal, fullscreen
+ * zoom and anything else reading the bucket.
+ *
  * Resumable: an existing non-empty output file is skipped, so a failed run can
  * simply be re-run. Pass --force to re-encode everything.
  */
@@ -62,7 +68,11 @@ async function processCard(job) {
   const src = await fetchBuffer(job.url);
   for (const { tier, file } of needed) {
     fs.mkdirSync(path.dirname(file), { recursive: true });
-    await sharp(src)
+    let img = sharp(src);
+    // Upright the pre-rotated Location artwork before resizing, so `width`
+    // still means the long edge.
+    if (job.landscape) img = img.rotate(90);
+    await img
       .resize({ width: tier.width, withoutEnlargement: true })
       .webp({ quality: tier.quality, effort: 5 })
       .toFile(file);
@@ -82,7 +92,12 @@ async function main() {
     for (const c of list) {
       const url = c?.image_uris?.digital?.large;
       if (!url) throw new Error(`card ${s.code}-${c.collector_number} has no large image`);
-      jobs.push({ setCode: s.code, num: String(c.collector_number), url });
+      jobs.push({
+        setCode: s.code,
+        num: String(c.collector_number),
+        url,
+        landscape: c.layout === 'landscape',
+      });
     }
   }
   console.log(`📦 ${jobs.length} cards x ${TIERS.length} tiers\n`);
