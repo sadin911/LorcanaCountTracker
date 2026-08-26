@@ -25,23 +25,24 @@ export function RelatedCardStrip({ title, cards, onSelect, onSeeAll }: Props) {
   if (!cards.length) return null;
 
   return (
-    <section className="space-y-1.5">
+    <section className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{title}</h3>
+        <h3 className="text-xs font-bold tracking-wide text-slate-300 flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+          <span>{title}</span>
+        </h3>
         <button
           type="button"
           onClick={onSeeAll}
-          className="px-2 py-1 rounded-lg border border-slate-700 text-[10px] font-semibold text-sky-300 hover:bg-slate-800 hover:text-sky-200 whitespace-nowrap"
+          className="px-2.5 py-1 rounded-xl border border-amber-500/30 bg-amber-500/10 text-[11px] font-bold text-amber-200 hover:bg-amber-500/20 hover:border-amber-400 whitespace-nowrap transition-all"
         >
           See all ({cards.length}) →
         </button>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto scrollbar-thin pb-1">
+      <div className="flex gap-2.5 overflow-x-auto scrollbar-thin pb-2">
         {cards.slice(0, MAX_THUMBS).map((card) => {
           const owned = totalCopies(ownedCards[card.id]?.variants) > 0;
-          /* Same desaturation rule as the grid: unowned cards are dimmed unless
-             Vivid mode is on. */
           const vivid = owned || showFullColor;
           return (
             <button
@@ -49,8 +50,10 @@ export function RelatedCardStrip({ title, cards, onSelect, onSeeAll }: Props) {
               type="button"
               onClick={() => onSelect(card)}
               title={cardDisplayName(card)}
-              className={`shrink-0 w-[74px] rounded-lg border overflow-hidden bg-slate-950 transition-colors ${
-                owned ? 'border-sky-600/60 hover:border-sky-400' : 'border-slate-800 hover:border-slate-500'
+              className={`shrink-0 w-[78px] rounded-xl border overflow-hidden bg-slate-950 transition-all hover:scale-105 hover:-translate-y-1 shadow-md ${
+                owned
+                  ? 'border-amber-500/50 shadow-amber-500/10'
+                  : 'border-slate-800/90 hover:border-slate-600'
               }`}
             >
               <div className="relative aspect-[2.5/3.5] overflow-hidden">
@@ -59,13 +62,12 @@ export function RelatedCardStrip({ title, cards, onSelect, onSeeAll }: Props) {
                   alt={cardDisplayName(card)}
                   loading="lazy"
                   onError={(e) => handleCardImageError(e, card.setCode, card.collectorNumber)}
-                  /* Locations are landscape; contain rather than crop them. */
                   className={`w-full h-full ${card.layout === 'landscape' ? 'object-contain' : 'object-cover'} ${
-                    vivid ? '' : 'grayscale opacity-60'
+                    vivid ? 'brightness-100' : 'grayscale opacity-50 hover:opacity-90 hover:grayscale-0'
                   }`}
                 />
               </div>
-              <p className="px-1 py-0.5 font-mono text-[9px] text-slate-500 truncate">
+              <p className="px-1.5 py-1 font-mono text-[9px] font-bold text-slate-400 truncate text-center bg-slate-900/90">
                 {card.setCode}·{card.collectorNumber}
               </p>
             </button>
@@ -75,3 +77,4 @@ export function RelatedCardStrip({ title, cards, onSelect, onSeeAll }: Props) {
     </section>
   );
 }
+

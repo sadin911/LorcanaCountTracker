@@ -1,16 +1,12 @@
 @import "tailwindcss";
 
-/*
- * Utilities Tailwind v4 core does not ship. The Pokemon app referenced
- * `animate-fade-in` and the `scrollbar-*` classes without ever defining them,
- * so they silently no-op there; defined here so they actually work.
- */
 @theme {
-  --animate-fade-in: fade-in 180ms ease-out;
+  --animate-fade-in: fade-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -22,13 +18,28 @@
 
 @utility scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-slate-700) transparent;
+  scrollbar-color: rgba(148, 163, 184, 0.2) transparent;
   &::-webkit-scrollbar { height: 6px; width: 6px; }
   &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
-    background: var(--color-slate-700);
+    background: rgba(148, 163, 184, 0.25);
     border-radius: 9999px;
+    &:hover { background: rgba(148, 163, 184, 0.4); }
   }
+}
+
+@utility glass-panel {
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.75), rgba(15, 23, 42, 0.6));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@utility glass-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.7));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 @layer base {
@@ -48,17 +59,16 @@
     overflow-x: hidden;
   }
 
-  /*
-   * The document is the only scroll container. Giving `body` or `#root` their
-   * own `overflow-y: auto` on top of a 100% height turns them into nested
-   * scrollports that clip their own contents, which silently breaks any
-   * IntersectionObserver watching the viewport — including the grid's
-   * infinite-scroll sentinel.
-   */
   body {
     min-height: 100%;
-    @apply bg-slate-950 text-slate-100;
-    font-family: system-ui, -apple-system, sans-serif;
+    background-color: #080c16;
+    color: #f1f5f9;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.12), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 30%, rgba(168, 85, 247, 0.08), transparent),
+      radial-gradient(ellipse 50% 30% at 0% 60%, rgba(245, 158, 11, 0.06), transparent);
+    background-attachment: fixed;
   }
 
   #root {
@@ -70,3 +80,4 @@
     touch-action: manipulation;
   }
 }
+

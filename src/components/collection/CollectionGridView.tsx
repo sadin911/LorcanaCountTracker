@@ -48,17 +48,20 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
   return (
     <div className="space-y-3">
       {currentSetProgress && (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3">
-          <div className="flex items-center justify-between text-xs mb-1.5">
-            <span className="font-bold text-slate-200">{currentSetProgress.setName}</span>
-            <span className="text-slate-400">
-              {currentSetProgress.uniqueOwned}/{currentSetProgress.totalCards} ·{' '}
-              <span className="text-sky-300 font-bold">{currentSetProgress.percentage}%</span>
+        <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-900/90 backdrop-blur-md p-4 shadow-xl">
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className="font-bold text-amber-100 flex items-center gap-1.5">
+              <span className="text-amber-400">✦</span>
+              <span>{currentSetProgress.setName}</span>
+            </span>
+            <span className="text-slate-300 font-medium">
+              <span className="font-bold text-white">{currentSetProgress.uniqueOwned}</span> / {currentSetProgress.totalCards} cards ·{' '}
+              <span className="text-amber-400 font-extrabold">{currentSetProgress.percentage}%</span>
             </span>
           </div>
-          <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+          <div className="h-2.5 rounded-full bg-slate-950/80 p-0.5 border border-slate-800/80 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 transition-[width] duration-500"
+              className="h-full rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-300 transition-[width] duration-500 shadow-[0_0_12px_rgba(245,158,11,0.5)]"
               style={{ width: `${currentSetProgress.percentage}%` }}
             />
           </div>
@@ -66,9 +69,14 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
       )}
 
       {!cards.length ? (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 py-16 text-center">
-          <p className="text-3xl mb-2">🔍</p>
-          <p className="text-sm text-slate-400">No cards match these filters.</p>
+        <div className="rounded-3xl border border-slate-800/80 bg-slate-900/40 backdrop-blur-md py-20 text-center shadow-2xl">
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4 text-3xl">
+            ✨
+          </div>
+          <h4 className="text-base font-bold text-slate-200 mb-1">No Illumineer Cards Found</h4>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            Try adjusting your search query, ink color filters, or set selection to reveal cards in your realm.
+          </p>
         </div>
       ) : (
         <>

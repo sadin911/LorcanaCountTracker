@@ -29,10 +29,6 @@ function visibleFinishes(card: LorcanaCard, variants: Record<string, number | un
 }
 
 export function CardCollectionModal({ card: initialCard, onClose }: Props) {
-  /* The displayed card is state, not the prop: clicking a related thumbnail
-     walks the modal to that card instead of closing it. CollectionGridView keys
-     this component by card id, so opening a different card from the grid
-     remounts and starts the walk over. */
   const [card, setCard] = useState(initialCard);
   const [showZoom, setShowZoom] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -50,9 +46,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
   const sameName = useMemo(() => relatedBySameName(card), [card]);
   const sameStory = useMemo(() => relatedByStory(card), [card]);
 
-  /* "Same character" for Characters; for a Song, Action or Item the same name
-     means other printings of that card, which is still worth offering. */
-  const sameNameTitle = card.types.includes('Character') ? 'Same character' : 'Cards with this name';
+  const sameNameTitle = card.types.includes('Character') ? 'Same Character in Other Sets' : 'Cards With This Name';
 
   const goToCard = (next: LorcanaCard) => {
     setCard(next);
@@ -60,9 +54,6 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  /* "See all" must mean all of them, not the leftovers of a stale ink or rarity
-     filter — so reset to defaults and apply exactly one condition. showFullColor
-     survives because it is a display preference, not a filter. */
   const seeAll = (patch: Partial<CollectionFilters>) => {
     setFilters({ ...DEFAULT_COLLECTION_FILTERS, showFullColor, ...patch });
     onClose();
@@ -87,78 +78,80 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/80 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-fade-in"
       onClick={onClose}
     >
       <div
         ref={scrollRef}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-4xl max-h-[92vh] overflow-y-auto scrollbar-thin rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl"
+        className="w-full max-w-4xl max-h-[92vh] overflow-y-auto scrollbar-thin rounded-3xl border border-amber-500/30 bg-[#0c1222]/95 backdrop-blur-2xl shadow-2xl shadow-black/90"
       >
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4">
-          {/* Image */}
-          <div className="md:col-span-5 space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 p-4 sm:p-6">
+          {/* Image Column */}
+          <div className="md:col-span-5 space-y-3">
             <button
               type="button"
               onClick={() => setShowZoom(true)}
-              className="block w-full rounded-xl overflow-hidden border border-slate-700 bg-slate-950 hover:border-sky-500 transition-colors"
+              className="block w-full rounded-2xl overflow-hidden border border-slate-700/80 bg-slate-950 hover:border-amber-400/80 transition-all shadow-xl shadow-black/50 group"
             >
               <img
                 src={imageUrl}
                 alt={cardDisplayName(card)}
                 onError={(e) => handleCardImageError(e, card.setCode, card.collectorNumber)}
-                className="w-full h-auto"
+                className="w-full h-auto transition-transform duration-300 group-hover:scale-[1.02]"
               />
             </button>
             <button
               type="button"
               onClick={() => setShowZoom(true)}
-              className="w-full py-1.5 rounded-lg border border-slate-700 text-[11px] text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              className="w-full py-2 rounded-xl border border-slate-700/80 bg-slate-900/60 hover:bg-slate-800 text-xs font-bold text-slate-300 hover:text-slate-100 transition-all flex items-center justify-center gap-1.5"
             >
-              ⛶ View fullscreen
+              <span>🔍</span>
+              <span>View Fullscreen Artwork</span>
             </button>
-            <p className="text-[10px] text-slate-500 text-center font-mono">
+            <p className="text-[11px] text-slate-400 text-center font-mono font-medium">
               {card.setName} · {card.setCode}·{card.collectorNumber}
             </p>
           </div>
 
-          {/* Detail */}
-          <div className="md:col-span-7 space-y-3">
+          {/* Details Column */}
+          <div className="md:col-span-7 space-y-3.5">
             <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-1.5 mb-1">
-                  <span className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] text-slate-300">
+              <div className="min-w-0 space-y-1">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700 font-mono text-[10px] text-amber-300 font-bold">
                     {card.setCode}
                   </span>
                   <button
                     type="button"
                     onClick={() => seeAll({ selectedStory: card.story })}
                     title={`Show every card from ${card.story}`}
-                    className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-amber-200 hover:border-amber-500 hover:text-amber-100"
+                    className="px-2 py-0.5 rounded-md bg-sky-950/70 border border-sky-600/40 text-[10px] text-sky-200 hover:border-sky-400 hover:bg-sky-900/70 font-semibold transition-colors"
                   >
                     🎬 {card.story}
                   </button>
-                  <span className={`text-[10px] font-bold ${RARITY_STYLES[card.rarity]}`}>
+                  <span className={`text-[11px] px-2 py-0.5 rounded-md bg-slate-900 border border-slate-800 font-bold ${RARITY_STYLES[card.rarity]}`}>
                     {rarityLabel(card.rarity)}
                   </span>
                   {card.types.map((t) => (
-                    <span key={t} className="text-[10px] text-slate-400">
+                    <span key={t} className="text-[10px] text-slate-400 font-medium px-1.5 py-0.5 rounded bg-slate-900">
                       {TYPE_ICONS[t] ?? ''} {t}
                     </span>
                   ))}
                 </div>
-                <h2 className="text-lg font-bold text-slate-100 leading-tight">{card.name}</h2>
-                {card.version && <p className="text-sm text-slate-400">{card.version}</p>}
+                <h2 className="text-xl font-extrabold text-slate-100 leading-tight">{card.name}</h2>
+                {card.version && <p className="text-sm font-medium text-amber-300/80 italic">{card.version}</p>}
               </div>
-              <div className="flex items-center gap-1 shrink-0">
+
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => toggleWishlist(card.id)}
                   aria-label="Toggle wishlist"
-                  className={`w-8 h-8 rounded-lg text-sm ${
+                  className={`w-9 h-9 rounded-xl text-base transition-all flex items-center justify-center ${
                     entry?.isWishlist
-                      ? 'bg-amber-500 text-white'
-                      : 'bg-slate-800 text-slate-400 hover:text-amber-300'
+                      ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/40 font-bold'
+                      : 'bg-slate-800/80 border border-slate-700 text-slate-400 hover:text-amber-300 hover:bg-slate-800'
                   }`}
                 >
                   ★
@@ -167,84 +160,88 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                   type="button"
                   onClick={onClose}
                   aria-label="Close"
-                  className="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-100"
+                  className="w-9 h-9 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-400 hover:text-slate-100 hover:bg-slate-800 flex items-center justify-center font-bold"
                 >
                   ✕
                 </button>
               </div>
             </div>
 
-            {/* Stat strip */}
+            {/* Stat Strip */}
             <div className="flex flex-wrap gap-1.5">
               {card.inks.map((ink) => (
                 <span
                   key={ink}
-                  className={`px-2 py-0.5 rounded-md border text-[10px] font-bold ${INK_STYLES[ink].activeChip}`}
+                  className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold ${INK_STYLES[ink].activeChip}`}
                 >
                   {ink}
                 </span>
               ))}
               {card.cost !== null && (
-                <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-slate-300">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700/60 text-[11px] font-bold text-slate-200">
                   Cost {card.cost}
                 </span>
               )}
               {card.inkwell && (
-                <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-emerald-300">Inkwell</span>
+                <span className="px-2.5 py-1 rounded-lg bg-emerald-950/70 border border-emerald-600/40 text-[11px] font-bold text-emerald-300">
+                  Inkwell
+                </span>
               )}
               {card.strength !== null && (
-                <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-slate-300">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700/60 text-[11px] font-bold text-slate-200">
                   ⚔ {card.strength}
                 </span>
               )}
               {card.willpower !== null && (
-                <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-slate-300">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700/60 text-[11px] font-bold text-slate-200">
                   🛡 {card.willpower}
                 </span>
               )}
               {card.lore !== null && (
-                <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-amber-300">◇ {card.lore}</span>
+                <span className="px-2.5 py-1 rounded-lg bg-amber-950/70 border border-amber-500/40 text-[11px] font-bold text-amber-300">
+                  ◇ {card.lore} Lore
+                </span>
               )}
               {card.moveCost !== null && (
-                <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-slate-300">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700/60 text-[11px] font-bold text-slate-200">
                   Move {card.moveCost}
                 </span>
               )}
             </div>
 
             {!!card.classifications.length && (
-              <p className="text-[11px] text-slate-400">{card.classifications.join(' · ')}</p>
+              <p className="text-xs text-slate-400 font-medium">{card.classifications.join(' · ')}</p>
             )}
 
             {card.text && (
-              <p className="text-[11px] leading-relaxed text-slate-300 bg-slate-950/60 border border-slate-800 rounded-lg p-2 whitespace-pre-wrap">
+              <p className="text-xs leading-relaxed text-slate-200 bg-slate-950/70 border border-slate-800/80 rounded-xl p-3 whitespace-pre-wrap shadow-inner font-normal">
                 {card.text}
               </p>
             )}
 
-            {/* Finish counters */}
-            <div className="space-y-1.5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Copies owned</p>
+            {/* Finish Counters */}
+            <div className="space-y-2 pt-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Copies in Binder</p>
               {finishes.map((finish) => {
                 const meta = FINISH_META[finish];
                 const value = variants[finish] ?? 0;
                 return (
                   <div
                     key={finish}
-                    className="flex items-center justify-between gap-2 p-2 rounded-lg bg-slate-950/60 border border-slate-800"
+                    className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80 shadow-sm"
                   >
                     <div className="min-w-0">
                       <p className={`text-xs font-bold ${meta.color}`}>
-                        {meta.icon} {meta.label}
+                        {meta.icon} {meta.label} Printing
                       </p>
-                      <p className="text-[10px] text-slate-500 truncate">{meta.description}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{meta.description}</p>
                     </div>
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       <button
                         type="button"
                         aria-label={`Remove one ${meta.label}`}
                         onClick={() => decrementFinish(card.id, finish)}
-                        className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold"
+                        className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-base font-bold transition-all active:scale-95"
                       >
                         −
                       </button>
@@ -254,13 +251,13 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                         max={999}
                         value={value}
                         onChange={(e) => setFinishCount(card.id, finish, Number(e.target.value))}
-                        className="w-14 h-8 text-center rounded-lg bg-slate-950 border border-slate-700 text-sm font-bold text-slate-100 focus:outline-none focus:border-sky-500"
+                        className="w-14 h-8 text-center rounded-lg bg-slate-900 border border-slate-700 text-sm font-bold text-slate-100 focus:outline-none focus:border-amber-400"
                       />
                       <button
                         type="button"
                         aria-label={`Add one ${meta.label}`}
                         onClick={() => incrementFinish(card.id, finish)}
-                        className="w-8 h-8 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold"
+                        className="w-8 h-8 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-base font-black transition-all shadow-md shadow-amber-500/20 active:scale-95"
                       >
                         +
                       </button>
@@ -270,18 +267,18 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
               })}
             </div>
 
-            {/* Condition + note */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {/* Condition + Note */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
               <label className="block">
-                <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Condition</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Card Condition</span>
                 <select
                   value={entry?.condition ?? ''}
                   onChange={(e) =>
                     setCardDetails(card.id, { condition: (e.target.value || undefined) as CardCondition })
                   }
-                  className="mt-1 w-full px-2 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-sky-500"
+                  className="mt-1 w-full px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-700/80 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
                 >
-                  <option value="">—</option>
+                  <option value="">— Select Condition —</option>
                   {CONDITIONS.map((c) => (
                     <option key={c.value} value={c.value}>
                       {c.label}
@@ -290,17 +287,17 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 </select>
               </label>
               <label className="block">
-                <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Note</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Personal Note</span>
                 <input
                   value={entry?.note ?? ''}
                   onChange={(e) => setCardDetails(card.id, { note: e.target.value })}
-                  placeholder="Graded, signed, traded…"
-                  className="mt-1 w-full px-2 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-sky-500"
+                  placeholder="Graded, signed, deck slot…"
+                  className="mt-1 w-full px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-700/80 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-amber-400"
                 />
               </label>
             </div>
 
-            <div className="flex items-center justify-between gap-2 pt-1">
+            <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-800/80">
               <button
                 type="button"
                 disabled={!entry}
@@ -310,19 +307,20 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                     onClose();
                   }
                 }}
-                className="px-3 py-1.5 rounded-lg text-[11px] font-bold text-rose-300 border border-rose-900/60 hover:bg-rose-950/40 disabled:opacity-30 disabled:hover:bg-transparent"
+                className="px-3 py-1.5 rounded-xl text-xs font-bold text-rose-300 border border-rose-900/60 hover:bg-rose-950/50 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
               >
-                Remove from binder
+                Remove from Binder
               </button>
-              <span className="text-[10px] text-slate-500">
-                {count > 0 ? `${count} cop${count === 1 ? 'y' : 'ies'} · saved automatically` : 'Saved automatically'}
+              <span className="text-[11px] text-slate-400 font-medium">
+                {count > 0 ? `${count} cop${count === 1 ? 'y' : 'ies'} · saved` : 'Auto-saved'}
               </span>
             </div>
           </div>
         </div>
 
+        {/* Related Cards */}
         {(sameName.length > 0 || sameStory.length > 0) && (
-          <div className="border-t border-slate-800 px-4 py-3 space-y-3">
+          <div className="border-t border-slate-800/80 px-4 sm:px-6 py-4 space-y-4 bg-slate-950/50">
             <RelatedCardStrip
               title={sameNameTitle}
               cards={sameName}
@@ -330,7 +328,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
               onSeeAll={() => seeAll({ selectedCharacter: card.name })}
             />
             <RelatedCardStrip
-              title={`Same series — ${card.story}`}
+              title={`Same Series — ${card.story}`}
               cards={sameStory}
               onSelect={goToCard}
               onSeeAll={() => seeAll({ selectedStory: card.story })}
@@ -342,20 +340,20 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
       {showZoom &&
         createPortal(
           <div
-            className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/95 animate-fade-in"
+            className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl animate-fade-in"
             onClick={() => setShowZoom(false)}
           >
             <img
               src={imageUrl}
               alt={cardDisplayName(card)}
               onError={(e) => handleCardImageError(e, card.setCode, card.collectorNumber)}
-              className="max-w-full max-h-full object-contain rounded-xl"
+              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl shadow-black"
             />
             <button
               type="button"
               onClick={() => setShowZoom(false)}
               aria-label="Close fullscreen"
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800/80 text-slate-200 text-lg"
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800/90 text-slate-100 text-lg flex items-center justify-center hover:bg-slate-700"
             >
               ✕
             </button>
