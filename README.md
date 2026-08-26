@@ -15,9 +15,14 @@ two games can evolve independently.
   finishes each card exists in, so no rarity guessing is needed.
 - **Full catalogue** — 22 sets, 3,192 cards, sourced from the
   [Lorcast API](https://lorcast.com).
-- **Filters** — set, ownership status, ink (dual-ink aware), card type, rarity,
-  classification, plus sorting by number, name, ink cost, lore, strength or copies.
-- **Fast search** — matches name, subtitle, collector number, set and classification.
+- **Filters** — set, Disney series, ownership status, ink (dual-ink aware), card
+  type, rarity, classification, plus sorting by number, name, ink cost, lore,
+  strength or copies.
+- **Fast search** — matches name, subtitle, Disney series, collector number, set
+  and classification, so "frozen" returns every Frozen card.
+- **Related cards** — every card's detail view links to the other cards of that
+  same character and the other cards from that same Disney series, and you can
+  walk from one to the next without leaving the panel.
 - **Wishlist, condition and notes** per card.
 - **Vivid mode** — unowned cards are desaturated by default; toggle to see every
   card in full colour.
@@ -70,9 +75,22 @@ deploy — `src/utils/firebase.ts` has no hardcoded fallbacks on purpose.
 
 | Script | Does |
 | --- | --- |
-| `npm run data:cards` | Fetches every set and card from the Lorcast API into `src/data/lorcanaCards.json` (~1.75 MB) and `src/data/lorcanaSets.json`. Fails loudly if the card count, id uniqueness or JSON size gate is violated. |
+| `npm run data:cards` | Fetches every set and card from the Lorcast API, joins each card's Disney story in from [LorcanaJSON](https://lorcanajson.org) (Lorcast has no franchise field), and writes `src/data/lorcanaCards.json` (~1.82 MB), `src/data/lorcanaSets.json` and `src/data/lorcanaStories.json`. Fails loudly if the card count, id uniqueness, story coverage, story ambiguity, story count or JSON size gate is violated. |
 | `npm run data:images` | Downloads each card's AVIF at Lorcast's maximum resolution and emits two WebP tiers: `public/card-images/` (320w, grid) and `public/card-images-lg/` (674w, detail view). Resumable — re-run to retry failures. |
 | `npm run data:upload` | Uploads both tiers to Cloudflare R2, reading the endpoint, credentials and bucket name from a gitignored `secret.yaml` (override the bucket with `R2_BUCKET`). |
+
+Both upstreams are read **only** by these scripts, on a developer machine. The app
+itself never calls an external API: the catalogue, the set index and the story
+index are static JSON imports, and card images come from R2.
+
+The Disney story is joined in two passes. The first is keyed on `setCode` +
+`collectorNumber` + name + version and covers 2,985 cards; the name and version
+are part of that key because LorcanaJSON files promos under the main set's
+`setCode` too, so 160 of the bare `setCode`-`number` keys are ambiguous and a
+plain number join mis-assigns 155 cards. The second pass is keyed on name +
+version and covers the 207 promo reprints LorcanaJSON numbers differently. A card
+that resolves through neither trips a gate that prints paste-ready lines for the
+`STORY_OVERRIDES` table in the script.
 
 Card ids are `` `${setCode}-${collectorNumber}` `` verbatim — unique across all
 3,192 cards. They are deliberately **not** zero-padded: set 8 ships both `1` and
