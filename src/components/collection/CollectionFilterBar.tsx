@@ -111,6 +111,49 @@ export function CollectionFilterBar({
             className="w-full sm:w-auto sm:min-w-[230px]"
           />
 
+          {/* Grid Zoom / Density Switcher */}
+          <div className="flex items-center p-0.5 rounded-xl bg-slate-900/80 border border-slate-700/70 shadow-sm" title="Adjust Card Size / Grid Density">
+            <button
+              type="button"
+              onClick={() => onChange({ cardZoom: 'compact' })}
+              title="Compact (More cards per row)"
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                (filters.cardZoom ?? 'normal') === 'compact'
+                  ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span className="text-[11px] font-black">−</span>
+              <span className="hidden xl:inline text-[10px]">Compact</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onChange({ cardZoom: 'normal' })}
+              title="Standard Grid Size"
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                (filters.cardZoom ?? 'normal') === 'normal'
+                  ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span className="text-[11px]">🎴</span>
+              <span className="hidden xl:inline text-[10px]">Normal</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onChange({ cardZoom: 'large' })}
+              title="Large Cards (Detailed view)"
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                (filters.cardZoom ?? 'normal') === 'large'
+                  ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span className="text-[11px] font-black">+</span>
+              <span className="hidden xl:inline text-[10px]">Large</span>
+            </button>
+          </div>
+
           {/* Vivid Color Mode Toggle */}
           <button
             type="button"

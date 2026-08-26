@@ -32,6 +32,7 @@ export const DEFAULT_COLLECTION_FILTERS: CollectionFilters = {
   sortBy: 'number',
   sortOrder: 'asc',
   showFullColor: false,
+  cardZoom: 'normal',
 };
 
 function createDefaultProfile(): CollectionProfile {

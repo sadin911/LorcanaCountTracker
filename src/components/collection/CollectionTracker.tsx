@@ -210,6 +210,7 @@ export function CollectionTracker() {
     filters.selectedClassification,
     filters.sortBy,
     filters.sortOrder,
+    filters.cardZoom,
     effectiveSearch.trim(),
     activeProfileId,
   ].join('_');

@@ -35,6 +35,8 @@ export type CollectionSortBy = 'number' | 'name' | 'cost' | 'lore' | 'strength' 
 
 export type SortOrder = 'asc' | 'desc';
 
+export type CardZoomLevel = 'compact' | 'normal' | 'large';
+
 export interface CollectionFilters {
   selectedSet: string;
   /** Disney story name, or 'ALL'. Not a Lorcana set — see LorcanaCard.story. */
@@ -55,6 +57,7 @@ export interface CollectionFilters {
   sortBy: CollectionSortBy;
   sortOrder: SortOrder;
   showFullColor: boolean;
+  cardZoom?: CardZoomLevel;
 }
 
 export interface SetProgress {
