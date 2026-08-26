@@ -20,6 +20,8 @@ lerna-debug.log*
 .env
 .env.*
 !.env.example
+# Committed deliberately — see the comment at the top of the file. Holds no secrets.
+!.env.production
 *.env
 secret*.yaml
 secret*.yml
