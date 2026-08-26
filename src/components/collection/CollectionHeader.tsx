@@ -20,8 +20,10 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
 
   const user = useAuthStore((s) => s.user);
   const authLoading = useAuthStore((s) => s.loading);
+  const authError = useAuthStore((s) => s.error);
   const signIn = useAuthStore((s) => s.signIn);
   const signOut = useAuthStore((s) => s.signOut);
+  const clearError = useAuthStore((s) => s.clearError);
 
   const syncStatus = useCollectionStore((s) => s.syncStatus);
   const profiles = useCollectionStore((s) => s.profiles);
@@ -141,6 +143,24 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
             )}
           </div>
         </div>
+
+        {authError && (
+          <div className="flex items-start justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-rose-950/50 border border-rose-800 animate-fade-in">
+            <p className="text-[11px] text-rose-200">
+              Sign-in failed: {authError}
+              {/* Easily the most common cause, and invisible without saying so. */}
+              {authError.includes('popup-blocked') && ' — allow pop-ups for this site and try again.'}
+            </p>
+            <button
+              type="button"
+              onClick={clearError}
+              aria-label="Dismiss"
+              className="shrink-0 text-rose-300 hover:text-rose-100 text-xs leading-none"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-1.5 text-[10px]">
           <span className="px-2 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300">
