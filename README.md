@@ -85,7 +85,16 @@ card, which keeps the catalogue JSON small enough to import statically.
 ## Firestore
 
 One document per binder at `users/{uid}/binders/{binderId}`. Rules live in
-`firestore.rules`; deploy them with `firebase deploy --only firestore:rules`.
+`firestore.rules`:
+
+```bash
+npm run rules:deploy    # prompts for a Google login the first time
+```
+
+The Firestore default for a new production-mode database denies everything,
+including signed-in users — so cloud sync stays broken until these rules are
+applied. You can also paste `firestore.rules` into Firebase Console → Firestore
+Database → Rules → Publish.
 
 Binder documents are written whole rather than merged, so cards you remove really
 disappear from the cloud. The trade-off is that concurrent edits to the *same*

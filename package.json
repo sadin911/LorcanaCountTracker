@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "data:cards": "node scripts/fetch-lorcana-cards.mjs",
     "data:images": "node scripts/download-lorcana-images.mjs",
-    "data:upload": "node scripts/upload-lorcana-r2.mjs"
+    "data:upload": "node scripts/upload-lorcana-r2.mjs",
+    "rules:deploy": "npx -y firebase-tools deploy --only firestore:rules --project lorcanacounttracker"
   },
   "dependencies": {
     "firebase": "^12.18.0",
