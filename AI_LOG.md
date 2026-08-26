@@ -8,3 +8,4 @@
 [2026-08-27 02:50] Major | Antigravity | Edit | src/components/collection/* - Clean minimal toolbar, modal, and ink UI
 [2026-08-27 02:51] Major | Antigravity | Command | npm run lint && npm run build - verification passed
 [2026-08-27 02:55] Major | Antigravity | Edit | src/components - fixed dropdown z-index layer stacking over card grid
+[2026-08-27 02:56] Major | Antigravity | Edit | src/components/collection/CollectionTracker.tsx - sort Disney Series A-Z

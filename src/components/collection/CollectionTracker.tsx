@@ -59,7 +59,7 @@ export function CollectionTracker() {
       name: s.name,
       count: s.cardCount,
       owned: storyOwned.get(s.name) ?? 0,
-    }));
+    })).sort((a, b) => a.name.localeCompare(b.name));
 
     return { sets: setOptions, stories: storyOptions };
   }, [ownedCards]);
