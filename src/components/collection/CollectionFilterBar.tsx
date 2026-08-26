@@ -346,8 +346,26 @@ export function CollectionFilterBar({
               })}
             </div>
 
-            {/* Lorcana Rarity Filter Capsule (Full Text Names) */}
-            <div className="flex items-center gap-1 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm" title="Filter by Rarity">
+            {/* Mobile / Tablet Rarity Dropdown Selector (Compact, Never Overflows) */}
+            <div className="flex xl:hidden items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 shadow-sm min-h-[38px] sm:min-h-[34px]" title="Filter by Rarity">
+              <span className="text-[11px] font-bold text-[#dfc792] shrink-0">Rarity:</span>
+              <select
+                value={filters.selectedRarity}
+                onChange={(e) => onChange({ selectedRarity: e.target.value as any })}
+                aria-label="Filter cards by rarity"
+                className="bg-transparent text-xs font-bold text-slate-200 focus:outline-none cursor-pointer pr-1"
+              >
+                <option value="ALL" className="bg-[#1b2038] text-slate-200">All Rarities</option>
+                {RARITIES.map((r) => (
+                  <option key={r} value={r} className="bg-[#1b2038] text-slate-200">
+                    {rarityLabel(r)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Desktop Rarity Filter Capsule (Full Text Names) */}
+            <div className="hidden xl:flex flex-wrap items-center gap-1 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm" title="Filter by Rarity">
               <button
                 type="button"
                 onClick={() => onChange({ selectedRarity: 'ALL' })}
