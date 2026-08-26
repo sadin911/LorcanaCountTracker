@@ -16,4 +16,6 @@
 [2026-08-27 03:12] Major | Antigravity | Edit | Add Ink Cost (1-9+) & Inkwell (Inkable/Uninkable) filters
 [2026-08-27 03:15] Major | Antigravity | Edit | Header official Lorcana logo & Mobile/Tablet touch UX targets
 [2026-08-27 03:15] Major | Antigravity | Command | npm run lint && npm run build - verification passed
-[2026-08-27 03:15] Major | Antigravity | Command | git push origin feat/lorcana-ui-theme-overhaul
+[2026-08-27 03:18] Major | Antigravity | Edit | src/components/collection/CollectionFilterBar.tsx - No horizontal scroll, minimal symbols
+[2026-08-27 03:18] Major | Antigravity | Command | npm run lint && npm run build - verification passed
+[2026-08-27 03:18] Major | Antigravity | Command | git push origin feat/lorcana-ui-theme-overhaul
