@@ -137,20 +137,45 @@ returns the 124 Frozen cards; `aladdin` returns the story *and* the character.
 The input placeholder becomes
 `Search name, subtitle, series, number, classification…`.
 
-## Series filter
+## Series and character filters
 
-`CollectionFilters` gains `selectedStory: string`, default `'ALL'`.
+`CollectionFilters` gains two fields, both defaulting to `'ALL'`:
+`selectedStory` (a Disney story name) and `selectedCharacter` (a card name).
+
+`selectedCharacter` exists because folding `story` into the search key makes a
+name query bleed into its whole story: searching `Mickey Mouse` returns 193 cards
+— the 58 that are him plus the 179 in `Mickey Mouse & Friends`. A "See all (57)"
+button that lands on 193 cards teaches the collector to distrust the numbers, so
+the character relation gets an exact filter of its own rather than riding on
+search. Both sides of the comparison run through `normalizeCardName`, so the
+filter groups cards exactly the way the relation index does.
+
+The character filter has no picker — it is set only by the modal's same-character
+"See all" — so the filter bar renders it as a labelled chip (`🧝 Mickey Mouse ✕`)
+whenever it is active. Without that, a collector could land in a filtered state
+with no visible way out.
+
+Typing a name into the search box still works and still spans the story; that is
+the looser, exploratory path, and it is what the user asked search to do.
 `loadInitialFilters` already spreads defaults underneath the parsed localStorage
 value, so saved filter state stays valid without a migration.
 
-`CollectionTracker`'s filter chain gains one equality test:
+`CollectionTracker`'s filter chain gains two tests:
 
 ```ts
 if (selectedStory !== 'ALL' && card.story !== selectedStory) return false;
+if (
+  selectedCharacter !== 'ALL' &&
+  normalizeCardName(card.name) !== normalizeCardName(selectedCharacter)
+) {
+  return false;
+}
 ```
 
-`selectedStory` joins `filterKey` (so pagination resets), `activeFilterCount` and
-`isFiltered`.
+`normalizeCardName` is exported from `src/utils/cardRelations.ts` — the same
+function the name index is keyed on, so there is one definition of "same name".
+
+Both fields join `filterKey` (so pagination resets) and `activeFilterCount`.
 
 The control reuses `SearchableSetSelect` rather than duplicating it: stories map
 onto `SetOption` with `code` and `name` both set to the story name, `count` taken
@@ -204,15 +229,12 @@ The story also appears as a clickable badge in the modal header, next to the set
 code.
 
 `See all` resets filters to their defaults and then applies exactly one
-condition — `{ selectedStory: story }` for the story strip, `{ search: card.name }`
-for the name strip — then closes the modal and scrolls to top. Resetting is the
+condition — `{ selectedStory: story }` for the story strip,
+`{ selectedCharacter: card.name }` for the name strip — then closes the modal and
+scrolls to top. Resetting is the
 point: "see all of these" must not silently return the leftovers of a stale ink
 or rarity filter. `showFullColor` survives the reset because it is a display
 preference, not a filter.
-
-The character relation rides on `search` rather than getting its own filter field.
-Search already matches `name`, and the user's own framing was "type the name and
-the cards come up".
 
 ## Testing
 
@@ -231,5 +253,4 @@ introducing one. Verification is:
 - Umbrella story grouping.
 - A per-series progress panel above the grid, of the kind `SetProgress` gives for
   sets.
-- A dedicated character filter field.
 - Localizing the UI; the interface stays English, as it is today.

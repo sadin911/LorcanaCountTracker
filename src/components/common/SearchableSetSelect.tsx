@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 
+/**
+ * A pickable option. Named for its first user, the set filter; the series filter
+ * reuses the same control with `code` and `name` both set to the story name.
+ */
 export interface SetOption {
   code: string;
   name: string;
@@ -13,6 +17,13 @@ interface Props {
   onSelectSet: (code: string) => void;
   placeholder?: string;
   className?: string;
+  /** Label for the clear-the-filter row, e.g. "All Series". */
+  allLabel?: string;
+  /** Lowercase plural used in the empty state and the footer count. */
+  itemNoun?: string;
+  icon?: string;
+  /** Off when `code` and `name` are the same string, as they are for stories. */
+  showCode?: boolean;
 }
 
 function pct(owned: number, count: number) {
@@ -32,6 +43,10 @@ export function SearchableSetSelect({
   onSelectSet,
   placeholder = 'Choose a set…',
   className = '',
+  allLabel = 'All Sets',
+  itemNoun = 'sets',
+  icon = '📦',
+  showCode = true,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -44,7 +59,7 @@ export function SearchableSetSelect({
 
   const q = query.trim().toLowerCase();
   const filtered = q ? sets.filter((s) => s.code.toLowerCase().includes(q) || s.name.toLowerCase().includes(q)) : sets;
-  const showAllRow = !q || 'all sets'.includes(q);
+  const showAllRow = !q || allLabel.toLowerCase().includes(q);
 
   useEffect(() => {
     if (!isOpen) {
@@ -101,9 +116,11 @@ export function SearchableSetSelect({
         <span className="flex items-center gap-2 min-w-0">
           {selected ? (
             <>
-              <span className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] text-slate-300 shrink-0">
-                {selected.code}
-              </span>
+              {showCode && (
+                <span className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] text-slate-300 shrink-0">
+                  {selected.code}
+                </span>
+              )}
               <span className="truncate">{selected.name}</span>
               <span className={`shrink-0 text-[10px] ${progressColor(selected.owned, selected.count)}`}>
                 {selected.owned}/{selected.count} · {pct(selected.owned, selected.count)}%
@@ -111,9 +128,9 @@ export function SearchableSetSelect({
             </>
           ) : (
             <>
-              <span>📦</span>
+              <span>{icon}</span>
               <span className="truncate">
-                All Sets <span className="text-slate-500">({sets.length})</span>
+                {allLabel} <span className="text-slate-500">({sets.length})</span>
               </span>
               <span className={`shrink-0 text-[10px] ${progressColor(totalOwned, totalCards)}`}>
                 {totalOwned}/{totalCards}
@@ -126,7 +143,7 @@ export function SearchableSetSelect({
             <span
               role="button"
               tabIndex={0}
-              aria-label="Clear set filter"
+              aria-label={`Clear ${itemNoun} filter`}
               onClick={(e) => {
                 e.stopPropagation();
                 onSelectSet('ALL');
@@ -171,8 +188,8 @@ export function SearchableSetSelect({
                 className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs hover:bg-slate-800 text-slate-200"
               >
                 <span className="flex items-center gap-2">
-                  <span>📦</span>
-                  <span className="font-semibold">All Sets</span>
+                  <span>{icon}</span>
+                  <span className="font-semibold">{allLabel}</span>
                 </span>
                 <span className="flex items-center gap-2">
                   <span className={`text-[10px] ${progressColor(totalOwned, totalCards)}`}>
@@ -191,9 +208,11 @@ export function SearchableSetSelect({
                 className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs hover:bg-slate-800 text-slate-300"
               >
                 <span className="flex items-center gap-2 min-w-0">
-                  <span className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] shrink-0">
-                    {s.code}
-                  </span>
+                  {showCode && (
+                    <span className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] shrink-0">
+                      {s.code}
+                    </span>
+                  )}
                   <span className="truncate">{s.name}</span>
                 </span>
                 <span className="flex items-center gap-2 shrink-0">
@@ -207,7 +226,7 @@ export function SearchableSetSelect({
 
             {!filtered.length && !showAllRow && (
               <div className="px-3 py-6 text-center text-xs text-slate-500">
-                No sets match “{query}”.
+                No {itemNoun} match “{query}”.
                 <button onClick={() => setQuery('')} className="ml-1 text-sky-400 hover:underline">
                   Clear
                 </button>
@@ -217,7 +236,9 @@ export function SearchableSetSelect({
 
           <div className="px-3 py-2 border-t border-slate-800 text-[10px] text-slate-500 flex justify-between">
             <span>Esc to close · Enter to pick</span>
-            <span>{filtered.length} sets</span>
+            <span>
+              {filtered.length} {itemNoun}
+            </span>
           </div>
         </div>
       )}

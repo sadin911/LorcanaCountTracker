@@ -1,8 +1,9 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
-import { ALL_CARDS, ALL_CLASSIFICATIONS, ALL_SETS, SET_ORDER } from '../../data/catalogue';
+import { ALL_CARDS, ALL_CLASSIFICATIONS, ALL_SETS, ALL_STORIES, SET_ORDER } from '../../data/catalogue';
 import { useCollectionStore } from '../../store/collectionStore';
 import type { CollectionStats, SetProgress } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
+import { normalizeCardName } from '../../utils/cardRelations';
 import { createCardMatcher } from '../../utils/searchHelpers';
 import type { SetOption } from '../common/SearchableSetSelect';
 import { CollectionFilterBar } from './CollectionFilterBar';
@@ -31,20 +32,36 @@ export function CollectionTracker() {
   const effectiveSearch = filters.search.trim() === '' ? '' : deferredSearch;
   const cardMatcher = useMemo(() => createCardMatcher(effectiveSearch), [effectiveSearch]);
 
-  const sets: SetOption[] = useMemo(() => {
-    const counts = new Map<string, { count: number; owned: number }>();
+  const { sets, stories } = useMemo(() => {
+    const setCounts = new Map<string, { count: number; owned: number }>();
+    const storyOwned = new Map<string, number>();
+
     for (const card of ALL_CARDS) {
-      const bucket = counts.get(card.setCode) ?? { count: 0, owned: 0 };
+      const bucket = setCounts.get(card.setCode) ?? { count: 0, owned: 0 };
       bucket.count++;
-      if (totalCopies(ownedCards[card.id]?.variants) > 0) bucket.owned++;
-      counts.set(card.setCode, bucket);
+      if (totalCopies(ownedCards[card.id]?.variants) > 0) {
+        bucket.owned++;
+        storyOwned.set(card.story, (storyOwned.get(card.story) ?? 0) + 1);
+      }
+      setCounts.set(card.setCode, bucket);
     }
-    return ALL_SETS.map((s) => ({
+
+    const setOptions: SetOption[] = ALL_SETS.map((s) => ({
       code: s.code,
       name: s.name,
-      count: counts.get(s.code)?.count ?? 0,
-      owned: counts.get(s.code)?.owned ?? 0,
+      count: setCounts.get(s.code)?.count ?? 0,
+      owned: setCounts.get(s.code)?.owned ?? 0,
     })).sort((a, b) => (SET_ORDER.get(a.code) ?? 0) - (SET_ORDER.get(b.code) ?? 0));
+
+    // A story is its own key: `code` and `name` are both the story name.
+    const storyOptions: SetOption[] = ALL_STORIES.map((s) => ({
+      code: s.name,
+      name: s.name,
+      count: s.cardCount,
+      owned: storyOwned.get(s.name) ?? 0,
+    }));
+
+    return { sets: setOptions, stories: storyOptions };
   }, [ownedCards]);
 
   const overallStats: CollectionStats = useMemo(() => {
@@ -97,6 +114,8 @@ export function CollectionTracker() {
     const {
       statusFilter,
       selectedSet,
+      selectedStory,
+      selectedCharacter,
       selectedInk,
       selectedType,
       selectedRarity,
@@ -125,6 +144,15 @@ export function CollectionTracker() {
       }
 
       if (selectedSet !== 'ALL' && card.setCode !== selectedSet) return false;
+      if (selectedStory !== 'ALL' && card.story !== selectedStory) return false;
+      // Normalized both sides so this groups cards the same way the related-card
+      // index does.
+      if (
+        selectedCharacter !== 'ALL' &&
+        normalizeCardName(card.name) !== normalizeCardName(selectedCharacter)
+      ) {
+        return false;
+      }
       // Membership, not equality: 187 cards are dual-ink and would otherwise
       // vanish from every ink filter.
       if (selectedInk !== 'ALL' && !card.inks.includes(selectedInk as never)) return false;
@@ -173,6 +201,8 @@ export function CollectionTracker() {
   // Pagination resets when the query changes, but NOT when a card count changes.
   const filterKey = [
     filters.selectedSet,
+    filters.selectedStory,
+    filters.selectedCharacter,
     filters.statusFilter,
     filters.selectedInk,
     filters.selectedType,
@@ -194,6 +224,7 @@ export function CollectionTracker() {
           onChange={setFilters}
           onReset={resetFilters}
           sets={sets}
+          stories={stories}
           classifications={ALL_CLASSIFICATIONS}
           totalFiltered={filteredCards.length}
         />

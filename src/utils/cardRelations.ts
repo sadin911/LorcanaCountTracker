@@ -9,8 +9,11 @@
 import { ALL_CARDS, SET_ORDER } from '../data/catalogue';
 import type { LorcanaCard } from '../types/card';
 
-/** Same rule the data pipeline uses to join promo reprints by name. */
-function normalizeName(input: string | null): string {
+/**
+ * Same rule the data pipeline uses to join promo reprints by name. Exported so
+ * the character filter compares names exactly the way this index groups them.
+ */
+export function normalizeCardName(input: string | null): string {
   return (input ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '');
 }
 
@@ -38,7 +41,7 @@ function ensureIndexes(): void {
     if (storyBucket) storyBucket.push(card);
     else stories.set(card.story, [card]);
 
-    const nameKey = normalizeName(card.name);
+    const nameKey = normalizeCardName(card.name);
     const nameBucket = names.get(nameKey);
     if (nameBucket) nameBucket.push(card);
     else names.set(nameKey, [card]);
@@ -65,5 +68,5 @@ export function relatedByStory(card: LorcanaCard): LorcanaCard[] {
  */
 export function relatedBySameName(card: LorcanaCard): LorcanaCard[] {
   ensureIndexes();
-  return (byName?.get(normalizeName(card.name)) ?? []).filter((c) => c.id !== card.id);
+  return (byName?.get(normalizeCardName(card.name)) ?? []).filter((c) => c.id !== card.id);
 }

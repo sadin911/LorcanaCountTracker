@@ -21,6 +21,8 @@ const SAVE_DEBOUNCE_MS = 600;
 
 export const DEFAULT_COLLECTION_FILTERS: CollectionFilters = {
   selectedSet: 'ALL',
+  selectedStory: 'ALL',
+  selectedCharacter: 'ALL',
   statusFilter: 'all',
   search: '',
   selectedInk: 'ALL',

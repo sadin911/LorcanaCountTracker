@@ -37,6 +37,15 @@ export type SortOrder = 'asc' | 'desc';
 
 export interface CollectionFilters {
   selectedSet: string;
+  /** Disney story name, or 'ALL'. Not a Lorcana set — see LorcanaCard.story. */
+  selectedStory: string;
+  /**
+   * A card name, or 'ALL'. Its own field rather than a search query because
+   * `story` is part of the search key: searching "Mickey Mouse" also returns
+   * every card in the Mickey Mouse & Friends story, which is 193 cards rather
+   * than the 58 that are actually him.
+   */
+  selectedCharacter: string;
   statusFilter: CollectionStatusFilter;
   search: string;
   selectedInk: string;

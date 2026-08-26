@@ -27,14 +27,25 @@ interface Props {
   onChange: (patch: Partial<CollectionFilters>) => void;
   onReset: () => void;
   sets: SetOption[];
+  stories: SetOption[];
   classifications: string[];
   totalFiltered: number;
 }
 
-export function CollectionFilterBar({ filters, onChange, onReset, sets, classifications, totalFiltered }: Props) {
+export function CollectionFilterBar({
+  filters,
+  onChange,
+  onReset,
+  sets,
+  stories,
+  classifications,
+  totalFiltered,
+}: Props) {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const activeFilterCount = [
+    filters.selectedStory !== 'ALL',
+    filters.selectedCharacter !== 'ALL',
     filters.selectedInk !== 'ALL',
     filters.selectedType !== 'ALL',
     filters.selectedRarity !== 'ALL',
@@ -79,6 +90,33 @@ export function CollectionFilterBar({ filters, onChange, onReset, sets, classifi
           onSelectSet={(code) => onChange({ selectedSet: code })}
           className="w-full sm:w-auto sm:min-w-[260px]"
         />
+
+        <SearchableSetSelect
+          sets={stories}
+          selectedSet={filters.selectedStory}
+          onSelectSet={(story) => onChange({ selectedStory: story })}
+          placeholder="Choose a Disney series…"
+          allLabel="All Series"
+          itemNoun="series"
+          icon="🎬"
+          showCode={false}
+          className="w-full sm:w-auto sm:min-w-[240px]"
+        />
+
+        {/* The character filter has no picker of its own — it is set by the
+            "See all" button on a card's same-character strip — so it needs a
+            visible way out. */}
+        {filters.selectedCharacter !== 'ALL' && (
+          <button
+            type="button"
+            onClick={() => onChange({ selectedCharacter: 'ALL' })}
+            title="Clear the character filter"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-sky-700/60 bg-sky-500/10 text-xs font-semibold text-sky-200 hover:bg-sky-500/20"
+          >
+            🧝 {filters.selectedCharacter}
+            <span className="text-sky-400/70">✕</span>
+          </button>
+        )}
 
         <button
           type="button"
