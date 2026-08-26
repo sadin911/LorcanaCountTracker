@@ -33,23 +33,23 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
   const badge = SYNC_LABEL[user ? syncStatus : 'idle'] ?? SYNC_LABEL.idle;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-amber-500/10 bg-[#080c16]/85 backdrop-blur-xl shadow-lg shadow-black/40">
-      {/* Subtle top magical starlight line */}
-      <div className="h-[2px] w-full bg-gradient-to-r from-amber-500/40 via-purple-500/50 to-sky-500/40" />
+    <header className="sticky top-0 z-30 border-b border-[#c8b07b]/20 bg-[#131627]/90 backdrop-blur-xl shadow-lg shadow-black/50">
+      {/* Signature Disney Lorcana Gold Filigree Header Line */}
+      <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#c8b07b] to-transparent" />
 
       <div className="px-3 sm:px-6 py-2.5 space-y-2.5 max-w-7xl mx-auto">
         <div className="flex items-center justify-between gap-3">
           {/* Logo & Identity */}
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400/20 via-purple-500/20 to-sky-500/20 border border-amber-400/30 flex items-center justify-center shadow-inner text-base shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-[#252a48] border border-[#c8b07b]/40 flex items-center justify-center shadow-inner text-base shrink-0">
               ✨
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-sm sm:text-base font-extrabold tracking-tight bg-gradient-to-r from-amber-200 via-amber-100 to-sky-200 bg-clip-text text-transparent whitespace-nowrap">
+                <h1 className="text-sm sm:text-base font-extrabold tracking-tight bg-gradient-to-r from-[#dfc792] via-[#f5e4bd] to-[#c8b07b] bg-clip-text text-transparent whitespace-nowrap">
                   Disney Lorcana
                 </h1>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400/80 px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#dfc792] px-1.5 py-0.5 rounded bg-[#c8b07b]/15 border border-[#c8b07b]/30">
                   Tracker
                 </span>
                 <span
@@ -68,13 +68,13 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
             <button
               type="button"
               onClick={() => setShowProfiles(true)}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-900/80 border border-slate-700/70 hover:border-amber-400/50 hover:bg-slate-800 text-xs transition-all shadow-sm group"
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] text-xs transition-all shadow-sm group hover:text-[#dfc792]"
             >
               <span className="text-sm group-hover:scale-110 transition-transform">{activeProfile?.icon ?? '📘'}</span>
-              <span className="hidden sm:inline max-w-[130px] truncate font-medium text-slate-200">
+              <span className="hidden sm:inline max-w-[130px] truncate font-bold text-slate-200">
                 {activeProfile?.name ?? 'Binder'}
               </span>
-              <span className="text-slate-500 text-[10px]">▾</span>
+              <span className="text-amber-400/80 text-[10px]">▾</span>
             </button>
 
             {/* Backup / Export */}
@@ -82,17 +82,17 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
               type="button"
               onClick={() => setShowBackup(true)}
               title="Backup & restore collection"
-              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg bg-slate-900/80 border border-slate-700/70 hover:border-sky-400/50 hover:bg-slate-800 text-xs text-slate-300 transition-all shadow-sm flex items-center gap-1.5"
+              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm flex items-center gap-1.5"
             >
               <span>💾</span>
-              <span className="hidden md:inline font-medium">Backup</span>
+              <span className="hidden md:inline font-bold">Backup</span>
             </button>
 
             {/* Auth / Cloud Sync */}
             {!isFirebaseConfigured ? (
               <span
                 title="Set VITE_FIREBASE_* in .env.local to enable cloud sync"
-                className="px-2 py-1.5 rounded-lg bg-slate-900/50 border border-slate-800 text-[10px] text-slate-500 font-medium"
+                className="px-2 py-1.5 rounded-lg bg-[#1b2038]/60 border border-[#c8b07b]/20 text-[10px] text-slate-400 font-medium"
               >
                 Offline
               </span>
@@ -101,23 +101,23 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
                 <button
                   type="button"
                   onClick={() => setShowUserMenu((v) => !v)}
-                  className="flex items-center gap-1.5 p-1 sm:px-2 sm:py-1 rounded-lg bg-slate-900/80 border border-slate-700/70 hover:border-amber-400/50 transition-all"
+                  className="flex items-center gap-1.5 p-1 sm:px-2 sm:py-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] transition-all"
                 >
                   {user.photoURL ? (
-                    <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full ring-1 ring-amber-400/40" />
+                    <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full ring-1 ring-[#c8b07b]" />
                   ) : (
-                    <span className="w-6 h-6 rounded-full bg-gradient-to-tr from-amber-500 to-sky-500 text-slate-950 text-[11px] font-extrabold flex items-center justify-center shadow">
+                    <span className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#dfc792] to-[#c8b07b] text-[#131627] text-[11px] font-extrabold flex items-center justify-center shadow">
                       {(user.displayName ?? user.email ?? '?').charAt(0).toUpperCase()}
                     </span>
                   )}
-                  <span className="text-slate-500 text-[10px]">▾</span>
+                  <span className="text-slate-400 text-[10px]">▾</span>
                 </button>
 
                 {showUserMenu && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)} />
-                    <div className="absolute right-0 mt-2 z-20 w-60 rounded-xl border border-slate-700/80 bg-slate-900/95 backdrop-blur-xl shadow-2xl p-3 animate-fade-in space-y-2">
-                      <div className="border-b border-slate-800 pb-2">
+                    <div className="absolute right-0 mt-2 z-20 w-60 rounded-2xl border border-[#c8b07b]/30 bg-[#1b2038]/95 backdrop-blur-xl shadow-2xl p-3 animate-fade-in space-y-2">
+                      <div className="border-b border-slate-700/60 pb-2">
                         <p className="text-xs font-bold text-slate-100 truncate">{user.displayName || 'Illumite'}</p>
                         <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
                         <div className="flex items-center gap-1.5 mt-1.5">
@@ -131,7 +131,7 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
                           setShowUserMenu(false);
                           void signOut();
                         }}
-                        className="w-full py-2 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 text-xs font-semibold text-rose-300 transition-colors"
+                        className="w-full py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 text-xs font-semibold text-rose-300 transition-colors"
                       >
                         Sign out
                       </button>
@@ -144,7 +144,7 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
                 type="button"
                 disabled={authLoading}
                 onClick={() => void signIn()}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs font-bold transition-all shadow-md shadow-amber-500/20 disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] hover:brightness-110 text-[#131627] text-xs font-extrabold transition-all shadow-md shadow-[#c8b07b]/20 disabled:opacity-50"
               >
                 <span>☁️</span>
                 <span className="hidden sm:inline">Sign In</span>
@@ -171,40 +171,37 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
         )}
 
         {/* Collection Stats Bar with Progress */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 border-t border-slate-800/50">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 border-t border-[#c8b07b]/15">
           <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
-            <span className="px-2 py-0.5 rounded-md bg-slate-900/90 border border-slate-800 text-slate-300 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
-              <strong className="text-sky-300 font-bold">{stats.totalUniqueOwned.toLocaleString()}</strong> distinct
+            <span className="px-2.5 py-0.5 rounded-lg bg-[#1b2038]/90 border border-[#c8b07b]/20 text-slate-300 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#dfc792]" />
+              <strong className="text-[#dfc792] font-bold">{stats.totalUniqueOwned.toLocaleString()}</strong> distinct
             </span>
-            <span className="px-2 py-0.5 rounded-md bg-slate-900/90 border border-slate-800 text-slate-300 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-              <strong className="text-cyan-300 font-bold">{stats.totalCardsCount.toLocaleString()}</strong> copies
+            <span className="px-2.5 py-0.5 rounded-lg bg-[#1b2038]/90 border border-[#c8b07b]/20 text-slate-300 flex items-center gap-1.5">
+              <strong className="text-slate-100 font-bold">{stats.totalCardsCount.toLocaleString()}</strong> copies
             </span>
             {stats.duplicatesCount > 0 && (
-              <span className="px-2 py-0.5 rounded-md bg-slate-900/90 border border-slate-800 text-slate-300 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
-                <strong className="text-purple-300 font-bold">{stats.duplicatesCount.toLocaleString()}</strong> duplicates
+              <span className="px-2.5 py-0.5 rounded-lg bg-[#1b2038]/90 border border-[#c8b07b]/20 text-slate-300 flex items-center gap-1.5">
+                <strong className="text-amber-300 font-bold">{stats.duplicatesCount.toLocaleString()}</strong> dupes
               </span>
             )}
             {stats.wishlistCount > 0 && (
-              <span className="px-2 py-0.5 rounded-md bg-slate-900/90 border border-slate-800 text-slate-300 flex items-center gap-1">
-                <span className="text-amber-400 text-[10px]">★</span>
-                <strong className="text-amber-300 font-bold">{stats.wishlistCount}</strong> wishlist
+              <span className="px-2.5 py-0.5 rounded-lg bg-[#1b2038]/90 border border-[#c8b07b]/20 text-[#dfc792] flex items-center gap-1.5">
+                ★ <strong>{stats.wishlistCount}</strong> wishlist
               </span>
             )}
           </div>
 
           {/* Collection Progress Glow */}
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="w-28 sm:w-36 h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-700/60 p-0.5">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="w-28 sm:w-36 h-2.5 bg-[#131627] rounded-full overflow-hidden border border-[#c8b07b]/30 p-0.5">
               <div
-                className="h-full bg-gradient-to-r from-amber-400 via-emerald-400 to-sky-400 rounded-full transition-all duration-500 shadow-sm shadow-emerald-400/40"
+                className="h-full bg-gradient-to-r from-[#b39552] via-[#c8b07b] to-[#dfc792] rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(200,176,123,0.5)]"
                 style={{ width: `${Math.min(100, Math.max(0, stats.overallPercentage))}%` }}
               />
             </div>
-            <span className="text-[11px] font-bold text-emerald-400 whitespace-nowrap">
-              {stats.overallPercentage}% <span className="text-slate-500 font-normal">complete</span>
+            <span className="text-[11px] font-bold text-[#dfc792] whitespace-nowrap">
+              {stats.overallPercentage}% <span className="text-slate-400 font-normal">complete</span>
             </span>
           </div>
         </div>

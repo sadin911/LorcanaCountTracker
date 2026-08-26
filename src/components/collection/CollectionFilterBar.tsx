@@ -66,7 +66,7 @@ export function CollectionFilterBar({
   return (
     <div className="relative z-40 space-y-2.5">
       {/* Main Command Bar (Card Container with glass styling) */}
-      <div className="relative z-40 p-2.5 sm:p-3 rounded-2xl border border-slate-700/60 bg-slate-950/70 backdrop-blur-xl shadow-lg shadow-black/40 space-y-2.5">
+      <div className="relative z-40 p-2.5 sm:p-3 rounded-2xl border border-[#c8b07b]/25 bg-[#131627]/85 backdrop-blur-xl shadow-lg shadow-black/50 space-y-2.5">
         {/* Row 1: Search, Set, Series, and Quick Action Toggles */}
         <div className="relative z-40 flex flex-wrap items-center gap-2">
           {/* Search Box */}
@@ -75,7 +75,7 @@ export function CollectionFilterBar({
               value={filters.search}
               onChange={(e) => onChange({ search: e.target.value })}
               placeholder="Search cards, series, subtitle, #num…"
-              className="w-full pl-8 pr-8 py-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/40 transition-all"
+              className="w-full pl-8 pr-8 py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-[#c8b07b] focus:ring-1 focus:ring-[#c8b07b]/40 transition-all"
             />
             <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
             {filters.search && (
@@ -118,13 +118,13 @@ export function CollectionFilterBar({
             title="Toggle Vivid full-color for unowned cards"
             className={`px-3 py-2 rounded-xl border text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 ${
               filters.showFullColor
-                ? 'bg-amber-400/20 border-amber-400 text-amber-200 shadow-amber-400/10'
-                : 'bg-slate-900/80 border-slate-700/70 text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                ? 'bg-[#c8b07b]/20 border-[#c8b07b] text-[#dfc792] shadow-[#c8b07b]/10'
+                : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-400 hover:text-slate-200 hover:border-[#c8b07b]/50'
             }`}
           >
             <span>🎨</span>
             <span className="hidden sm:inline">Vivid</span>
-            <span className={`text-[10px] font-mono ${filters.showFullColor ? 'text-amber-300' : 'text-slate-500'}`}>
+            <span className={`text-[10px] font-mono ${filters.showFullColor ? 'text-[#dfc792]' : 'text-slate-500'}`}>
               {filters.showFullColor ? 'ON' : 'OFF'}
             </span>
           </button>
@@ -135,14 +135,14 @@ export function CollectionFilterBar({
             onClick={() => setShowAdvanced((v) => !v)}
             className={`px-3 py-2 rounded-xl border text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 ${
               showAdvanced || activeSecondaryFilterCount > 0
-                ? 'bg-sky-500/20 border-sky-400 text-sky-200 shadow-sky-400/10'
-                : 'bg-slate-900/80 border-slate-700/70 text-slate-300 hover:text-slate-100 hover:border-slate-600'
+                ? 'bg-[#252a48] border-[#c8b07b] text-[#dfc792] shadow-[#c8b07b]/15'
+                : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-300 hover:text-slate-100 hover:border-[#c8b07b]/50'
             }`}
           >
             <span>⚙️</span>
             <span>Filters</span>
             {activeSecondaryFilterCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-sky-500 text-slate-950 text-[10px] font-extrabold">
+              <span className="px-1.5 py-0.2 rounded-full bg-[#dfc792] text-[#131627] text-[10px] font-extrabold">
                 {activeSecondaryFilterCount}
               </span>
             )}
@@ -150,17 +150,17 @@ export function CollectionFilterBar({
           </button>
 
           {/* Results Count Badge */}
-          <div className="px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] font-bold text-slate-300 whitespace-nowrap ml-auto sm:ml-0 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>{totalFiltered.toLocaleString()}</span>
-            <span className="text-slate-500 font-normal">cards</span>
+          <div className="px-3 py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 text-[11px] font-bold text-slate-300 whitespace-nowrap ml-auto sm:ml-0 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#dfc792]" />
+            <span className="text-[#dfc792]">{totalFiltered.toLocaleString()}</span>
+            <span className="text-slate-400 font-normal">cards</span>
           </div>
         </div>
 
         {/* Row 2: Status Tabs Segment, Card Zoom / Columns Stepper, and Lorcana Inks */}
         <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1">
           {/* Status Tabs */}
-          <div className="flex items-center gap-1 overflow-x-auto scrollbar-none p-1 rounded-xl bg-slate-900/80 border border-slate-800/80">
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-none p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/20">
             {STATUS_TABS.map((tab) => {
               const active = filters.statusFilter === tab.id;
               return (
@@ -170,8 +170,8 @@ export function CollectionFilterBar({
                   onClick={() => onChange({ statusFilter: tab.id })}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     active
-                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md shadow-amber-500/20 font-extrabold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                      ? 'bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] text-[#131627] shadow-md shadow-[#c8b07b]/20 font-extrabold'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-[#252a48]/50'
                   }`}
                 >
                   <span className="text-xs">{tab.icon}</span>
@@ -184,7 +184,7 @@ export function CollectionFilterBar({
           {/* Right Group: Grid Zoom & Custom Column Controls + Lorcana Inks */}
           <div className="flex flex-wrap items-center gap-2">
             {/* Grid Zoom & Custom Column Controls */}
-            <div className="flex items-center gap-1 p-0.5 rounded-xl bg-slate-900/80 border border-slate-700/70 shadow-sm" title="Adjust Card Size / Column Count">
+            <div className="flex items-center gap-1 p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm" title="Adjust Card Size / Column Count">
               {/* Presets */}
               <div className="flex items-center">
                 <button
@@ -193,7 +193,7 @@ export function CollectionFilterBar({
                   title="Compact Grid (Auto responsive)"
                   className={`px-2 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
                     filters.cardZoom === 'compact'
-                      ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
+                      ? 'bg-[#c8b07b]/20 text-[#dfc792] border border-[#c8b07b]/50 shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
@@ -206,7 +206,7 @@ export function CollectionFilterBar({
                   title="Standard Grid (Auto responsive)"
                   className={`px-2 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
                     (filters.cardZoom ?? 'normal') === 'normal'
-                      ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
+                      ? 'bg-[#c8b07b]/20 text-[#dfc792] border border-[#c8b07b]/50 shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
@@ -219,7 +219,7 @@ export function CollectionFilterBar({
                   title="Large Grid (Auto responsive)"
                   className={`px-2 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
                     filters.cardZoom === 'large'
-                      ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
+                      ? 'bg-[#c8b07b]/20 text-[#dfc792] border border-[#c8b07b]/50 shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
@@ -228,7 +228,7 @@ export function CollectionFilterBar({
                 </button>
               </div>
 
-              <span className="w-px h-4 bg-slate-700/80 my-auto" />
+              <span className="w-px h-4 bg-[#c8b07b]/30 my-auto" />
 
               {/* Custom Column Stepper */}
               <div className="flex items-center gap-0.5 px-1 py-0.5">
@@ -241,7 +241,7 @@ export function CollectionFilterBar({
                     onChange({ cardZoom: 'custom', customColumns: next });
                   }}
                   title="Decrease custom columns"
-                  className="w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-amber-300 hover:bg-slate-800 text-xs font-black"
+                  className="w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-[#dfc792] hover:bg-[#252a48] text-xs font-black"
                 >
                   −
                 </button>
@@ -260,10 +260,10 @@ export function CollectionFilterBar({
                     }
                   }}
                   title="Custom number of columns (1-12)"
-                  className={`w-7 text-center font-mono text-[11px] font-bold py-0.5 rounded bg-slate-950 border focus:outline-none focus:border-amber-400 ${
+                  className={`w-7 text-center font-mono text-[11px] font-bold py-0.5 rounded bg-[#131627] border focus:outline-none focus:border-[#c8b07b] ${
                     filters.cardZoom === 'custom'
-                      ? 'border-amber-500/60 text-amber-300 ring-1 ring-amber-500/30'
-                      : 'border-slate-800 text-slate-400 placeholder:text-slate-600'
+                      ? 'border-[#c8b07b] text-[#dfc792] ring-1 ring-[#c8b07b]/40'
+                      : 'border-[#c8b07b]/20 text-slate-400 placeholder:text-slate-600'
                   }`}
                 />
 
@@ -275,7 +275,7 @@ export function CollectionFilterBar({
                     onChange({ cardZoom: 'custom', customColumns: next });
                   }}
                   title="Increase custom columns"
-                  className="w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-amber-300 hover:bg-slate-800 text-xs font-black"
+                  className="w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-[#dfc792] hover:bg-[#252a48] text-xs font-black"
                 >
                   +
                 </button>
@@ -413,10 +413,10 @@ export function CollectionFilterBar({
 
         {/* Collapsible Advanced Filters Drawer */}
         {showAdvanced && (
-          <div className="pt-2 border-t border-slate-800 space-y-2.5 animate-fade-in">
+          <div className="pt-2.5 border-t border-[#c8b07b]/20 space-y-2.5 animate-fade-in">
             {/* Card Types */}
             <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 shrink-0">Type:</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Type:</span>
               <div className="flex gap-1">
                 {CARD_TYPES.map((t) => {
                   const active = filters.selectedType === t;
@@ -427,8 +427,8 @@ export function CollectionFilterBar({
                       onClick={() => onChange({ selectedType: active ? 'ALL' : t })}
                       className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold whitespace-nowrap transition-all flex items-center gap-1 ${
                         active
-                          ? 'bg-sky-500/20 border-sky-400 text-sky-100 shadow-sm'
-                          : 'bg-slate-900 border-slate-700/80 text-slate-400 hover:text-slate-200'
+                          ? 'bg-[#c8b07b]/20 border-[#c8b07b] text-[#dfc792] shadow-sm'
+                          : 'bg-[#1b2038] border-[#c8b07b]/20 text-slate-400 hover:text-slate-200'
                       }`}
                     >
                       <span>{TYPE_ICONS[t]}</span>
@@ -441,7 +441,7 @@ export function CollectionFilterBar({
 
             {/* Rarities */}
             <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 shrink-0">Rarity:</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Rarity:</span>
               <div className="flex gap-1">
                 {RARITIES.map((r) => {
                   const active = filters.selectedRarity === r;
@@ -452,8 +452,8 @@ export function CollectionFilterBar({
                       onClick={() => onChange({ selectedRarity: active ? 'ALL' : r })}
                       className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold whitespace-nowrap transition-all ${
                         active
-                          ? 'bg-amber-400/20 border-amber-400 text-amber-100 shadow-sm'
-                          : `bg-slate-900 border-slate-700/80 ${RARITY_STYLES[r]} hover:brightness-125`
+                          ? 'bg-[#c8b07b]/25 border-[#c8b07b] text-[#dfc792] shadow-sm'
+                          : `bg-[#1b2038] border-[#c8b07b]/20 ${RARITY_STYLES[r]} hover:brightness-125`
                       }`}
                     >
                       {rarityLabel(r)}
@@ -464,13 +464,13 @@ export function CollectionFilterBar({
             </div>
 
             {/* Classifications & Sorting */}
-            <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-slate-800/60">
+            <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-[#c8b07b]/15">
               <label className="flex items-center gap-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Classification</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Classification</span>
                 <select
                   value={filters.selectedClassification}
                   onChange={(e) => onChange({ selectedClassification: e.target.value })}
-                  className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
+                  className="px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-xs text-slate-200 focus:outline-none focus:border-[#c8b07b]"
                 >
                   <option value="ALL">All Classifications</option>
                   {classifications.map((c) => (
@@ -482,11 +482,11 @@ export function CollectionFilterBar({
               </label>
 
               <label className="flex items-center gap-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Sort By</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Sort By</span>
                 <select
                   value={filters.sortBy}
                   onChange={(e) => onChange({ sortBy: e.target.value as CollectionSortBy })}
-                  className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
+                  className="px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-xs text-slate-200 focus:outline-none focus:border-[#c8b07b]"
                 >
                   {SORT_OPTIONS.map((o) => (
                     <option key={o.id} value={o.id}>
@@ -499,7 +499,7 @@ export function CollectionFilterBar({
               <button
                 type="button"
                 onClick={() => onChange({ sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc' })}
-                className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 text-xs text-slate-300 hover:text-slate-100 font-medium"
+                className="px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-xs text-slate-300 hover:text-[#dfc792] font-medium"
               >
                 {filters.sortOrder === 'asc' ? '↑ Ascending' : '↓ Descending'}
               </button>

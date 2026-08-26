@@ -84,7 +84,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
       <div
         ref={scrollRef}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-4xl max-h-[92vh] overflow-y-auto scrollbar-thin rounded-3xl border border-amber-500/30 bg-[#0c1222]/95 backdrop-blur-2xl shadow-2xl shadow-black/90"
+        className="w-full max-w-4xl max-h-[92vh] overflow-y-auto scrollbar-thin rounded-3xl border border-[#c8b07b]/40 bg-[#131627]/95 backdrop-blur-2xl shadow-2xl shadow-black/90"
       >
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5 p-4 sm:p-6">
           {/* Image Column */}
@@ -92,7 +92,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
             <button
               type="button"
               onClick={() => setShowZoom(true)}
-              className="block w-full rounded-2xl overflow-hidden border border-slate-700/80 bg-slate-950 hover:border-amber-400/80 transition-all shadow-xl shadow-black/50 group"
+              className="block w-full rounded-2xl overflow-hidden border border-[#c8b07b]/30 bg-[#1b2038] hover:border-[#c8b07b] transition-all shadow-xl shadow-black/50 group"
             >
               <img
                 src={imageUrl}
@@ -104,7 +104,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
             <button
               type="button"
               onClick={() => setShowZoom(true)}
-              className="w-full py-2 rounded-xl border border-slate-700/80 bg-slate-900/60 hover:bg-slate-800 text-xs font-bold text-slate-300 hover:text-slate-100 transition-all flex items-center justify-center gap-1.5"
+              className="w-full py-2 rounded-xl border border-[#c8b07b]/30 bg-[#1b2038]/80 hover:bg-[#252a48] text-xs font-bold text-slate-200 hover:text-[#dfc792] transition-all flex items-center justify-center gap-1.5"
             >
               <span>🔍</span>
               <span>View Fullscreen Artwork</span>
@@ -119,28 +119,28 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 space-y-1">
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700 font-mono text-[10px] text-amber-300 font-bold">
+                  <span className="px-2 py-0.5 rounded-md bg-[#1b2038] border border-[#c8b07b]/30 font-mono text-[10px] text-[#dfc792] font-bold">
                     {card.setCode}
                   </span>
                   <button
                     type="button"
                     onClick={() => seeAll({ selectedStory: card.story })}
                     title={`Show every card from ${card.story}`}
-                    className="px-2 py-0.5 rounded-md bg-sky-950/70 border border-sky-600/40 text-[10px] text-sky-200 hover:border-sky-400 hover:bg-sky-900/70 font-semibold transition-colors"
+                    className="px-2 py-0.5 rounded-md bg-[#1b2038] border border-sky-500/40 text-[10px] text-sky-200 hover:border-sky-400 hover:bg-sky-900/40 font-semibold transition-colors"
                   >
                     🎬 {card.story}
                   </button>
-                  <span className={`text-[11px] px-2 py-0.5 rounded-md bg-slate-900 border border-slate-800 font-bold ${RARITY_STYLES[card.rarity]}`}>
+                  <span className={`text-[11px] px-2 py-0.5 rounded-md bg-[#1b2038] border border-[#c8b07b]/20 font-bold ${RARITY_STYLES[card.rarity]}`}>
                     {rarityLabel(card.rarity)}
                   </span>
                   {card.types.map((t) => (
-                    <span key={t} className="text-[10px] text-slate-400 font-medium px-1.5 py-0.5 rounded bg-slate-900">
+                    <span key={t} className="text-[10px] text-slate-300 font-medium px-1.5 py-0.5 rounded bg-[#1b2038]">
                       {TYPE_ICONS[t] ?? ''} {t}
                     </span>
                   ))}
                 </div>
                 <h2 className="text-xl font-extrabold text-slate-100 leading-tight">{card.name}</h2>
-                {card.version && <p className="text-sm font-medium text-amber-300/80 italic">{card.version}</p>}
+                {card.version && <p className="text-sm font-medium text-[#dfc792] italic">{card.version}</p>}
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0">
@@ -150,8 +150,8 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                   aria-label="Toggle wishlist"
                   className={`w-9 h-9 rounded-xl text-base transition-all flex items-center justify-center ${
                     entry?.isWishlist
-                      ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/40 font-bold'
-                      : 'bg-slate-800/80 border border-slate-700 text-slate-400 hover:text-amber-300 hover:bg-slate-800'
+                      ? 'bg-gradient-to-tr from-[#dfc792] to-[#c8b07b] text-[#131627] shadow-md shadow-[#c8b07b]/40 font-bold'
+                      : 'bg-[#1b2038] border border-[#c8b07b]/30 text-slate-400 hover:text-[#dfc792] hover:bg-[#252a48]'
                   }`}
                 >
                   ★
@@ -160,7 +160,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                   type="button"
                   onClick={onClose}
                   aria-label="Close"
-                  className="w-9 h-9 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-400 hover:text-slate-100 hover:bg-slate-800 flex items-center justify-center font-bold"
+                  className="w-9 h-9 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-slate-400 hover:text-slate-100 hover:bg-[#252a48] flex items-center justify-center font-bold"
                 >
                   ✕
                 </button>
@@ -178,32 +178,32 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 </span>
               ))}
               {card.cost !== null && (
-                <span className="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700/60 text-[11px] font-bold text-slate-200">
+                <span className="px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/20 text-[11px] font-bold text-slate-200">
                   Cost {card.cost}
                 </span>
               )}
               {card.inkwell && (
-                <span className="px-2.5 py-1 rounded-lg bg-emerald-950/70 border border-emerald-600/40 text-[11px] font-bold text-emerald-300">
+                <span className="px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#008e5a]/50 text-[11px] font-bold text-emerald-300">
                   Inkwell
                 </span>
               )}
               {card.strength !== null && (
-                <span className="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700/60 text-[11px] font-bold text-slate-200">
+                <span className="px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/20 text-[11px] font-bold text-slate-200">
                   ⚔ {card.strength}
                 </span>
               )}
               {card.willpower !== null && (
-                <span className="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700/60 text-[11px] font-bold text-slate-200">
+                <span className="px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/20 text-[11px] font-bold text-slate-200">
                   🛡 {card.willpower}
                 </span>
               )}
               {card.lore !== null && (
-                <span className="px-2.5 py-1 rounded-lg bg-amber-950/70 border border-amber-500/40 text-[11px] font-bold text-amber-300">
+                <span className="px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/40 text-[11px] font-bold text-[#dfc792]">
                   ◇ {card.lore} Lore
                 </span>
               )}
               {card.moveCost !== null && (
-                <span className="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700/60 text-[11px] font-bold text-slate-200">
+                <span className="px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/20 text-[11px] font-bold text-slate-200">
                   Move {card.moveCost}
                 </span>
               )}
@@ -214,7 +214,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
             )}
 
             {card.text && (
-              <p className="text-xs leading-relaxed text-slate-200 bg-slate-950/70 border border-slate-800/80 rounded-xl p-3 whitespace-pre-wrap shadow-inner font-normal">
+              <p className="text-xs leading-relaxed text-slate-200 bg-[#1b2038]/80 border border-[#c8b07b]/25 rounded-xl p-3 whitespace-pre-wrap shadow-inner font-normal">
                 {card.text}
               </p>
             )}
@@ -228,7 +228,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 return (
                   <div
                     key={finish}
-                    className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80 shadow-sm"
+                    className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm"
                   >
                     <div className="min-w-0">
                       <p className={`text-xs font-bold ${meta.color}`}>
@@ -241,7 +241,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                         type="button"
                         aria-label={`Remove one ${meta.label}`}
                         onClick={() => decrementFinish(card.id, finish)}
-                        className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-base font-bold transition-all active:scale-95"
+                        className="w-8 h-8 rounded-lg bg-[#252a48] hover:bg-[#2e3459] text-slate-200 text-base font-bold transition-all active:scale-95 border border-[#c8b07b]/20"
                       >
                         −
                       </button>
@@ -251,13 +251,13 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                         max={999}
                         value={value}
                         onChange={(e) => setFinishCount(card.id, finish, Number(e.target.value))}
-                        className="w-14 h-8 text-center rounded-lg bg-slate-900 border border-slate-700 text-sm font-bold text-slate-100 focus:outline-none focus:border-amber-400"
+                        className="w-14 h-8 text-center rounded-lg bg-[#131627] border border-[#c8b07b]/30 text-sm font-bold text-slate-100 focus:outline-none focus:border-[#c8b07b]"
                       />
                       <button
                         type="button"
                         aria-label={`Add one ${meta.label}`}
                         onClick={() => incrementFinish(card.id, finish)}
-                        className="w-8 h-8 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-base font-black transition-all shadow-md shadow-amber-500/20 active:scale-95"
+                        className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] hover:brightness-110 text-[#131627] text-base font-black transition-all shadow-md shadow-[#c8b07b]/20 active:scale-95"
                       >
                         +
                       </button>
@@ -276,7 +276,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                   onChange={(e) =>
                     setCardDetails(card.id, { condition: (e.target.value || undefined) as CardCondition })
                   }
-                  className="mt-1 w-full px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-700/80 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
+                  className="mt-1 w-full px-3 py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-xs text-slate-200 focus:outline-none focus:border-[#c8b07b]"
                 >
                   <option value="">— Select Condition —</option>
                   {CONDITIONS.map((c) => (
@@ -292,12 +292,12 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                   value={entry?.note ?? ''}
                   onChange={(e) => setCardDetails(card.id, { note: e.target.value })}
                   placeholder="Graded, signed, deck slot…"
-                  className="mt-1 w-full px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-700/80 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-amber-400"
+                  className="mt-1 w-full px-3 py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-[#c8b07b]"
                 />
               </label>
             </div>
 
-            <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-800/80">
+            <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#c8b07b]/15">
               <button
                 type="button"
                 disabled={!entry}
@@ -320,7 +320,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
 
         {/* Related Cards */}
         {(sameName.length > 0 || sameStory.length > 0) && (
-          <div className="border-t border-slate-800/80 px-4 sm:px-6 py-4 space-y-4 bg-slate-950/50">
+          <div className="border-t border-[#c8b07b]/20 px-4 sm:px-6 py-4 space-y-4 bg-[#1b2038]/50">
             <RelatedCardStrip
               title={sameNameTitle}
               cards={sameName}

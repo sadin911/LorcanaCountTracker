@@ -99,24 +99,24 @@ export function SearchableSetSelect({
         onClick={() => setIsOpen((v) => !v)}
         className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl border text-xs font-semibold transition-all shadow-sm ${
           isOpen
-            ? 'bg-slate-900 border-amber-400/80 text-amber-200 ring-2 ring-amber-400/20'
+            ? 'bg-[#252a48] border-[#c8b07b] text-[#dfc792] ring-2 ring-[#c8b07b]/30'
             : selected
-              ? 'bg-slate-900/90 border-amber-500/40 text-amber-200 hover:border-amber-400/70 hover:bg-slate-900'
-              : 'bg-slate-900/80 border-slate-700/70 text-slate-300 hover:border-slate-600 hover:bg-slate-800/80'
+              ? 'bg-[#1b2038] border-[#c8b07b]/60 text-[#dfc792] hover:border-[#c8b07b] hover:bg-[#252a48]'
+              : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-300 hover:border-[#c8b07b]/50 hover:bg-[#252a48]/70'
         }`}
       >
         <span className="flex items-center gap-2 min-w-0">
           {selected ? (
             <>
               {showCode ? (
-                <span className="px-1.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 font-mono text-[10px] text-amber-300 font-bold shrink-0">
+                <span className="px-1.5 py-0.5 rounded bg-[#c8b07b]/20 border border-[#c8b07b]/40 font-mono text-[10px] text-[#dfc792] font-bold shrink-0">
                   {selected.code}
                 </span>
               ) : (
                 <span className="text-sm shrink-0">{icon}</span>
               )}
               <span className="truncate font-bold text-slate-100">{selected.name}</span>
-              <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-600/40 text-emerald-300">
+              <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/40 text-emerald-300">
                 {pct(selected.owned, selected.count)}%
               </span>
             </>
@@ -124,7 +124,7 @@ export function SearchableSetSelect({
             <>
               <span className="text-sm shrink-0">{icon}</span>
               <span className="truncate text-slate-300">
-                {allLabel} <span className="text-slate-500 text-[11px]">({sets.length})</span>
+                {allLabel} <span className="text-slate-400 text-[11px]">({sets.length})</span>
               </span>
               <span className="shrink-0 text-[10px] text-slate-400 font-medium ml-auto">
                 {pct(totalOwned, totalCards)}%
@@ -154,7 +154,7 @@ export function SearchableSetSelect({
               ✕
             </span>
           )}
-          <span className={`transition-transform text-slate-400 text-[10px] ${isOpen ? 'rotate-180 text-amber-400' : ''}`}>
+          <span className={`transition-transform text-[#c8b07b] text-[10px] ${isOpen ? 'rotate-180 text-[#dfc792]' : ''}`}>
             ▾
           </span>
         </span>
@@ -162,10 +162,10 @@ export function SearchableSetSelect({
 
       {isOpen && (
         <div
-          className="absolute z-50 mt-1.5 w-full sm:min-w-[420px] max-w-[95vw] rounded-2xl border border-slate-700/80 bg-slate-950/95 backdrop-blur-2xl shadow-2xl shadow-black/80 animate-fade-in overflow-hidden"
+          className="absolute z-50 mt-1.5 w-full sm:min-w-[420px] max-w-[95vw] rounded-2xl border border-[#c8b07b]/40 bg-[#1b2038]/95 backdrop-blur-2xl shadow-2xl shadow-black/90 animate-fade-in overflow-hidden"
           style={{ maxHeight: 440 }}
         >
-          <div className="p-2.5 border-b border-slate-800/80 bg-slate-900/50">
+          <div className="p-2.5 border-b border-[#c8b07b]/20 bg-[#131627]/80">
             <div className="relative">
               <input
                 ref={inputRef}
@@ -173,9 +173,9 @@ export function SearchableSetSelect({
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={onKeyDown}
                 placeholder={placeholder}
-                className="w-full pl-8 pr-8 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/40"
+                className="w-full pl-8 pr-8 py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-[#c8b07b] focus:ring-1 focus:ring-[#c8b07b]/40"
               />
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs">🔍</span>
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
               {query && (
                 <button
                   type="button"
@@ -195,8 +195,8 @@ export function SearchableSetSelect({
                 onClick={() => pick('ALL')}
                 className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-xs transition-all ${
                   selectedSet === 'ALL'
-                    ? 'bg-amber-500/15 border border-amber-500/40 text-amber-200 font-bold'
-                    : 'hover:bg-slate-900/80 text-slate-200'
+                    ? 'bg-[#c8b07b]/20 border border-[#c8b07b]/50 text-[#dfc792] font-bold'
+                    : 'hover:bg-[#252a48]/70 text-slate-200'
                 }`}
               >
                 <span className="flex items-center gap-2.5">
@@ -207,7 +207,7 @@ export function SearchableSetSelect({
                   <span className="text-[11px] text-slate-400 font-medium">
                     {totalOwned}/{totalCards} ({pct(totalOwned, totalCards)}%)
                   </span>
-                  {selectedSet === 'ALL' && <span className="text-amber-400 font-bold">✓</span>}
+                  {selectedSet === 'ALL' && <span className="text-[#dfc792] font-bold">✓</span>}
                 </div>
               </button>
             )}
@@ -222,14 +222,14 @@ export function SearchableSetSelect({
                   onClick={() => pick(s.code)}
                   className={`w-full flex flex-col gap-1 px-3 py-2 rounded-xl text-xs transition-all text-left group ${
                     isPicked
-                      ? 'bg-amber-500/15 border border-amber-500/40 text-amber-200'
-                      : 'hover:bg-slate-900/80 text-slate-300'
+                      ? 'bg-[#c8b07b]/20 border border-[#c8b07b]/50 text-[#dfc792]'
+                      : 'hover:bg-[#252a48]/70 text-slate-300'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 w-full">
                     <span className="flex items-center gap-2 min-w-0">
                       {showCode && (
-                        <span className="px-1.5 py-0.5 rounded bg-slate-800/90 border border-slate-700 font-mono text-[10px] text-slate-300 font-bold shrink-0">
+                        <span className="px-1.5 py-0.5 rounded bg-[#131627] border border-[#c8b07b]/30 font-mono text-[10px] text-[#dfc792] font-bold shrink-0">
                           {s.code}
                         </span>
                       )}
@@ -239,15 +239,15 @@ export function SearchableSetSelect({
                       <span className="text-[10px] font-bold text-slate-400 group-hover:text-slate-200">
                         {s.owned}/{s.count} <span className="text-emerald-400 ml-0.5">{p}%</span>
                       </span>
-                      {isPicked && <span className="text-amber-400 font-bold">✓</span>}
+                      {isPicked && <span className="text-[#dfc792] font-bold">✓</span>}
                     </div>
                   </div>
 
                   {/* Visual micro progress bar */}
-                  <div className="w-full h-1 bg-slate-900 rounded-full overflow-hidden">
+                  <div className="w-full h-1 bg-[#131627] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all ${
-                        p === 100 ? 'bg-emerald-400' : p > 0 ? 'bg-amber-400' : 'bg-transparent'
+                        p === 100 ? 'bg-emerald-400' : p > 0 ? 'bg-gradient-to-r from-[#b39552] to-[#dfc792]' : 'bg-transparent'
                       }`}
                       style={{ width: `${p}%` }}
                     />
@@ -259,16 +259,16 @@ export function SearchableSetSelect({
             {!filtered.length && !showAllRow && (
               <div className="px-3 py-8 text-center text-xs text-slate-500">
                 No {itemNoun} match “{query}”.
-                <button onClick={() => setQuery('')} className="ml-1 text-amber-400 hover:underline font-semibold">
+                <button onClick={() => setQuery('')} className="ml-1 text-[#dfc792] hover:underline font-semibold">
                   Clear search
                 </button>
               </div>
             )}
           </div>
 
-          <div className="px-3.5 py-2 border-t border-slate-800/80 bg-slate-900/40 text-[10px] text-slate-500 flex justify-between items-center">
+          <div className="px-3.5 py-2 border-t border-[#c8b07b]/20 bg-[#131627]/60 text-[10px] text-slate-400 flex justify-between items-center">
             <span>Esc to close · Enter to select</span>
-            <span className="font-medium text-slate-400">
+            <span className="font-medium text-[#dfc792]">
               {filtered.length} {itemNoun}
             </span>
           </div>
