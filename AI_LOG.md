@@ -45,6 +45,9 @@
 [2026-08-27 04:05] Major | Antigravity | Edit | src/components/collection/CollectionFilterBar.tsx - display full text Rarity names
 [2026-08-27 04:05] Major | Antigravity | Command | npm run lint && npm run build - verification passed
 [2026-08-27 04:05] Major | Antigravity | Command | git tag -a v0.2.2 && git push origin main --tags - release published
+[2026-08-27 04:07] Major | Antigravity | Edit | .github/workflows/deploy.yml - configure Node 22 & suppress deprecation warning
+[2026-08-27 04:07] Major | Antigravity | Command | git push origin main
+
 
 
 
