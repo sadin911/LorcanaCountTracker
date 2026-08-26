@@ -13,6 +13,19 @@ const RAW_CDN_BASE = (import.meta.env.VITE_R2_CDN_BASE || '').replace(/\/+$/, ''
 
 const BASE_URL = import.meta.env.BASE_URL || '/';
 
+/*
+ * A production build with no CDN base falls back to public/card-images/, which
+ * is gitignored and therefore absent from the deployed artifact — every card
+ * would 404 with nothing in the console to explain it. Say so loudly, the same
+ * way firebase.ts does for a missing Firebase config.
+ */
+if (import.meta.env.PROD && !RAW_CDN_BASE) {
+  console.error(
+    '[cardImage] VITE_R2_CDN_BASE is not set. Card images are served from the R2 bucket in ' +
+      'production and are not bundled, so every card image will 404. Set it as a build-time env var.'
+  );
+}
+
 export const DEFAULT_CARD_PLACEHOLDER = `${BASE_URL.replace(/\/+$/, '')}/card-placeholder.svg`;
 
 function localUrl(key: string): string {
