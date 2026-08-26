@@ -1,8 +1,8 @@
 /**
  * Download every card image from the Lorcast CDN and emit two WebP tiers.
  *
- *   public/card-images/<setCode>/<collectorNumber>.webp     320w q78  (grid)
- *   public/card-images-lg/<setCode>/<collectorNumber>.webp  674w q82  (detail modal)
+ *   public/card-images/<setCode>/<collectorNumber>.webp     446px long edge, q78  (grid)
+ *   public/card-images-lg/<setCode>/<collectorNumber>.webp  940px long edge, q82  (detail modal)
  *
  * `large` (674x940 AVIF) is Lorcast's maximum resolution, so there is no higher
  * tier to escalate to. Both dirs are gitignored — they live on R2 in production
@@ -25,9 +25,15 @@ const API = 'https://api.lorcast.com/v0';
 const CONCURRENCY = 12;
 const FORCE = process.argv.includes('--force');
 
+/*
+ * Tiers are sized by LONG EDGE, not width. Sizing by width would downscale the
+ * landscape Locations from their native 940px long edge to 674px, leaving them
+ * visibly softer than every portrait card in the fullscreen view.
+ * 940 is the source's long edge, so the large tier is lossless for both shapes.
+ */
 const TIERS = [
-  { dir: 'public/card-images', width: 320, quality: 78 },
-  { dir: 'public/card-images-lg', width: 674, quality: 82 },
+  { dir: 'public/card-images', longEdge: 446, quality: 78 },
+  { dir: 'public/card-images-lg', longEdge: 940, quality: 82 },
 ];
 
 async function getJSON(url, attempt = 1) {
@@ -69,11 +75,15 @@ async function processCard(job) {
   for (const { tier, file } of needed) {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     let img = sharp(src);
-    // Upright the pre-rotated Location artwork before resizing, so `width`
-    // still means the long edge.
+    // Upright the pre-rotated Location artwork before resizing.
     if (job.landscape) img = img.rotate(90);
     await img
-      .resize({ width: tier.width, withoutEnlargement: true })
+      .resize({
+        width: tier.longEdge,
+        height: tier.longEdge,
+        fit: 'inside',
+        withoutEnlargement: true,
+      })
       .webp({ quality: tier.quality, effort: 5 })
       .toFile(file);
   }
