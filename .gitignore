@@ -73,3 +73,6 @@ public/card-images-lg/
 # Firebase local
 .firebase/
 firebase-debug.log
+
+# Artifact of a hook with an unexpanded $log_file variable
+$log_file

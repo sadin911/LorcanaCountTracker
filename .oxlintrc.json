@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-empty": "off"
+  },
+  "ignorePatterns": ["dist", "node_modules", "src/data"]
+}

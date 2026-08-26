@@ -1,0 +1,134 @@
+[
+  {
+    "code": "P1",
+    "name": "Promo Set 1",
+    "releasedAt": "2023-08-18",
+    "cardCount": 41
+  },
+  {
+    "code": "1",
+    "name": "The First Chapter",
+    "releasedAt": "2023-08-18",
+    "cardCount": 216
+  },
+  {
+    "code": "2",
+    "name": "Rise of the Floodborn",
+    "releasedAt": "2023-11-17",
+    "cardCount": 216
+  },
+  {
+    "code": "3",
+    "name": "Into the Inklands",
+    "releasedAt": "2024-02-23",
+    "cardCount": 226
+  },
+  {
+    "code": "4",
+    "name": "Ursula's Return",
+    "releasedAt": "2024-05-17",
+    "cardCount": 225
+  },
+  {
+    "code": "cp",
+    "name": "Challenge Promo",
+    "releasedAt": "2024-05-17",
+    "cardCount": 9
+  },
+  {
+    "code": "P2",
+    "name": "Promo Set 2",
+    "releasedAt": "2024-08-09",
+    "cardCount": 39
+  },
+  {
+    "code": "5",
+    "name": "Shimmering Skies",
+    "releasedAt": "2024-08-09",
+    "cardCount": 223
+  },
+  {
+    "code": "D23",
+    "name": "D23 Collection",
+    "releasedAt": "2024-08-09",
+    "cardCount": 9
+  },
+  {
+    "code": "6",
+    "name": "Azurite Sea",
+    "releasedAt": "2024-11-15",
+    "cardCount": 222
+  },
+  {
+    "code": "7",
+    "name": "Archazia's Island",
+    "releasedAt": "2025-03-07",
+    "cardCount": 224
+  },
+  {
+    "code": "8",
+    "name": "Reign of Jafar",
+    "releasedAt": "2025-05-30",
+    "cardCount": 229
+  },
+  {
+    "code": "P3",
+    "name": "Promo Set 3",
+    "releasedAt": "2025-08-18",
+    "cardCount": 56
+  },
+  {
+    "code": "9",
+    "name": "Fabled",
+    "releasedAt": "2025-08-29",
+    "cardCount": 243
+  },
+  {
+    "code": "10",
+    "name": "Whispers in the Well",
+    "releasedAt": "2025-11-07",
+    "cardCount": 242
+  },
+  {
+    "code": "C2",
+    "name": "Lorcana Challenge Year 3",
+    "releasedAt": "2026-01-16",
+    "cardCount": 14
+  },
+  {
+    "code": "DIS",
+    "name": "EPCOT Festival of the Arts",
+    "releasedAt": "2026-01-16",
+    "cardCount": 3
+  },
+  {
+    "code": "11",
+    "name": "Winterspell",
+    "releasedAt": "2026-02-13",
+    "cardCount": 242
+  },
+  {
+    "code": "12",
+    "name": "Wilds Unknown",
+    "releasedAt": "2026-05-08",
+    "cardCount": 242
+  },
+  {
+    "code": "13",
+    "name": "Attack of the Vine!",
+    "releasedAt": "2026-07-17",
+    "cardCount": 245
+  },
+  {
+    "code": "Coconut",
+    "name": "Format Coconut",
+    "releasedAt": "2026-07-28",
+    "cardCount": 18
+  },
+  {
+    "code": "PD1",
+    "name": "PD1",
+    "releasedAt": "2026-07-28",
+    "cardCount": 8
+  }
+]
