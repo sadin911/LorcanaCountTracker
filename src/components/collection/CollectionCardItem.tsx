@@ -5,6 +5,7 @@ import type { FinishCount } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
 import { handleCardImageError, resolveCardImageUrl } from '../../utils/cardImage';
 import { LorcanaInkIcon, LorcanaRarityIcon } from '../icons/LorcanaIcons';
+import { analytics } from '../../utils/analytics';
 
 interface Props {
   card: LorcanaCard;
@@ -67,6 +68,7 @@ export function CollectionCardItem({
           aria-label={isWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
           onClick={(e) => {
             e.stopPropagation();
+            analytics.trackWishlist(card.name, card.setCode, !isWishlist);
             onToggleWishlist(card.id);
           }}
           className={`absolute top-1.5 left-1.5 w-7 h-7 sm:w-6 sm:h-6 rounded-lg flex items-center justify-center text-xs transition-all active:scale-90 ${
@@ -84,6 +86,8 @@ export function CollectionCardItem({
           aria-label="Add one copy"
           onClick={(e) => {
             e.stopPropagation();
+            const defaultFinish = card.finishes[0] || 'regular';
+            analytics.trackCardAdded(card.name, card.setCode, defaultFinish, count + 1);
             onQuickAdd(card);
           }}
           className="absolute bottom-1.5 right-1.5 w-8 h-8 sm:w-7 sm:h-7 rounded-xl bg-gradient-to-br from-[#dfc792] via-[#c8b07b] to-[#b39552] hover:brightness-110 text-[#131627] text-base font-black flex items-center justify-center shadow-lg shadow-black/80 transition-all opacity-85 sm:opacity-0 sm:group-hover:opacity-100 active:scale-90"

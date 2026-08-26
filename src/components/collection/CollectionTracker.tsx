@@ -5,6 +5,7 @@ import type { CollectionStats, SetProgress } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
 import { normalizeCardName } from '../../utils/cardRelations';
 import { createCardMatcher } from '../../utils/searchHelpers';
+import { analytics } from '../../utils/analytics';
 import type { SetOption } from '../common/SearchableSetSelect';
 import { CollectionFilterBar } from './CollectionFilterBar';
 import { CollectionGridView } from './CollectionGridView';
@@ -26,6 +27,28 @@ export function CollectionTracker() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Track search queries
+  useEffect(() => {
+    if (!filters.search.trim()) return;
+    const timer = setTimeout(() => {
+      analytics.trackSearch(filters.search);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [filters.search]);
+
+  // Track major filter changes
+  useEffect(() => {
+    if (filters.selectedInk !== 'ALL') {
+      analytics.trackFilter('ink', filters.selectedInk);
+    }
+  }, [filters.selectedInk]);
+
+  useEffect(() => {
+    if (filters.selectedSet !== 'ALL') {
+      analytics.trackFilter('set', filters.selectedSet);
+    }
+  }, [filters.selectedSet]);
 
   // Clearing the box should feel instant; typing can lag a frame behind.
   const deferredSearch = useDeferredValue(filters.search);

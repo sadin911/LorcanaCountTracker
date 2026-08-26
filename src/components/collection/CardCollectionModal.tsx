@@ -17,6 +17,7 @@ import {
   LorcanaStrengthIcon,
   LorcanaWillpowerIcon,
 } from '../icons/LorcanaIcons';
+import { analytics } from '../../utils/analytics';
 
 interface Props {
   card: LorcanaCard;
@@ -155,7 +156,10 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   type="button"
-                  onClick={() => toggleWishlist(card.id)}
+                  onClick={() => {
+                    analytics.trackWishlist(card.name, card.setCode, !entry?.isWishlist);
+                    toggleWishlist(card.id);
+                  }}
                   aria-label="Toggle wishlist"
                   className={`w-9 h-9 rounded-xl text-base transition-all flex items-center justify-center ${
                     entry?.isWishlist
@@ -249,7 +253,10 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                       <button
                         type="button"
                         aria-label={`Remove one ${meta.label}`}
-                        onClick={() => decrementFinish(card.id, finish)}
+                        onClick={() => {
+                          analytics.trackCardRemoved(card.name, card.setCode, finish, Math.max(0, value - 1));
+                          decrementFinish(card.id, finish);
+                        }}
                         className="w-11 h-11 sm:w-9 sm:h-9 rounded-xl bg-[#252a48] hover:bg-[#2e3459] text-slate-100 text-xl sm:text-base font-black transition-all active:scale-90 border border-[#c8b07b]/20 flex items-center justify-center"
                       >
                         −
@@ -259,13 +266,20 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                         min={0}
                         max={999}
                         value={value}
-                        onChange={(e) => setFinishCount(card.id, finish, Number(e.target.value))}
+                        onChange={(e) => {
+                          const n = Math.max(0, Number(e.target.value));
+                          analytics.trackCardAdded(card.name, card.setCode, finish, n);
+                          setFinishCount(card.id, finish, n);
+                        }}
                         className="w-14 h-11 sm:h-9 text-center rounded-xl bg-[#131627] border border-[#c8b07b]/30 text-base sm:text-sm font-bold text-slate-100 focus:outline-none focus:border-[#c8b07b]"
                       />
                       <button
                         type="button"
                         aria-label={`Add one ${meta.label}`}
-                        onClick={() => incrementFinish(card.id, finish)}
+                        onClick={() => {
+                          analytics.trackCardAdded(card.name, card.setCode, finish, value + 1);
+                          incrementFinish(card.id, finish);
+                        }}
                         className="w-11 h-11 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] hover:brightness-110 text-[#131627] text-xl sm:text-base font-black transition-all shadow-md shadow-[#c8b07b]/20 active:scale-90 flex items-center justify-center"
                       >
                         +
