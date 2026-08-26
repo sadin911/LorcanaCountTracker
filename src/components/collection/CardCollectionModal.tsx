@@ -220,7 +220,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
             )}
 
             {/* Finish Counters */}
-            <div className="space-y-2 pt-1">
+            <div className="space-y-2.5 pt-1">
               <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Copies in Binder</p>
               {finishes.map((finish) => {
                 const meta = FINISH_META[finish];
@@ -228,20 +228,20 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 return (
                   <div
                     key={finish}
-                    className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm"
+                    className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm"
                   >
                     <div className="min-w-0">
-                      <p className={`text-xs font-bold ${meta.color}`}>
+                      <p className={`text-xs sm:text-sm font-bold ${meta.color}`}>
                         {meta.icon} {meta.label} Printing
                       </p>
-                      <p className="text-[10px] text-slate-400 truncate">{meta.description}</p>
+                      <p className="text-[10px] sm:text-xs text-slate-400 truncate">{meta.description}</p>
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                       <button
                         type="button"
                         aria-label={`Remove one ${meta.label}`}
                         onClick={() => decrementFinish(card.id, finish)}
-                        className="w-8 h-8 rounded-lg bg-[#252a48] hover:bg-[#2e3459] text-slate-200 text-base font-bold transition-all active:scale-95 border border-[#c8b07b]/20"
+                        className="w-11 h-11 sm:w-9 sm:h-9 rounded-xl bg-[#252a48] hover:bg-[#2e3459] text-slate-100 text-xl sm:text-base font-black transition-all active:scale-90 border border-[#c8b07b]/20 flex items-center justify-center"
                       >
                         −
                       </button>
@@ -251,13 +251,13 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                         max={999}
                         value={value}
                         onChange={(e) => setFinishCount(card.id, finish, Number(e.target.value))}
-                        className="w-14 h-8 text-center rounded-lg bg-[#131627] border border-[#c8b07b]/30 text-sm font-bold text-slate-100 focus:outline-none focus:border-[#c8b07b]"
+                        className="w-14 h-11 sm:h-9 text-center rounded-xl bg-[#131627] border border-[#c8b07b]/30 text-base sm:text-sm font-bold text-slate-100 focus:outline-none focus:border-[#c8b07b]"
                       />
                       <button
                         type="button"
                         aria-label={`Add one ${meta.label}`}
                         onClick={() => incrementFinish(card.id, finish)}
-                        className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] hover:brightness-110 text-[#131627] text-base font-black transition-all shadow-md shadow-[#c8b07b]/20 active:scale-95"
+                        className="w-11 h-11 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] hover:brightness-110 text-[#131627] text-xl sm:text-base font-black transition-all shadow-md shadow-[#c8b07b]/20 active:scale-90 flex items-center justify-center"
                       >
                         +
                       </button>
@@ -276,7 +276,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                   onChange={(e) =>
                     setCardDetails(card.id, { condition: (e.target.value || undefined) as CardCondition })
                   }
-                  className="mt-1 w-full px-3 py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-xs text-slate-200 focus:outline-none focus:border-[#c8b07b]"
+                  className="mt-1 w-full px-3 py-2.5 sm:py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-sm sm:text-xs text-slate-200 focus:outline-none focus:border-[#c8b07b] min-h-[42px] sm:min-h-[38px]"
                 >
                   <option value="">— Select Condition —</option>
                   {CONDITIONS.map((c) => (
@@ -292,7 +292,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                   value={entry?.note ?? ''}
                   onChange={(e) => setCardDetails(card.id, { note: e.target.value })}
                   placeholder="Graded, signed, deck slot…"
-                  className="mt-1 w-full px-3 py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-[#c8b07b]"
+                  className="mt-1 w-full px-3 py-2.5 sm:py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-sm sm:text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-[#c8b07b] min-h-[42px] sm:min-h-[38px]"
                 />
               </label>
             </div>
@@ -307,11 +307,11 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                     onClose();
                   }
                 }}
-                className="px-3 py-1.5 rounded-xl text-xs font-bold text-rose-300 border border-rose-900/60 hover:bg-rose-950/50 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                className="px-3.5 py-2.5 sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold text-rose-300 border border-rose-900/60 hover:bg-rose-950/50 disabled:opacity-30 disabled:hover:bg-transparent transition-colors min-h-[40px] sm:min-h-[34px]"
               >
                 Remove from Binder
               </button>
-              <span className="text-[11px] text-slate-400 font-medium">
+              <span className="text-xs sm:text-[11px] text-slate-400 font-medium">
                 {count > 0 ? `${count} cop${count === 1 ? 'y' : 'ies'} · saved` : 'Auto-saved'}
               </span>
             </div>

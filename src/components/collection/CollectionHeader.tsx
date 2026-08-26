@@ -32,45 +32,44 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
 
   const badge = SYNC_LABEL[user ? syncStatus : 'idle'] ?? SYNC_LABEL.idle;
 
+  const logoUrl = `${import.meta.env.BASE_URL}logo-br-2x-Sweb4xgr.png`;
+
   return (
-    <header className="sticky top-0 z-30 border-b border-[#c8b07b]/20 bg-[#131627]/90 backdrop-blur-xl shadow-lg shadow-black/50">
+    <header className="sticky top-0 z-30 border-b border-[#c8b07b]/20 bg-[#131627]/95 backdrop-blur-xl shadow-lg shadow-black/50">
       {/* Signature Disney Lorcana Gold Filigree Header Line */}
       <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#c8b07b] to-transparent" />
 
-      <div className="px-3 sm:px-6 py-2.5 space-y-2.5 max-w-7xl mx-auto">
-        <div className="flex items-center justify-between gap-3">
+      <div className="px-3 sm:px-6 py-2 sm:py-2.5 space-y-2 max-w-7xl mx-auto">
+        <div className="flex items-center justify-between gap-2.5">
           {/* Logo & Identity */}
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-[#252a48] border border-[#c8b07b]/40 flex items-center justify-center shadow-inner text-base shrink-0">
-              ✨
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-sm sm:text-base font-extrabold tracking-tight bg-gradient-to-r from-[#dfc792] via-[#f5e4bd] to-[#c8b07b] bg-clip-text text-transparent whitespace-nowrap">
-                  Disney Lorcana
-                </h1>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#dfc792] px-1.5 py-0.5 rounded bg-[#c8b07b]/15 border border-[#c8b07b]/30">
-                  Tracker
-                </span>
-                <span
-                  className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold ${badge.className}`}
-                >
-                  <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
-                  {badge.text}
-                </span>
-              </div>
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <img
+              src={logoUrl}
+              alt="Disney Lorcana TCG"
+              className="h-7 sm:h-9 w-auto object-contain drop-shadow-[0_2px_10px_rgba(200,176,123,0.35)] shrink-0 select-none"
+            />
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-widest text-[#dfc792] px-2 py-0.5 rounded-lg bg-[#c8b07b]/15 border border-[#c8b07b]/30 shadow-sm">
+                Tracker
+              </span>
+              <span
+                className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${badge.className}`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
+                {badge.text}
+              </span>
             </div>
           </div>
 
           {/* Right Action Tools */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Profile Picker */}
             <button
               type="button"
               onClick={() => setShowProfiles(true)}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] text-xs transition-all shadow-sm group hover:text-[#dfc792]"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs transition-all shadow-sm group hover:text-[#dfc792] min-h-[40px] sm:min-h-[36px]"
             >
-              <span className="text-sm group-hover:scale-110 transition-transform">{activeProfile?.icon ?? '📘'}</span>
+              <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">{activeProfile?.icon ?? '📘'}</span>
               <span className="hidden sm:inline max-w-[130px] truncate font-bold text-slate-200">
                 {activeProfile?.name ?? 'Binder'}
               </span>
@@ -82,9 +81,9 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
               type="button"
               onClick={() => setShowBackup(true)}
               title="Backup & restore collection"
-              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm flex items-center gap-1.5"
+              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm flex items-center gap-1.5 min-h-[40px] sm:min-h-[36px]"
             >
-              <span>💾</span>
+              <span className="text-base sm:text-sm">💾</span>
               <span className="hidden md:inline font-bold">Backup</span>
             </button>
 
@@ -92,7 +91,7 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
             {!isFirebaseConfigured ? (
               <span
                 title="Set VITE_FIREBASE_* in .env.local to enable cloud sync"
-                className="px-2 py-1.5 rounded-lg bg-[#1b2038]/60 border border-[#c8b07b]/20 text-[10px] text-slate-400 font-medium"
+                className="px-2.5 py-1.5 rounded-xl bg-[#1b2038]/60 border border-[#c8b07b]/20 text-[10px] text-slate-400 font-medium flex items-center min-h-[40px] sm:min-h-[36px]"
               >
                 Offline
               </span>
@@ -101,12 +100,12 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
                 <button
                   type="button"
                   onClick={() => setShowUserMenu((v) => !v)}
-                  className="flex items-center gap-1.5 p-1 sm:px-2 sm:py-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] transition-all"
+                  className="flex items-center gap-1.5 p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 transition-all min-h-[40px] sm:min-h-[36px]"
                 >
                   {user.photoURL ? (
-                    <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full ring-1 ring-[#c8b07b]" />
+                    <img src={user.photoURL} alt="" className="w-7 h-7 sm:w-6 sm:h-6 rounded-full ring-1 ring-[#c8b07b]" />
                   ) : (
-                    <span className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#dfc792] to-[#c8b07b] text-[#131627] text-[11px] font-extrabold flex items-center justify-center shadow">
+                    <span className="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-gradient-to-tr from-[#dfc792] to-[#c8b07b] text-[#131627] text-xs font-extrabold flex items-center justify-center shadow">
                       {(user.displayName ?? user.email ?? '?').charAt(0).toUpperCase()}
                     </span>
                   )}
@@ -131,7 +130,7 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
                           setShowUserMenu(false);
                           void signOut();
                         }}
-                        className="w-full py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 text-xs font-semibold text-rose-300 transition-colors"
+                        className="w-full py-2.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 text-xs font-semibold text-rose-300 transition-colors"
                       >
                         Sign out
                       </button>
@@ -144,7 +143,7 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
                 type="button"
                 disabled={authLoading}
                 onClick={() => void signIn()}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] hover:brightness-110 text-[#131627] text-xs font-extrabold transition-all shadow-md shadow-[#c8b07b]/20 disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] hover:brightness-110 active:scale-95 text-[#131627] text-xs font-extrabold transition-all shadow-md shadow-[#c8b07b]/20 disabled:opacity-50 min-h-[40px] sm:min-h-[36px]"
               >
                 <span>☁️</span>
                 <span className="hidden sm:inline">Sign In</span>

@@ -97,7 +97,7 @@ export function SearchableSetSelect({
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
-        className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl border text-xs font-semibold transition-all shadow-sm ${
+        className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 sm:px-3 sm:py-2 rounded-xl border text-sm sm:text-xs font-semibold transition-all shadow-sm min-h-[42px] sm:min-h-[38px] active:scale-98 ${
           isOpen
             ? 'bg-[#252a48] border-[#c8b07b] text-[#dfc792] ring-2 ring-[#c8b07b]/30'
             : selected
@@ -149,7 +149,7 @@ export function SearchableSetSelect({
                   onSelectSet('ALL');
                 }
               }}
-              className="w-4 h-4 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-300 hover:bg-rose-950/40 text-xs"
+              className="w-5 h-5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-300 hover:bg-rose-950/40 text-xs"
             >
               ✕
             </span>
@@ -173,14 +173,14 @@ export function SearchableSetSelect({
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={onKeyDown}
                 placeholder={placeholder}
-                className="w-full pl-8 pr-8 py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-[#c8b07b] focus:ring-1 focus:ring-[#c8b07b]/40"
+                className="w-full pl-9 pr-9 py-2.5 sm:py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-sm sm:text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-[#c8b07b] focus:ring-1 focus:ring-[#c8b07b]/40 min-h-[40px] sm:min-h-[36px]"
               />
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-xs">🔍</span>
               {query && (
                 <button
                   type="button"
                   onClick={() => setQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-100 text-xs"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-100 text-xs bg-[#252a48] sm:bg-transparent"
                 >
                   ✕
                 </button>
@@ -193,7 +193,7 @@ export function SearchableSetSelect({
               <button
                 type="button"
                 onClick={() => pick('ALL')}
-                className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-xs transition-all ${
+                className={`w-full flex items-center justify-between gap-3 px-3.5 py-3 sm:px-3 sm:py-2.5 rounded-xl text-xs transition-all active:scale-98 ${
                   selectedSet === 'ALL'
                     ? 'bg-[#c8b07b]/20 border border-[#c8b07b]/50 text-[#dfc792] font-bold'
                     : 'hover:bg-[#252a48]/70 text-slate-200'
@@ -204,7 +204,7 @@ export function SearchableSetSelect({
                   <span className="font-bold">{allLabel}</span>
                 </span>
                 <div className="flex items-center gap-2.5">
-                  <span className="text-[11px] text-slate-400 font-medium">
+                  <span className="text-xs sm:text-[11px] text-slate-400 font-medium">
                     {totalOwned}/{totalCards} ({pct(totalOwned, totalCards)}%)
                   </span>
                   {selectedSet === 'ALL' && <span className="text-[#dfc792] font-bold">✓</span>}
@@ -220,7 +220,7 @@ export function SearchableSetSelect({
                   key={s.code}
                   type="button"
                   onClick={() => pick(s.code)}
-                  className={`w-full flex flex-col gap-1 px-3 py-2 rounded-xl text-xs transition-all text-left group ${
+                  className={`w-full flex flex-col gap-1 px-3.5 py-2.5 sm:px-3 sm:py-2 rounded-xl text-xs transition-all text-left group active:scale-98 ${
                     isPicked
                       ? 'bg-[#c8b07b]/20 border border-[#c8b07b]/50 text-[#dfc792]'
                       : 'hover:bg-[#252a48]/70 text-slate-300'
