@@ -41,15 +41,26 @@ Two passes, verified against the current catalogue:
 
 | Pass | Key | Cards matched |
 | --- | --- | --- |
-| 1 | `${setCode}-${number}` | 2,985 |
+| 1 | `setCode` + `number` + normalized `name` + `version` | 2,985 |
 | 2 | normalized `name` + `version` | 207 |
 | | **total** | **3,192 / 3,192** |
 
-Pass 2 exists because LorcanaJSON does not index promo sets (`P1`, `P2`, `P3`,
-`cp`, `C2`, `D23`, `DIS`, `Coconut`, `PD1`) the way Lorcast does; those cards are
-reprints, so name + version resolves them. Normalization for pass 2 is
-`toLowerCase()` then strip everything outside `[a-z0-9]`. First writer wins on
-key collisions — reprints of one card share a story by definition.
+Pass 1 does **not** key on `setCode` + `number` alone. LorcanaJSON files promos
+under the main set's `setCode` too, so 160 of those keys are ambiguous — `1-1` is
+Ariel – On Human Legs *and* the P1 and D23 promos printed as card 1 — and a plain
+number join silently assigns whichever record happens to be indexed last. Keyed
+that way, 155 of 2,985 cards got the wrong story. Folding the name and version
+into the key makes each match unambiguous by construction.
+
+Pass 2 exists because LorcanaJSON numbers the promo sets (`P1`, `P2`, `P3`, `cp`,
+`C2`, `D23`, `DIS`, `Coconut`, `PD1`) differently from Lorcast; those cards are
+reprints, so name + version resolves them. Normalization is `toLowerCase()` then
+strip everything outside `[a-z0-9]`.
+
+Two names in LorcanaJSON map to two stories each — `Mickey Mouse – Wayward
+Sorcerer` and the versionless action `Distract`. Both resolve through pass 1, so
+pass 2 never has to guess between them today; a gate fails the build if it ever
+does, naming the cards so they can be pinned in `STORY_OVERRIDES`.
 
 ## Pipeline changes
 
@@ -67,8 +78,13 @@ key collisions — reprints of one card share a story by definition.
 5. New gates, in the existing fail-loudly style:
    - every card has a non-empty `story`, else exit 1 printing every unresolved id
      so `STORY_OVERRIDES` can be filled in;
+   - no card takes its story from a name that LorcanaJSON maps to more than one
+     story, else exit 1 naming those cards;
    - at least 60 distinct stories, which catches a schema change on the
      LorcanaJSON side that silently empties the field.
+
+   The script also logs how many cards each pass resolved, so a shift in the
+   upstream's indexing is visible rather than silent.
 
 The existing 3 MB gate on `lorcanaCards.json` stays. `story` adds roughly 90 KB
 (1.75 MB → ~1.84 MB).

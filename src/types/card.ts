@@ -26,6 +26,8 @@ export interface LorcanaCard {
   version: string | null;
   setCode: string;
   setName: string;
+  /** The Disney story this card comes from, e.g. "Frozen". Joined in from LorcanaJSON. */
+  story: string;
   /** Not always numeric: "4a", "1f", "25ja", "24B" all occur. */
   collectorNumber: string;
   /** Leading digits of collectorNumber, for stable ordering. */
@@ -56,6 +58,12 @@ export interface LorcanaSet {
   code: string;
   name: string;
   releasedAt: string | null;
+  cardCount: number;
+}
+
+/** One Disney story and how many catalogue cards belong to it. */
+export interface LorcanaStory {
+  name: string;
   cardCount: number;
 }
 
