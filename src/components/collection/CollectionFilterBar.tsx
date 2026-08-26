@@ -346,20 +346,18 @@ export function CollectionFilterBar({
               })}
             </div>
 
-            {/* Lorcana Rarity Filter Capsule (Official SVG Icons - Quick Tap) */}
+            {/* Lorcana Rarity Filter Capsule (Full Text Names) */}
             <div className="flex items-center gap-1 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm" title="Filter by Rarity">
               <button
                 type="button"
                 onClick={() => onChange({ selectedRarity: 'ALL' })}
-                title="All Rarities"
-                className={`px-2 py-1 rounded-lg text-xs font-bold transition-all active:scale-95 min-h-[30px] sm:min-h-[28px] flex items-center gap-1 ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all active:scale-95 min-h-[30px] sm:min-h-[28px] ${
                   filters.selectedRarity === 'ALL'
-                    ? 'bg-[#252a48] border border-[#c8b07b] text-[#dfc792] shadow-sm'
-                    : 'text-slate-400 hover:text-slate-300'
+                    ? 'bg-[#c8b07b]/25 border border-[#c8b07b] text-[#dfc792] shadow-sm font-extrabold'
+                    : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                <span>★</span>
-                <span className="hidden 2xl:inline text-[11px]">All</span>
+                All Rarities
               </button>
 
               {RARITIES.map((r) => {
@@ -368,15 +366,14 @@ export function CollectionFilterBar({
                   <button
                     key={r}
                     type="button"
-                    title={rarityLabel(r)}
                     onClick={() => onChange({ selectedRarity: active ? 'ALL' : r })}
-                    className={`w-7 h-7 sm:w-7 sm:h-7 rounded-lg border flex items-center justify-center transition-all active:scale-90 ${
+                    className={`px-2.5 py-1 rounded-lg border text-xs font-bold whitespace-nowrap transition-all active:scale-95 min-h-[30px] sm:min-h-[28px] ${
                       active
-                        ? 'bg-[#c8b07b]/30 border-[#c8b07b] text-[#dfc792] shadow-md ring-1 ring-[#c8b07b]/50'
+                        ? 'bg-[#c8b07b]/30 border-[#c8b07b] text-[#dfc792] shadow-md ring-1 ring-[#c8b07b]/50 font-extrabold'
                         : `bg-[#131627] border-[#c8b07b]/20 ${RARITY_STYLES[r]} hover:brightness-125`
                     }`}
                   >
-                    <LorcanaRarityIcon rarity={r} className="w-3.5 h-3.5 shrink-0" />
+                    {rarityLabel(r)}
                   </button>
                 );
               })}
@@ -612,13 +609,12 @@ export function CollectionFilterBar({
                       key={r}
                       type="button"
                       onClick={() => onChange({ selectedRarity: active ? 'ALL' : r })}
-                      className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold whitespace-nowrap transition-all inline-flex items-center gap-1.5 ${
+                      className={`px-2.5 py-1 rounded-lg border text-xs font-bold whitespace-nowrap transition-all ${
                         active
-                          ? 'bg-[#c8b07b]/25 border-[#c8b07b] text-[#dfc792] shadow-sm'
+                          ? 'bg-[#c8b07b]/30 border-[#c8b07b] text-[#dfc792] shadow-sm font-extrabold'
                           : `bg-[#1b2038] border-[#c8b07b]/20 ${RARITY_STYLES[r]} hover:brightness-125`
                       }`}
                     >
-                      <LorcanaRarityIcon rarity={r} className="w-3.5 h-3.5 shrink-0" />
                       {rarityLabel(r)}
                     </button>
                   );
