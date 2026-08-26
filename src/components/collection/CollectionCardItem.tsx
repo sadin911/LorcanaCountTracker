@@ -33,7 +33,7 @@ export function CollectionCardItem({
   return (
     <div
       onClick={() => onSelect(card)}
-      className={`group relative rounded-2xl border cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:-translate-y-1.5 hover:z-30 overflow-hidden ${
+      className={`group relative rounded-2xl border cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:-translate-y-1.5 hover:z-10 overflow-hidden ${
         owned
           ? `${inkStyle ? inkStyle.border : 'border-amber-500/40'} bg-slate-900/90 shadow-md ${
               inkStyle ? inkStyle.glow : 'shadow-amber-500/20'

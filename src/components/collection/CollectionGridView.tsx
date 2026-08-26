@@ -46,7 +46,7 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
   const visible = cards.slice(0, displayLimit);
 
   return (
-    <div className="space-y-3">
+    <div className="relative z-0 space-y-3">
       {currentSetProgress && (
         <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-900/90 backdrop-blur-md p-4 shadow-xl">
           <div className="flex items-center justify-between text-xs mb-2">

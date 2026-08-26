@@ -7,3 +7,4 @@
 [2026-08-27 02:45] Major | Antigravity | Edit | src/index.css, src/constants/lorcana.ts - Disney Lorcana starlight theme
 [2026-08-27 02:50] Major | Antigravity | Edit | src/components/collection/* - Clean minimal toolbar, modal, and ink UI
 [2026-08-27 02:51] Major | Antigravity | Command | npm run lint && npm run build - verification passed
+[2026-08-27 02:55] Major | Antigravity | Edit | src/components - fixed dropdown z-index layer stacking over card grid

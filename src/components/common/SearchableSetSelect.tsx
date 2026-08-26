@@ -93,7 +93,7 @@ export function SearchableSetSelect({
   };
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
+    <div ref={containerRef} className={`relative ${isOpen ? 'z-50' : 'z-20'} ${className}`}>
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
@@ -162,7 +162,7 @@ export function SearchableSetSelect({
 
       {isOpen && (
         <div
-          className="absolute z-40 mt-1.5 w-full sm:min-w-[420px] max-w-[95vw] rounded-2xl border border-slate-700/80 bg-slate-950/95 backdrop-blur-2xl shadow-2xl shadow-black/80 animate-fade-in overflow-hidden"
+          className="absolute z-50 mt-1.5 w-full sm:min-w-[420px] max-w-[95vw] rounded-2xl border border-slate-700/80 bg-slate-950/95 backdrop-blur-2xl shadow-2xl shadow-black/80 animate-fade-in overflow-hidden"
           style={{ maxHeight: 440 }}
         >
           <div className="p-2.5 border-b border-slate-800/80 bg-slate-900/50">
