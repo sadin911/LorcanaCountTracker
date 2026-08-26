@@ -51,6 +51,8 @@ export interface CollectionFilters {
   statusFilter: CollectionStatusFilter;
   search: string;
   selectedInk: string;
+  selectedCost: string;
+  selectedInkwell: 'ALL' | 'inkable' | 'uninkable';
   selectedType: string;
   selectedRarity: string;
   selectedClassification: string;

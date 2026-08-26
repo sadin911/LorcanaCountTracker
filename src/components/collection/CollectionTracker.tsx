@@ -117,6 +117,8 @@ export function CollectionTracker() {
       selectedStory,
       selectedCharacter,
       selectedInk,
+      selectedCost,
+      selectedInkwell,
       selectedType,
       selectedRarity,
       selectedClassification,
@@ -156,6 +158,23 @@ export function CollectionTracker() {
       // Membership, not equality: 187 cards are dual-ink and would otherwise
       // vanish from every ink filter.
       if (selectedInk !== 'ALL' && !card.inks.includes(selectedInk as never)) return false;
+
+      // Ink Cost Filter
+      if (selectedCost !== 'ALL') {
+        if (selectedCost === '9+') {
+          if (card.cost === null || card.cost < 9) return false;
+        } else {
+          const target = Number(selectedCost);
+          if (card.cost !== target) return false;
+        }
+      }
+
+      // Inkwell Filter
+      if (selectedInkwell !== 'ALL') {
+        if (selectedInkwell === 'inkable' && !card.inkwell) return false;
+        if (selectedInkwell === 'uninkable' && card.inkwell) return false;
+      }
+
       if (selectedType !== 'ALL' && !card.types.includes(selectedType as never)) return false;
       if (selectedRarity !== 'ALL' && card.rarity !== selectedRarity) return false;
       if (selectedClassification !== 'ALL' && !card.classifications.includes(selectedClassification)) return false;
@@ -205,6 +224,8 @@ export function CollectionTracker() {
     filters.selectedCharacter,
     filters.statusFilter,
     filters.selectedInk,
+    filters.selectedCost,
+    filters.selectedInkwell,
     filters.selectedType,
     filters.selectedRarity,
     filters.selectedClassification,

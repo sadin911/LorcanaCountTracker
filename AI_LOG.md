@@ -13,3 +13,5 @@
 [2026-08-27 03:01] Major | Antigravity | Edit | src/components - add custom column input & stepper (1-12 columns)
 [2026-08-27 03:09] Major | Antigravity | Edit | Theme color overhaul to match official Disney Lorcana palette & gold styling
 [2026-08-27 03:09] Major | Antigravity | Command | npm run lint && npm run build - verification passed
+[2026-08-27 03:12] Major | Antigravity | Edit | Add Ink Cost (1-9+) & Inkwell (Inkable/Uninkable) filters
+[2026-08-27 03:12] Major | Antigravity | Command | npm run lint && npm run build - verification passed

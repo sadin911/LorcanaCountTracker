@@ -26,6 +26,8 @@ export const DEFAULT_COLLECTION_FILTERS: CollectionFilters = {
   statusFilter: 'all',
   search: '',
   selectedInk: 'ALL',
+  selectedCost: 'ALL',
+  selectedInkwell: 'ALL',
   selectedType: 'ALL',
   selectedRarity: 'ALL',
   selectedClassification: 'ALL',

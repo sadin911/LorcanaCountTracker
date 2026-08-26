@@ -13,6 +13,8 @@ const STATUS_TABS: { id: CollectionStatusFilter; label: string; icon: string }[]
   { id: 'duplicates', label: 'Duplicates', icon: '🔁' },
 ];
 
+const INK_COSTS = ['ALL', '1', '2', '3', '4', '5', '6', '7', '8', '9+'];
+
 const SORT_OPTIONS: { id: CollectionSortBy; label: string }[] = [
   { id: 'number', label: 'Card Number' },
   { id: 'name', label: 'Name' },
@@ -44,6 +46,8 @@ export function CollectionFilterBar({
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const activeSecondaryFilterCount = [
+    filters.selectedCost !== 'ALL',
+    filters.selectedInkwell !== 'ALL',
     filters.selectedType !== 'ALL',
     filters.selectedRarity !== 'ALL',
     filters.selectedClassification !== 'ALL',
@@ -55,6 +59,8 @@ export function CollectionFilterBar({
     filters.selectedStory !== 'ALL' ||
     filters.selectedCharacter !== 'ALL' ||
     filters.selectedInk !== 'ALL' ||
+    filters.selectedCost !== 'ALL' ||
+    filters.selectedInkwell !== 'ALL' ||
     filters.selectedType !== 'ALL' ||
     filters.selectedRarity !== 'ALL' ||
     filters.selectedClassification !== 'ALL' ||
@@ -289,8 +295,8 @@ export function CollectionFilterBar({
                 onClick={() => onChange({ selectedInk: 'ALL' })}
                 className={`px-2.5 py-1.5 rounded-xl border text-[11px] font-bold whitespace-nowrap transition-all ${
                   filters.selectedInk === 'ALL'
-                    ? 'bg-slate-800 border-slate-500 text-slate-100 shadow-sm'
-                    : 'bg-slate-900/80 border-slate-800 text-slate-500 hover:text-slate-300'
+                    ? 'bg-[#252a48] border-[#c8b07b] text-[#dfc792] shadow-sm'
+                    : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-400 hover:text-slate-300'
                 }`}
               >
                 All Inks
@@ -305,7 +311,7 @@ export function CollectionFilterBar({
                     type="button"
                     onClick={() => onChange({ selectedInk: active ? 'ALL' : ink })}
                     className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-[11px] font-bold whitespace-nowrap transition-all ${
-                      active ? style.activeChip : `bg-slate-900/90 ${style.chip}`
+                      active ? style.activeChip : `bg-[#1b2038] ${style.chip}`
                     }`}
                   >
                     <span className={`w-2 h-2 rounded-full ${style.dot}`} />
@@ -314,12 +320,66 @@ export function CollectionFilterBar({
                 );
               })}
             </div>
+
+            {/* Ink Cost Selector */}
+            <div className="flex items-center gap-1 p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm overflow-x-auto scrollbar-none" title="Filter by Ink Cost">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 pl-1.5 hidden sm:inline">Cost:</span>
+              <button
+                type="button"
+                onClick={() => onChange({ selectedCost: 'ALL' })}
+                className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all ${
+                  filters.selectedCost === 'ALL'
+                    ? 'bg-[#c8b07b]/20 text-[#dfc792] border border-[#c8b07b]/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                All
+              </button>
+              {INK_COSTS.filter((c) => c !== 'ALL').map((c) => {
+                const active = filters.selectedCost === c;
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => onChange({ selectedCost: active ? 'ALL' : c })}
+                    className={`w-6 h-6 rounded-lg text-[11px] font-mono font-black flex items-center justify-center transition-all ${
+                      active
+                        ? 'bg-gradient-to-tr from-[#dfc792] via-[#c8b07b] to-[#b39552] text-[#131627] shadow-sm shadow-[#c8b07b]/30'
+                        : 'text-slate-300 hover:text-[#dfc792] hover:bg-[#252a48]'
+                    }`}
+                  >
+                    {c}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Inkwell (Inkable) Toggle */}
+            <button
+              type="button"
+              onClick={() => {
+                const next = filters.selectedInkwell === 'ALL' ? 'inkable' : filters.selectedInkwell === 'inkable' ? 'uninkable' : 'ALL';
+                onChange({ selectedInkwell: next });
+              }}
+              title={`Inkwell: ${filters.selectedInkwell === 'inkable' ? 'Inkable only' : filters.selectedInkwell === 'uninkable' ? 'Uninkable only' : 'All'}`}
+              className={`px-2.5 py-1.5 rounded-xl border text-[11px] font-bold transition-all flex items-center gap-1.5 ${
+                filters.selectedInkwell !== 'ALL'
+                  ? 'bg-[#c8b07b]/20 border-[#c8b07b] text-[#dfc792] shadow-sm'
+                  : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span>⬡</span>
+              <span className="hidden md:inline">Inkwell:</span>
+              <span className={`text-[10px] font-semibold ${filters.selectedInkwell !== 'ALL' ? 'text-[#dfc792]' : 'text-slate-500'}`}>
+                {filters.selectedInkwell === 'inkable' ? 'Inkable' : filters.selectedInkwell === 'uninkable' ? 'Uninkable' : 'All'}
+              </span>
+            </button>
           </div>
         </div>
 
-        {/* Active Filter Tags (if any active character, story, ink, etc.) */}
+        {/* Active Filter Tags (if any active character, story, ink, cost, etc.) */}
         {isFiltered && (
-          <div className="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-slate-800/50 text-[11px]">
+          <div className="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-[#c8b07b]/15 text-[11px]">
             <span className="text-slate-500 text-[10px] uppercase tracking-wider font-bold mr-1">Active:</span>
 
             {filters.selectedCharacter !== 'ALL' && (
@@ -349,7 +409,7 @@ export function CollectionFilterBar({
             )}
 
             {filters.selectedSet !== 'ALL' && (
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-950/60 border border-amber-500/40 text-amber-200 font-semibold">
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#1b2038] border border-[#c8b07b]/40 text-[#dfc792] font-semibold">
                 📦 {filters.selectedSet}
                 <button
                   type="button"
@@ -362,7 +422,7 @@ export function CollectionFilterBar({
             )}
 
             {filters.selectedInk !== 'ALL' && (
-              <span className={`flex items-center gap-1 px-2 py-0.5 rounded-lg border font-semibold ${INK_STYLES[filters.selectedInk as keyof typeof INK_STYLES]?.badgeBg ?? 'bg-slate-800'}`}>
+              <span className={`flex items-center gap-1 px-2 py-0.5 rounded-lg border font-semibold ${INK_STYLES[filters.selectedInk as keyof typeof INK_STYLES]?.badgeBg ?? 'bg-[#1b2038]'}`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${INK_STYLES[filters.selectedInk as keyof typeof INK_STYLES]?.dot ?? 'bg-slate-400'}`} />
                 {filters.selectedInk}
                 <button
@@ -375,8 +435,34 @@ export function CollectionFilterBar({
               </span>
             )}
 
+            {filters.selectedCost !== 'ALL' && (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#1b2038] border border-[#c8b07b]/40 text-[#dfc792] font-semibold">
+                Cost {filters.selectedCost}
+                <button
+                  type="button"
+                  onClick={() => onChange({ selectedCost: 'ALL' })}
+                  className="hover:text-white ml-0.5"
+                >
+                  ✕
+                </button>
+              </span>
+            )}
+
+            {filters.selectedInkwell !== 'ALL' && (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#1b2038] border border-[#c8b07b]/40 text-[#dfc792] font-semibold">
+                ⬡ {filters.selectedInkwell === 'inkable' ? 'Inkable' : 'Uninkable'}
+                <button
+                  type="button"
+                  onClick={() => onChange({ selectedInkwell: 'ALL' })}
+                  className="hover:text-white ml-0.5"
+                >
+                  ✕
+                </button>
+              </span>
+            )}
+
             {filters.selectedType !== 'ALL' && (
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 border border-slate-600 text-slate-200 font-semibold">
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#1b2038] border border-slate-600 text-slate-200 font-semibold">
                 {TYPE_ICONS[filters.selectedType as keyof typeof TYPE_ICONS] ?? '🃏'} {filters.selectedType}
                 <button
                   type="button"
@@ -389,7 +475,7 @@ export function CollectionFilterBar({
             )}
 
             {filters.selectedRarity !== 'ALL' && (
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 border border-slate-600 text-slate-200 font-semibold">
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#1b2038] border border-slate-600 text-slate-200 font-semibold">
                 ⭐ {rarityLabel(filters.selectedRarity)}
                 <button
                   type="button"
@@ -460,6 +546,55 @@ export function CollectionFilterBar({
                     </button>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* Ink Cost & Inkwell in Drawer */}
+            <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-[#c8b07b]/15">
+              <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Ink Cost:</span>
+                <div className="flex gap-1">
+                  {INK_COSTS.map((c) => {
+                    const active = filters.selectedCost === c;
+                    return (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => onChange({ selectedCost: c })}
+                        className={`px-2 py-1 rounded-lg border text-[11px] font-mono font-bold transition-all ${
+                          active
+                            ? 'bg-[#c8b07b]/25 border-[#c8b07b] text-[#dfc792] shadow-sm'
+                            : 'bg-[#1b2038] border-[#c8b07b]/20 text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        {c === 'ALL' ? 'All Costs' : c}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Inkwell:</span>
+                <div className="flex gap-1">
+                  {(['ALL', 'inkable', 'uninkable'] as const).map((mode) => {
+                    const active = filters.selectedInkwell === mode;
+                    return (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => onChange({ selectedInkwell: mode })}
+                        className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all ${
+                          active
+                            ? 'bg-[#c8b07b]/25 border-[#c8b07b] text-[#dfc792] shadow-sm'
+                            : 'bg-[#1b2038] border-[#c8b07b]/20 text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        {mode === 'ALL' ? 'All' : mode === 'inkable' ? '⬡ Inkable' : 'Uninkable'}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
