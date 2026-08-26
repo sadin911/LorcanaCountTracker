@@ -4,6 +4,7 @@ import { CARD_TYPES, INKS, RARITIES, rarityLabel } from '../../types/card';
 import type { CollectionFilters, CollectionSortBy, CollectionStatusFilter } from '../../types/collection';
 import { DEFAULT_COLLECTION_FILTERS } from '../../store/collectionStore';
 import { SearchableSetSelect, type SetOption } from '../common/SearchableSetSelect';
+import { LorcanaInkIcon, LorcanaInkwellIcon, LorcanaRarityIcon } from '../icons/LorcanaIcons';
 
 const STATUS_TABS: { id: CollectionStatusFilter; label: string; icon: string }[] = [
   { id: 'all', label: 'All Cards', icon: '🎴' },
@@ -310,7 +311,7 @@ export function CollectionFilterBar({
               </div>
             </div>
 
-            {/* Lorcana 6-Inks Minimal Gem Capsule (Symbol-based, No scroll) */}
+            {/* Lorcana 6-Inks Minimal Gem Capsule (Official SVG Icons) */}
             <div className="flex items-center gap-1 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm" title="Filter by Ink Colour">
               <button
                 type="button"
@@ -339,7 +340,7 @@ export function CollectionFilterBar({
                       active ? `${style.activeChip} shadow-md` : `bg-[#131627] ${style.chip}`
                     }`}
                   >
-                    <span className={`w-3 h-3 rounded-full ${style.dot} ring-1 ring-white/20`} />
+                    <LorcanaInkIcon ink={ink} className="w-4 h-4" />
                   </button>
                 );
               })}
@@ -379,7 +380,7 @@ export function CollectionFilterBar({
               })}
             </div>
 
-            {/* Inkwell (Inkable) Toggle */}
+            {/* Inkwell (Inkable) Toggle with Official Swirl Icon */}
             <button
               type="button"
               onClick={() => {
@@ -393,9 +394,9 @@ export function CollectionFilterBar({
                   : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-400 hover:text-slate-200'
               }`}
             >
-              <span className="text-sm">⬡</span>
+              <LorcanaInkwellIcon inkable={filters.selectedInkwell} className="w-4 h-4 shrink-0" />
               <span className={`text-[11px] font-semibold ${filters.selectedInkwell !== 'ALL' ? 'text-[#dfc792]' : 'text-slate-400'}`}>
-                {filters.selectedInkwell === 'inkable' ? 'Inkable' : filters.selectedInkwell === 'uninkable' ? 'Uninkable' : 'All'}
+                {filters.selectedInkwell === 'inkable' ? 'Inkable' : filters.selectedInkwell === 'uninkable' ? 'Uninkable' : 'Inkwell'}
               </span>
             </button>
           </div>
@@ -446,8 +447,8 @@ export function CollectionFilterBar({
             )}
 
             {filters.selectedInk !== 'ALL' && (
-              <span className={`flex items-center gap-1 px-2 py-0.5 rounded-lg border font-semibold ${INK_STYLES[filters.selectedInk as keyof typeof INK_STYLES]?.badgeBg ?? 'bg-[#1b2038]'}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${INK_STYLES[filters.selectedInk as keyof typeof INK_STYLES]?.dot ?? 'bg-slate-400'}`} />
+              <span className={`flex items-center gap-1.5 px-2 py-0.5 rounded-lg border font-semibold ${INK_STYLES[filters.selectedInk as keyof typeof INK_STYLES]?.badgeBg ?? 'bg-[#1b2038]'}`}>
+                <LorcanaInkIcon ink={filters.selectedInk} className="w-3.5 h-3.5" />
                 {filters.selectedInk}
                 <button
                   type="button"
@@ -474,7 +475,8 @@ export function CollectionFilterBar({
 
             {filters.selectedInkwell !== 'ALL' && (
               <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#1b2038] border border-[#c8b07b]/40 text-[#dfc792] font-semibold">
-                ⬡ {filters.selectedInkwell === 'inkable' ? 'Inkable' : 'Uninkable'}
+                <LorcanaInkwellIcon inkable={filters.selectedInkwell} className="w-3.5 h-3.5" />
+                {filters.selectedInkwell === 'inkable' ? 'Inkable' : 'Uninkable'}
                 <button
                   type="button"
                   onClick={() => onChange({ selectedInkwell: 'ALL' })}
@@ -512,8 +514,9 @@ export function CollectionFilterBar({
             )}
 
             {filters.selectedRarity !== 'ALL' && (
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#1b2038] border border-slate-600 text-slate-200 font-semibold">
-                ⭐ {rarityLabel(filters.selectedRarity)}
+              <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-[#1b2038] border border-slate-600 text-slate-200 font-semibold">
+                <LorcanaRarityIcon rarity={filters.selectedRarity} className="w-3.5 h-3.5" />
+                {rarityLabel(filters.selectedRarity)}
                 <button
                   type="button"
                   onClick={() => onChange({ selectedRarity: 'ALL' })}
@@ -573,12 +576,13 @@ export function CollectionFilterBar({
                       key={r}
                       type="button"
                       onClick={() => onChange({ selectedRarity: active ? 'ALL' : r })}
-                      className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold whitespace-nowrap transition-all ${
+                      className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold whitespace-nowrap transition-all inline-flex items-center gap-1.5 ${
                         active
                           ? 'bg-[#c8b07b]/25 border-[#c8b07b] text-[#dfc792] shadow-sm'
                           : `bg-[#1b2038] border-[#c8b07b]/20 ${RARITY_STYLES[r]} hover:brightness-125`
                       }`}
                     >
+                      <LorcanaRarityIcon rarity={r} className="w-3.5 h-3.5 shrink-0" />
                       {rarityLabel(r)}
                     </button>
                   );
@@ -682,4 +686,3 @@ export function CollectionFilterBar({
     </div>
   );
 }
-

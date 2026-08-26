@@ -9,6 +9,14 @@ import { totalCopies } from '../../types/collection';
 import { relatedByStory, relatedBySameName } from '../../utils/cardRelations';
 import { handleCardImageError, resolveCardImageUrl } from '../../utils/cardImage';
 import { RelatedCardStrip } from './RelatedCardStrip';
+import {
+  LorcanaInkIcon,
+  LorcanaInkwellIcon,
+  LorcanaLoreIcon,
+  LorcanaRarityIcon,
+  LorcanaStrengthIcon,
+  LorcanaWillpowerIcon,
+} from '../icons/LorcanaIcons';
 
 interface Props {
   card: LorcanaCard;
@@ -130,7 +138,8 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                   >
                     🎬 {card.story}
                   </button>
-                  <span className={`text-[11px] px-2 py-0.5 rounded-md bg-[#1b2038] border border-[#c8b07b]/20 font-bold ${RARITY_STYLES[card.rarity]}`}>
+                  <span className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-[#1b2038] border border-[#c8b07b]/20 font-bold ${RARITY_STYLES[card.rarity]}`}>
+                    <LorcanaRarityIcon rarity={card.rarity} className="w-3.5 h-3.5 shrink-0" />
                     {rarityLabel(card.rarity)}
                   </span>
                   {card.types.map((t) => (
@@ -168,38 +177,38 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
             </div>
 
             {/* Stat Strip */}
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
               {card.inks.map((ink) => (
                 <span
                   key={ink}
-                  className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold ${INK_STYLES[ink].activeChip}`}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-bold ${INK_STYLES[ink].activeChip}`}
                 >
+                  <LorcanaInkIcon ink={ink} className="w-3.5 h-3.5 shrink-0" />
                   {ink}
                 </span>
               ))}
               {card.cost !== null && (
-                <span className="px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/20 text-[11px] font-bold text-slate-200">
-                  Cost {card.cost}
-                </span>
-              )}
-              {card.inkwell && (
-                <span className="px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#008e5a]/50 text-[11px] font-bold text-emerald-300">
-                  Inkwell
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/20 text-[11px] font-bold text-slate-200">
+                  <LorcanaInkwellIcon inkable={card.inkwell} className="w-3.5 h-3.5 shrink-0" />
+                  Cost {card.cost} {card.inkwell ? '(Inkable)' : '(Uninkable)'}
                 </span>
               )}
               {card.strength !== null && (
-                <span className="px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/20 text-[11px] font-bold text-slate-200">
-                  ⚔ {card.strength}
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/20 text-[11px] font-bold text-amber-200">
+                  <LorcanaStrengthIcon className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+                  {card.strength} Strength
                 </span>
               )}
               {card.willpower !== null && (
-                <span className="px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/20 text-[11px] font-bold text-slate-200">
-                  🛡 {card.willpower}
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/20 text-[11px] font-bold text-slate-200">
+                  <LorcanaWillpowerIcon className="w-3.5 h-3.5 shrink-0 text-slate-300" />
+                  {card.willpower} Willpower
                 </span>
               )}
               {card.lore !== null && (
-                <span className="px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/40 text-[11px] font-bold text-[#dfc792]">
-                  ◇ {card.lore} Lore
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#1b2038] border border-[#c8b07b]/40 text-[11px] font-bold text-[#dfc792]">
+                  <LorcanaLoreIcon className="w-3.5 h-3.5 shrink-0 text-[#dfc792]" />
+                  {card.lore} Lore
                 </span>
               )}
               {card.moveCost !== null && (

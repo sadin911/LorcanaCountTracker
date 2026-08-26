@@ -1,9 +1,10 @@
-import { INK_STYLES, RARITY_STYLES, FINISH_META } from '../../constants/lorcana';
+import { RARITY_STYLES, FINISH_META } from '../../constants/lorcana';
 import type { LorcanaCard } from '../../types/card';
 import { cardDisplayName, rarityLabel } from '../../types/card';
 import type { FinishCount } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
 import { handleCardImageError, resolveCardImageUrl } from '../../utils/cardImage';
+import { LorcanaInkIcon, LorcanaRarityIcon } from '../icons/LorcanaIcons';
 
 interface Props {
   card: LorcanaCard;
@@ -28,16 +29,13 @@ export function CollectionCardItem({
   const owned = count > 0;
   const vivid = owned || showFullColor;
   const primaryInk = card.inks[0];
-  const inkStyle = primaryInk ? INK_STYLES[primaryInk] : null;
 
   return (
     <div
       onClick={() => onSelect(card)}
       className={`group relative rounded-2xl border cursor-pointer transition-all duration-200 hover:scale-[1.04] sm:hover:scale-[1.05] hover:-translate-y-1.5 hover:z-10 overflow-hidden active:scale-98 ${
         owned
-          ? `${inkStyle ? inkStyle.border : 'border-[#c8b07b]/50'} bg-[#1b2038]/95 shadow-md ${
-              inkStyle ? inkStyle.glow : 'shadow-[#c8b07b]/20'
-            } ring-1 ring-[#c8b07b]/20`
+          ? 'border-[#c8b07b]/60 bg-[#1b2038]/95 shadow-md shadow-[#c8b07b]/20 ring-1 ring-[#c8b07b]/20'
           : 'bg-[#131627]/80 border-[#c8b07b]/20 hover:border-[#c8b07b]/60'
       }`}
     >
@@ -99,11 +97,14 @@ export function CollectionCardItem({
           <span className="truncate text-slate-300">
             {card.setCode}·{card.collectorNumber}
           </span>
-          <span className={RARITY_STYLES[card.rarity]}>{rarityLabel(card.rarity)}</span>
+          <span className={`inline-flex items-center gap-1 ${RARITY_STYLES[card.rarity]}`}>
+            <LorcanaRarityIcon rarity={card.rarity} className="w-2.5 h-2.5 shrink-0" />
+            {rarityLabel(card.rarity)}
+          </span>
         </div>
 
         <div className="flex items-center gap-1.5">
-          {inkStyle && <span className={`w-2 h-2 rounded-full shrink-0 ${inkStyle.dot}`} />}
+          {primaryInk && <LorcanaInkIcon ink={primaryInk} className="w-3.5 h-3.5 shrink-0" />}
           <p className={`truncate text-xs font-bold ${owned ? 'text-[#f5e4bd]' : 'text-slate-300'}`}>
             {card.name}
           </p>
