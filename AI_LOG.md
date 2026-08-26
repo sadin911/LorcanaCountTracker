@@ -18,4 +18,6 @@
 [2026-08-27 03:15] Major | Antigravity | Command | npm run lint && npm run build - verification passed
 [2026-08-27 03:18] Major | Antigravity | Edit | src/components/collection/CollectionFilterBar.tsx - No horizontal scroll, minimal symbols
 [2026-08-27 03:18] Major | Antigravity | Command | npm run lint && npm run build - verification passed
-[2026-08-27 03:18] Major | Antigravity | Command | git push origin feat/lorcana-ui-theme-overhaul
+[2026-08-27 03:20] Major | Antigravity | Edit | src/components/collection/CollectionFilterBar.tsx - Exposed Sort By on toolbar
+[2026-08-27 03:20] Major | Antigravity | Command | npm run lint && npm run build - verification passed
+[2026-08-27 03:20] Major | Antigravity | Command | git push origin feat/lorcana-ui-theme-overhaul
