@@ -163,10 +163,10 @@ export function CollectionFilterBar({
           </div>
         </div>
 
-        {/* Row 2: Status Tabs Segment, Card Zoom / Columns Stepper, and Lorcana Inks */}
+        {/* Row 2: Status Tabs Segment, Card Zoom / Columns Stepper, Lorcana Inks & Cost */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-          {/* Status Tabs */}
-          <div className="flex items-center gap-1 overflow-x-auto scrollbar-none p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/20 max-w-full touch-pan-x">
+          {/* Status Tabs (Compact & Meaningful Icons) */}
+          <div className="flex flex-wrap items-center gap-1 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/20">
             {STATUS_TABS.map((tab) => {
               const active = filters.statusFilter === tab.id;
               return (
@@ -174,71 +174,68 @@ export function CollectionFilterBar({
                   key={tab.id}
                   type="button"
                   onClick={() => onChange({ statusFilter: tab.id })}
-                  className={`px-3.5 py-2 sm:px-3 sm:py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 active:scale-95 min-h-[38px] sm:min-h-[32px] ${
+                  title={tab.label}
+                  className={`px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 active:scale-95 min-h-[36px] sm:min-h-[32px] ${
                     active
                       ? 'bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] text-[#131627] shadow-md shadow-[#c8b07b]/20 font-extrabold'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-[#252a48]/50'
                   }`}
                 >
                   <span className="text-sm sm:text-xs">{tab.icon}</span>
-                  <span>{tab.label}</span>
+                  <span className="hidden xs:inline sm:inline">{tab.label}</span>
                 </button>
               );
             })}
           </div>
 
-          {/* Right Group: Grid Zoom & Custom Column Controls + Lorcana Inks & Cost */}
-          <div className="flex flex-wrap items-center gap-2 max-w-full">
+          {/* Right Group: Grid Zoom, Minimal Ink Gems, Cost, and Inkwell */}
+          <div className="flex flex-wrap items-center gap-2">
             {/* Grid Zoom & Custom Column Controls */}
-            <div className="flex items-center gap-1 p-1 sm:p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm min-h-[40px] sm:min-h-[36px]" title="Adjust Card Size / Column Count">
+            <div className="flex items-center gap-0.5 p-1 sm:p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm min-h-[38px] sm:min-h-[34px]" title="Adjust Card Size / Column Count">
               {/* Presets */}
               <div className="flex items-center">
                 <button
                   type="button"
                   onClick={() => onChange({ cardZoom: 'compact' })}
-                  title="Compact Grid (Auto responsive)"
-                  className={`px-2.5 py-2 sm:px-2 sm:py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 active:scale-95 ${
+                  title="Compact Grid"
+                  className={`w-7 h-7 sm:w-6 sm:h-6 rounded-lg text-xs font-black transition-all flex items-center justify-center active:scale-95 ${
                     filters.cardZoom === 'compact'
                       ? 'bg-[#c8b07b]/20 text-[#dfc792] border border-[#c8b07b]/50 shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  <span className="text-[12px] font-black">−</span>
-                  <span className="hidden sm:inline text-[10px]">Compact</span>
+                  −
                 </button>
                 <button
                   type="button"
                   onClick={() => onChange({ cardZoom: 'normal' })}
-                  title="Standard Grid (Auto responsive)"
-                  className={`px-2.5 py-2 sm:px-2 sm:py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 active:scale-95 ${
+                  title="Standard Grid"
+                  className={`w-7 h-7 sm:w-6 sm:h-6 rounded-lg text-xs transition-all flex items-center justify-center active:scale-95 ${
                     (filters.cardZoom ?? 'normal') === 'normal'
                       ? 'bg-[#c8b07b]/20 text-[#dfc792] border border-[#c8b07b]/50 shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  <span className="text-[12px]">🎴</span>
-                  <span className="hidden sm:inline text-[10px]">Normal</span>
+                  🎴
                 </button>
                 <button
                   type="button"
                   onClick={() => onChange({ cardZoom: 'large' })}
-                  title="Large Grid (Auto responsive)"
-                  className={`px-2.5 py-2 sm:px-2 sm:py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 active:scale-95 ${
+                  title="Large Grid"
+                  className={`w-7 h-7 sm:w-6 sm:h-6 rounded-lg text-xs font-black transition-all flex items-center justify-center active:scale-95 ${
                     filters.cardZoom === 'large'
                       ? 'bg-[#c8b07b]/20 text-[#dfc792] border border-[#c8b07b]/50 shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  <span className="text-[12px] font-black">+</span>
-                  <span className="hidden sm:inline text-[10px]">Large</span>
+                  +
                 </button>
               </div>
 
-              <span className="w-px h-5 sm:h-4 bg-[#c8b07b]/30 my-auto" />
+              <span className="w-px h-4 bg-[#c8b07b]/30 my-auto mx-0.5" />
 
               {/* Custom Column Stepper */}
-              <div className="flex items-center gap-1 sm:gap-0.5 px-1 py-0.5">
-                <span className="text-[10px] font-bold text-slate-400 hidden sm:inline mr-0.5">Cols:</span>
+              <div className="flex items-center gap-0.5 px-0.5">
                 <button
                   type="button"
                   onClick={() => {
@@ -247,7 +244,7 @@ export function CollectionFilterBar({
                     onChange({ cardZoom: 'custom', customColumns: next });
                   }}
                   title="Decrease custom columns"
-                  className="w-7 h-7 sm:w-5 sm:h-5 rounded-lg sm:rounded flex items-center justify-center text-slate-300 hover:text-[#dfc792] bg-[#252a48]/60 sm:bg-transparent text-sm sm:text-xs font-black active:scale-90"
+                  className="w-6 h-6 sm:w-5 sm:h-5 rounded flex items-center justify-center text-slate-300 hover:text-[#dfc792] bg-[#252a48]/60 sm:bg-transparent text-xs font-black active:scale-90"
                 >
                   −
                 </button>
@@ -265,8 +262,8 @@ export function CollectionFilterBar({
                       onChange({ cardZoom: 'custom', customColumns: clamped });
                     }
                   }}
-                  title="Custom number of columns (1-12)"
-                  className={`w-8 sm:w-7 text-center font-mono text-xs sm:text-[11px] font-bold py-1 sm:py-0.5 rounded-lg sm:rounded bg-[#131627] border focus:outline-none focus:border-[#c8b07b] ${
+                  title="Custom columns (1-12)"
+                  className={`w-7 sm:w-6 text-center font-mono text-xs sm:text-[11px] font-bold py-0.5 rounded bg-[#131627] border focus:outline-none focus:border-[#c8b07b] ${
                     filters.cardZoom === 'custom'
                       ? 'border-[#c8b07b] text-[#dfc792] ring-1 ring-[#c8b07b]/40'
                       : 'border-[#c8b07b]/20 text-slate-400 placeholder:text-slate-600'
@@ -281,25 +278,27 @@ export function CollectionFilterBar({
                     onChange({ cardZoom: 'custom', customColumns: next });
                   }}
                   title="Increase custom columns"
-                  className="w-7 h-7 sm:w-5 sm:h-5 rounded-lg sm:rounded flex items-center justify-center text-slate-300 hover:text-[#dfc792] bg-[#252a48]/60 sm:bg-transparent text-sm sm:text-xs font-black active:scale-90"
+                  className="w-6 h-6 sm:w-5 sm:h-5 rounded flex items-center justify-center text-slate-300 hover:text-[#dfc792] bg-[#252a48]/60 sm:bg-transparent text-xs font-black active:scale-90"
                 >
                   +
                 </button>
               </div>
             </div>
 
-            {/* Lorcana 6-Inks Gem Selector */}
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-0.5 touch-pan-x">
+            {/* Lorcana 6-Inks Minimal Gem Capsule (Symbol-based, No scroll) */}
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm" title="Filter by Ink Colour">
               <button
                 type="button"
                 onClick={() => onChange({ selectedInk: 'ALL' })}
-                className={`px-3 py-2 sm:px-2.5 sm:py-1.5 rounded-xl border text-xs sm:text-[11px] font-bold whitespace-nowrap transition-all active:scale-95 min-h-[40px] sm:min-h-[34px] ${
+                title="All Inks"
+                className={`px-2 py-1 rounded-lg text-xs font-bold transition-all active:scale-95 min-h-[30px] sm:min-h-[28px] flex items-center gap-1 ${
                   filters.selectedInk === 'ALL'
-                    ? 'bg-[#252a48] border-[#c8b07b] text-[#dfc792] shadow-sm'
-                    : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-400 hover:text-slate-300'
+                    ? 'bg-[#252a48] border border-[#c8b07b] text-[#dfc792] shadow-sm'
+                    : 'text-slate-400 hover:text-slate-300'
                 }`}
               >
-                All Inks
+                <span>✦</span>
+                <span className="hidden xl:inline text-[11px]">All</span>
               </button>
 
               {INKS.map((ink) => {
@@ -309,25 +308,25 @@ export function CollectionFilterBar({
                   <button
                     key={ink}
                     type="button"
+                    title={ink}
                     onClick={() => onChange({ selectedInk: active ? 'ALL' : ink })}
-                    className={`flex items-center gap-1.5 px-3 py-2 sm:px-2.5 sm:py-1.5 rounded-xl border text-xs sm:text-[11px] font-bold whitespace-nowrap transition-all active:scale-95 min-h-[40px] sm:min-h-[34px] ${
-                      active ? style.activeChip : `bg-[#1b2038] ${style.chip}`
+                    className={`w-7 h-7 sm:w-7 sm:h-7 rounded-lg border flex items-center justify-center transition-all active:scale-90 ${
+                      active ? `${style.activeChip} shadow-md` : `bg-[#131627] ${style.chip}`
                     }`}
                   >
-                    <span className={`w-2 h-2 rounded-full ${style.dot}`} />
-                    <span>{ink}</span>
+                    <span className={`w-3 h-3 rounded-full ${style.dot} ring-1 ring-white/20`} />
                   </button>
                 );
               })}
             </div>
 
-            {/* Ink Cost Selector */}
-            <div className="flex items-center gap-1 p-1 sm:p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm overflow-x-auto scrollbar-none touch-pan-x min-h-[40px] sm:min-h-[36px]" title="Filter by Ink Cost">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 pl-1.5 hidden sm:inline">Cost:</span>
+            {/* Ink Cost Selector (Compact Numeric Bar) */}
+            <div className="flex items-center gap-0.5 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm" title="Filter by Ink Cost">
               <button
                 type="button"
                 onClick={() => onChange({ selectedCost: 'ALL' })}
-                className={`px-2.5 py-1.5 sm:px-2 sm:py-1 rounded-lg text-xs sm:text-[10px] font-bold transition-all active:scale-95 ${
+                title="All Ink Costs"
+                className={`px-1.5 py-1 rounded-lg text-xs sm:text-[10px] font-bold transition-all active:scale-95 ${
                   filters.selectedCost === 'ALL'
                     ? 'bg-[#c8b07b]/20 text-[#dfc792] border border-[#c8b07b]/40 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200'
@@ -341,8 +340,9 @@ export function CollectionFilterBar({
                   <button
                     key={c}
                     type="button"
+                    title={`Cost ${c}`}
                     onClick={() => onChange({ selectedCost: active ? 'ALL' : c })}
-                    className={`w-8 h-8 sm:w-6 sm:h-6 rounded-lg text-xs sm:text-[11px] font-mono font-black flex items-center justify-center transition-all active:scale-90 ${
+                    className={`w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-lg text-xs sm:text-[11px] font-mono font-black flex items-center justify-center transition-all active:scale-90 ${
                       active
                         ? 'bg-gradient-to-tr from-[#dfc792] via-[#c8b07b] to-[#b39552] text-[#131627] shadow-sm shadow-[#c8b07b]/30'
                         : 'text-slate-300 hover:text-[#dfc792] hover:bg-[#252a48]'
@@ -361,16 +361,15 @@ export function CollectionFilterBar({
                 const next = filters.selectedInkwell === 'ALL' ? 'inkable' : filters.selectedInkwell === 'inkable' ? 'uninkable' : 'ALL';
                 onChange({ selectedInkwell: next });
               }}
-              title={`Inkwell: ${filters.selectedInkwell === 'inkable' ? 'Inkable only' : filters.selectedInkwell === 'uninkable' ? 'Uninkable only' : 'All'}`}
-              className={`px-3 py-2 sm:px-2.5 sm:py-1.5 rounded-xl border text-xs sm:text-[11px] font-bold transition-all flex items-center gap-1.5 active:scale-95 min-h-[40px] sm:min-h-[36px] ${
+              title={`Inkwell: ${filters.selectedInkwell === 'inkable' ? 'Inkable cards only' : filters.selectedInkwell === 'uninkable' ? 'Uninkable cards only' : 'All cards'}`}
+              className={`px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 min-h-[38px] sm:min-h-[34px] ${
                 filters.selectedInkwell !== 'ALL'
                   ? 'bg-[#c8b07b]/20 border-[#c8b07b] text-[#dfc792] shadow-sm'
                   : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-400 hover:text-slate-200'
               }`}
             >
-              <span>⬡</span>
-              <span className="hidden md:inline">Inkwell:</span>
-              <span className={`text-[10px] font-semibold ${filters.selectedInkwell !== 'ALL' ? 'text-[#dfc792]' : 'text-slate-500'}`}>
+              <span className="text-sm">⬡</span>
+              <span className={`text-[11px] font-semibold ${filters.selectedInkwell !== 'ALL' ? 'text-[#dfc792]' : 'text-slate-400'}`}>
                 {filters.selectedInkwell === 'inkable' ? 'Inkable' : filters.selectedInkwell === 'uninkable' ? 'Uninkable' : 'All'}
               </span>
             </button>
@@ -463,10 +462,23 @@ export function CollectionFilterBar({
 
             {filters.selectedType !== 'ALL' && (
               <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#1b2038] border border-slate-600 text-slate-200 font-semibold">
-                {TYPE_ICONS[filters.selectedType as keyof typeof TYPE_ICONS] ?? '🃏'} {filters.selectedType}
+                {TYPE_ICONS[filters.selectedType as keyof typeof TYPE_ICONS]} {filters.selectedType}
                 <button
                   type="button"
                   onClick={() => onChange({ selectedType: 'ALL' })}
+                  className="hover:text-white ml-0.5"
+                >
+                  ✕
+                </button>
+              </span>
+            )}
+
+            {filters.selectedClassification !== 'ALL' && (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#1b2038] border border-slate-600 text-slate-200 font-semibold">
+                🏷 {filters.selectedClassification}
+                <button
+                  type="button"
+                  onClick={() => onChange({ selectedClassification: 'ALL' })}
                   className="hover:text-white ml-0.5"
                 >
                   ✕
@@ -497,13 +509,13 @@ export function CollectionFilterBar({
           </div>
         )}
 
-        {/* Collapsible Advanced Filters Drawer */}
+        {/* Collapsible Advanced Filters Drawer (No horizontal scroll, clean wrap) */}
         {showAdvanced && (
           <div className="pt-2.5 border-t border-[#c8b07b]/20 space-y-2.5 animate-fade-in">
             {/* Card Types */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Type:</span>
-              <div className="flex gap-1">
+              <div className="flex flex-wrap gap-1">
                 {CARD_TYPES.map((t) => {
                   const active = filters.selectedType === t;
                   return (
@@ -526,9 +538,9 @@ export function CollectionFilterBar({
             </div>
 
             {/* Rarities */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Rarity:</span>
-              <div className="flex gap-1">
+              <div className="flex flex-wrap gap-1">
                 {RARITIES.map((r) => {
                   const active = filters.selectedRarity === r;
                   return (
@@ -551,9 +563,9 @@ export function CollectionFilterBar({
 
             {/* Ink Cost & Inkwell in Drawer */}
             <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-[#c8b07b]/15">
-              <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Ink Cost:</span>
-                <div className="flex gap-1">
+                <div className="flex flex-wrap gap-1">
                   {INK_COSTS.map((c) => {
                     const active = filters.selectedCost === c;
                     return (
@@ -574,9 +586,9 @@ export function CollectionFilterBar({
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Inkwell:</span>
-                <div className="flex gap-1">
+                <div className="flex flex-wrap gap-1">
                   {(['ALL', 'inkable', 'uninkable'] as const).map((mode) => {
                     const active = filters.selectedInkwell === mode;
                     return (
