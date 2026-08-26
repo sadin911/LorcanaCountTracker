@@ -51,6 +51,18 @@ Copy `.env.example` to `.env.local` and fill it in:
 | `VITE_FIREBASE_*` | Firebase web app config. Without these, sign-in and cloud sync are disabled and the app runs in local-only guest mode. |
 | `VITE_R2_CDN_BASE` | Public base URL of the R2 bucket holding card images. Leave blank to serve them from `public/`. |
 
+`secret.yaml` (gitignored) holds the R2 side:
+
+```yaml
+AccessKey: ...
+Secret: ...
+S3Endpoint: https://<account>.r2.cloudflarestorage.com
+Bucket: <bucket name>
+```
+
+> A `pub-*.r2.dev` URL is Cloudflare's rate-limited **development** endpoint.
+> Attach a custom domain to the bucket before the site takes real traffic.
+
 The same values must be set as GitHub Actions repository secrets for the Pages
 deploy — `src/utils/firebase.ts` has no hardcoded fallbacks on purpose.
 
@@ -60,7 +72,7 @@ deploy — `src/utils/firebase.ts` has no hardcoded fallbacks on purpose.
 | --- | --- |
 | `npm run data:cards` | Fetches every set and card from the Lorcast API into `src/data/lorcanaCards.json` (~1.75 MB) and `src/data/lorcanaSets.json`. Fails loudly if the card count, id uniqueness or JSON size gate is violated. |
 | `npm run data:images` | Downloads each card's AVIF at Lorcast's maximum resolution and emits two WebP tiers: `public/card-images/` (320w, grid) and `public/card-images-lg/` (674w, detail view). Resumable — re-run to retry failures. |
-| `npm run data:upload` | Uploads both tiers to the Cloudflare R2 bucket named by `R2_BUCKET` (default `lorcana-cards`), reading credentials from a gitignored `secret.yaml`. |
+| `npm run data:upload` | Uploads both tiers to Cloudflare R2, reading the endpoint, credentials and bucket name from a gitignored `secret.yaml` (override the bucket with `R2_BUCKET`). |
 
 Card ids are `` `${setCode}-${collectorNumber}` `` verbatim — unique across all
 3,192 cards. They are deliberately **not** zero-padded: set 8 ships both `1` and

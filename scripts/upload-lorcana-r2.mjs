@@ -5,6 +5,7 @@
  *   AccessKey: ...
  *   Secret: ...
  *   S3Endpoint: https://<account>.r2.cloudflarestorage.com
+ *   Bucket: <bucket name>
  *
  * Object keys are relative to public/, e.g. card-images/1/125.webp, matching
  * what src/utils/cardImage.ts builds in production.
@@ -13,7 +14,6 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import fs from 'fs';
 import path from 'path';
 
-const BUCKET_NAME = process.env.R2_BUCKET || 'lorcana-cards';
 const CONCURRENCY = 30;
 const SOURCE_DIRS = ['public/card-images', 'public/card-images-lg'];
 
@@ -26,8 +26,11 @@ const raw = fs.readFileSync(SECRET_FILE, 'utf-8');
 const accessKeyId = raw.match(/AccessKey:\s*([^\r\n]+)/)?.[1]?.trim();
 const secretAccessKey = raw.match(/Secret:\s*([^\r\n]+)/)?.[1]?.trim();
 const endpoint = raw.match(/S3Endpoint:\s*([^\r\n]+)/)?.[1]?.trim();
+// Bucket lives with the credentials rather than hardcoded, so renaming the
+// bucket never means editing this script.
+const BUCKET_NAME = process.env.R2_BUCKET || raw.match(/Bucket:\s*([^\r\n]+)/)?.[1]?.trim();
 
-for (const [k, v] of Object.entries({ accessKeyId, secretAccessKey, endpoint })) {
+for (const [k, v] of Object.entries({ accessKeyId, secretAccessKey, endpoint, BUCKET_NAME })) {
   if (!v) {
     console.error(`❌ ${SECRET_FILE} is missing ${k}`);
     process.exit(1);
