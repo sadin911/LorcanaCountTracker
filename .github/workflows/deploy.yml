@@ -27,12 +27,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # Build config comes from the committed .env.production, which Vite loads
-      # automatically — no repository secrets needed. Deliberately no `env:`
-      # block here: an unset secret would inject an empty string and clobber
-      # the committed value, producing a silently broken deploy.
       - run: npm run build
-      - uses: actions/configure-pages@v4
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
