@@ -114,8 +114,33 @@ export function CollectionFilterBar({
             itemNoun="series"
             icon="🎬"
             showCode={false}
-            className="w-full sm:w-auto sm:min-w-[230px]"
+            className="w-full sm:w-auto sm:min-w-[220px]"
           />
+
+          {/* Quick Sort By & Direction Toggle */}
+          <div className="flex items-center gap-1 p-1 sm:p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 shadow-sm min-h-[42px] sm:min-h-[38px]" title="Sort cards">
+            <span className="text-[10px] font-bold text-slate-400 pl-2 hidden lg:inline">Sort:</span>
+            <select
+              value={filters.sortBy}
+              onChange={(e) => onChange({ sortBy: e.target.value as CollectionSortBy })}
+              aria-label="Sort cards by"
+              className="bg-transparent text-xs font-bold text-slate-200 focus:outline-none cursor-pointer py-1.5 px-2 rounded-lg hover:text-[#dfc792] transition-colors"
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.id} value={o.id} className="bg-[#1b2038] text-slate-200">
+                  {o.label}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              title={`Sort Order: ${filters.sortOrder === 'asc' ? 'Ascending (Click for Descending)' : 'Descending (Click for Ascending)'}`}
+              onClick={() => onChange({ sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc' })}
+              className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg bg-[#252a48] hover:bg-[#2e3459] text-xs font-black text-[#dfc792] flex items-center justify-center transition-all active:scale-90 border border-[#c8b07b]/20"
+            >
+              {filters.sortOrder === 'asc' ? '↑' : '↓'}
+            </button>
+          </div>
 
           {/* Vivid Color Mode Toggle */}
           <button
