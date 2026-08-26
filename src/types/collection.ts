@@ -35,7 +35,7 @@ export type CollectionSortBy = 'number' | 'name' | 'cost' | 'lore' | 'strength' 
 
 export type SortOrder = 'asc' | 'desc';
 
-export type CardZoomLevel = 'compact' | 'normal' | 'large';
+export type CardZoomLevel = 'compact' | 'normal' | 'large' | 'custom';
 
 export interface CollectionFilters {
   selectedSet: string;
@@ -58,6 +58,7 @@ export interface CollectionFilters {
   sortOrder: SortOrder;
   showFullColor: boolean;
   cardZoom?: CardZoomLevel;
+  customColumns?: number;
 }
 
 export interface SetProgress {

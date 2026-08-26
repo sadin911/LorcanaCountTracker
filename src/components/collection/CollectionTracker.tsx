@@ -211,6 +211,7 @@ export function CollectionTracker() {
     filters.sortBy,
     filters.sortOrder,
     filters.cardZoom,
+    filters.customColumns,
     effectiveSearch.trim(),
     activeProfileId,
   ].join('_');

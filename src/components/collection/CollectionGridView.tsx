@@ -22,6 +22,7 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
 
   const activeCards = useCollectionStore((s) => s.profiles[s.activeProfileId]?.cards ?? {});
   const cardZoom = useCollectionStore((s) => s.filters.cardZoom ?? 'normal');
+  const customColumns = useCollectionStore((s) => s.filters.customColumns ?? 6);
   const incrementFinish = useCollectionStore((s) => s.incrementFinish);
   const toggleWishlist = useCollectionStore((s) => s.toggleWishlist);
 
@@ -46,12 +47,19 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
 
   const visible = cards.slice(0, displayLimit);
 
+  const isCustom = cardZoom === 'custom';
   const gridColsClass =
     cardZoom === 'compact'
       ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12 gap-2 sm:gap-2.5'
       : cardZoom === 'large'
         ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-5'
-        : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-3 md:gap-4';
+        : isCustom
+          ? 'gap-2.5 sm:gap-3.5'
+          : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-3 md:gap-4';
+
+  const customGridStyle = isCustom
+    ? { gridTemplateColumns: `repeat(${Math.max(1, Math.min(12, customColumns))}, minmax(0, 1fr))` }
+    : undefined;
 
   return (
     <div className="relative z-0 space-y-3">
@@ -88,7 +96,10 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
         </div>
       ) : (
         <>
-          <div className={`grid ${gridColsClass} transition-all duration-300`}>
+          <div
+            className={`grid ${gridColsClass} transition-all duration-300`}
+            style={customGridStyle}
+          >
             {visible.map((card) => (
               <CollectionCardItem
                 key={card.id}

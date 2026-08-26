@@ -10,3 +10,4 @@
 [2026-08-27 02:55] Major | Antigravity | Edit | src/components - fixed dropdown z-index layer stacking over card grid
 [2026-08-27 02:56] Major | Antigravity | Edit | src/components/collection/CollectionTracker.tsx - sort Disney Series A-Z
 [2026-08-27 02:59] Major | Antigravity | Edit | src/components - responsive card zoom density (Compact / Normal / Large)
+[2026-08-27 03:01] Major | Antigravity | Edit | src/components - add custom column input & stepper (1-12 columns)

@@ -111,47 +111,103 @@ export function CollectionFilterBar({
             className="w-full sm:w-auto sm:min-w-[230px]"
           />
 
-          {/* Grid Zoom / Density Switcher */}
-          <div className="flex items-center p-0.5 rounded-xl bg-slate-900/80 border border-slate-700/70 shadow-sm" title="Adjust Card Size / Grid Density">
-            <button
-              type="button"
-              onClick={() => onChange({ cardZoom: 'compact' })}
-              title="Compact (More cards per row)"
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
-                (filters.cardZoom ?? 'normal') === 'compact'
-                  ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <span className="text-[11px] font-black">−</span>
-              <span className="hidden xl:inline text-[10px]">Compact</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onChange({ cardZoom: 'normal' })}
-              title="Standard Grid Size"
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
-                (filters.cardZoom ?? 'normal') === 'normal'
-                  ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <span className="text-[11px]">🎴</span>
-              <span className="hidden xl:inline text-[10px]">Normal</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onChange({ cardZoom: 'large' })}
-              title="Large Cards (Detailed view)"
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
-                (filters.cardZoom ?? 'normal') === 'large'
-                  ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <span className="text-[11px] font-black">+</span>
-              <span className="hidden xl:inline text-[10px]">Large</span>
-            </button>
+          {/* Grid Zoom & Custom Column Controls */}
+          <div className="flex items-center gap-1 p-0.5 rounded-xl bg-slate-900/80 border border-slate-700/70 shadow-sm" title="Adjust Card Size / Column Count">
+            {/* Presets */}
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => onChange({ cardZoom: 'compact' })}
+                title="Compact Grid (Auto responsive)"
+                className={`px-2 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                  filters.cardZoom === 'compact'
+                    ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span className="text-[11px] font-black">−</span>
+                <span className="hidden xl:inline text-[10px]">Compact</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ cardZoom: 'normal' })}
+                title="Standard Grid (Auto responsive)"
+                className={`px-2 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                  (filters.cardZoom ?? 'normal') === 'normal'
+                    ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span className="text-[11px]">🎴</span>
+                <span className="hidden xl:inline text-[10px]">Normal</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ cardZoom: 'large' })}
+                title="Large Grid (Auto responsive)"
+                className={`px-2 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                  filters.cardZoom === 'large'
+                    ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span className="text-[11px] font-black">+</span>
+                <span className="hidden xl:inline text-[10px]">Large</span>
+              </button>
+            </div>
+
+            <span className="w-px h-4 bg-slate-700/80 my-auto" />
+
+            {/* Custom Column Stepper */}
+            <div className="flex items-center gap-0.5 px-1 py-0.5">
+              <span className="text-[10px] font-bold text-slate-400 hidden sm:inline mr-0.5">Cols:</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const curr = filters.cardZoom === 'custom' ? (filters.customColumns ?? 6) : 6;
+                  const next = Math.max(1, curr - 1);
+                  onChange({ cardZoom: 'custom', customColumns: next });
+                }}
+                title="Decrease custom columns"
+                className="w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-amber-300 hover:bg-slate-800 text-xs font-black"
+              >
+                −
+              </button>
+
+              <input
+                type="number"
+                min={1}
+                max={12}
+                value={filters.cardZoom === 'custom' ? (filters.customColumns ?? 6) : ''}
+                placeholder={filters.cardZoom === 'compact' ? '10' : filters.cardZoom === 'large' ? '4' : '6'}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  if (!isNaN(val)) {
+                    const clamped = Math.max(1, Math.min(12, val));
+                    onChange({ cardZoom: 'custom', customColumns: clamped });
+                  }
+                }}
+                title="Custom number of columns (1-12)"
+                className={`w-7 text-center font-mono text-[11px] font-bold py-0.5 rounded bg-slate-950 border focus:outline-none focus:border-amber-400 ${
+                  filters.cardZoom === 'custom'
+                    ? 'border-amber-500/60 text-amber-300 ring-1 ring-amber-500/30'
+                    : 'border-slate-800 text-slate-400 placeholder:text-slate-600'
+                }`}
+              />
+
+              <button
+                type="button"
+                onClick={() => {
+                  const curr = filters.cardZoom === 'custom' ? (filters.customColumns ?? 6) : 6;
+                  const next = Math.min(12, curr + 1);
+                  onChange({ cardZoom: 'custom', customColumns: next });
+                }}
+                title="Increase custom columns"
+                className="w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-amber-300 hover:bg-slate-800 text-xs font-black"
+              >
+                +
+              </button>
+            </div>
           </div>
 
           {/* Vivid Color Mode Toggle */}
