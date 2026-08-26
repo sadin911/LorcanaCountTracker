@@ -242,6 +242,7 @@ export function CollectionTracker() {
       <CollectionHeader stats={overallStats} />
 
       <main className="px-3 sm:px-4 py-3 space-y-3">
+        <h1 className="sr-only">Disney Lorcana Card Collection Tracker - Track Inks, Foils, Cards, and Sets</h1>
         <CollectionFilterBar
           filters={filters}
           onChange={setFilters}

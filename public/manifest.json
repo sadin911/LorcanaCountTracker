@@ -1,0 +1,22 @@
+{
+  "short_name": "Lorcana Tracker",
+  "name": "Disney Lorcana Card Collection Tracker",
+  "description": "Track foils, cards, inks, and set completion with the free Disney Lorcana card collection tracker.",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "logo-br-2x-Sweb4xgr.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./",
+  "background_color": "#131627",
+  "theme_color": "#c8b07b",
+  "display": "standalone",
+  "orientation": "any"
+}
