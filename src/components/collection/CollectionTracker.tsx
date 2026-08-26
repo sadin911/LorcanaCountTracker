@@ -1,8 +1,6 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
-import cardData from '../../data/lorcanaCards.json';
-import setData from '../../data/lorcanaSets.json';
+import { ALL_CARDS, ALL_CLASSIFICATIONS, ALL_SETS, SET_ORDER } from '../../data/catalogue';
 import { useCollectionStore } from '../../store/collectionStore';
-import type { LorcanaCard, LorcanaSet } from '../../types/card';
 import type { CollectionStats, SetProgress } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
 import { createCardMatcher } from '../../utils/searchHelpers';
@@ -10,16 +8,6 @@ import type { SetOption } from '../common/SearchableSetSelect';
 import { CollectionFilterBar } from './CollectionFilterBar';
 import { CollectionGridView } from './CollectionGridView';
 import { CollectionHeader } from './CollectionHeader';
-
-const ALL_CARDS = cardData as LorcanaCard[];
-const ALL_SETS = setData as LorcanaSet[];
-
-/** Set order follows lorcanaSets.json (release order), not alphabetical codes. */
-const SET_ORDER = new Map(ALL_SETS.map((s, i) => [s.code, i]));
-
-const ALL_CLASSIFICATIONS = Array.from(
-  new Set(ALL_CARDS.flatMap((c) => c.classifications))
-).sort((a, b) => a.localeCompare(b));
 
 export function CollectionTracker() {
   const [showBackToTop, setShowBackToTop] = useState(false);
