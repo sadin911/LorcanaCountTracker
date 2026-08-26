@@ -1245,3 +1245,28 @@ With the dev server running, walk the whole feature once:
 git add README.md
 git commit -m "docs: document Disney series discovery and the LorcanaJSON upstream"
 ```
+
+---
+
+## Deviations during execution
+
+Two things changed against the plan as written. The spec was updated to match; this
+section records why.
+
+**1. The story join is keyed on more than the number.** Task 1 as planned keyed
+pass 1 on `setCode`-`number`. LorcanaJSON files promos under the main set's
+`setCode` too, so 160 of those keys are ambiguous — `1-1` is Ariel – On Human Legs
+*and* the P1 and D23 promos printed as card 1 — and the unguarded `Map.set` let a
+promo overwrite the real card. That mis-assigned 155 of 2,985 stories, which is
+how a Mickey Mouse card ended up filed under The Incredibles. The key now includes
+the name and version, making each match unambiguous by construction, and a gate
+fails the build if a card ever takes its story from a name LorcanaJSON maps to two
+stories.
+
+**2. The character relation got its own filter field.** Task 7 as planned sent the
+same-character "See all" through `search: card.name`. With `story` in the search
+key, that bleeds: searching `Mickey Mouse` returns 193 cards — the 58 that are him
+plus the 179 in `Mickey Mouse & Friends` — so a button reading "See all (57)"
+landed on 193. `CollectionFilters.selectedCharacter` now holds an exact name, and
+the filter bar renders it as a clearable chip because nothing else in the UI can
+set or clear it.
