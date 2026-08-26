@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CONDITIONS, FINISH_META, INK_STYLES, RARITY_STYLES, TYPE_ICONS } from '../../constants/lorcana';
-import { useCollectionStore } from '../../store/collectionStore';
+import { DEFAULT_COLLECTION_FILTERS, useCollectionStore } from '../../store/collectionStore';
 import type { FinishKey, LorcanaCard } from '../../types/card';
 import { cardDisplayName, rarityLabel } from '../../types/card';
-import type { CardCondition } from '../../types/collection';
+import type { CardCondition, CollectionFilters } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
+import { relatedByStory, relatedBySameName } from '../../utils/cardRelations';
 import { handleCardImageError, resolveCardImageUrl } from '../../utils/cardImage';
+import { RelatedCardStrip } from './RelatedCardStrip';
 
 interface Props {
   card: LorcanaCard;
@@ -26,8 +28,14 @@ function visibleFinishes(card: LorcanaCard, variants: Record<string, number | un
   return list;
 }
 
-export function CardCollectionModal({ card, onClose }: Props) {
+export function CardCollectionModal({ card: initialCard, onClose }: Props) {
+  /* The displayed card is state, not the prop: clicking a related thumbnail
+     walks the modal to that card instead of closing it. CollectionGridView keys
+     this component by card id, so opening a different card from the grid
+     remounts and starts the walk over. */
+  const [card, setCard] = useState(initialCard);
   const [showZoom, setShowZoom] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const entry = useCollectionStore((s) => s.profiles[s.activeProfileId]?.cards[card.id]);
   const setFinishCount = useCollectionStore((s) => s.setFinishCount);
@@ -36,6 +44,30 @@ export function CardCollectionModal({ card, onClose }: Props) {
   const toggleWishlist = useCollectionStore((s) => s.toggleWishlist);
   const setCardDetails = useCollectionStore((s) => s.setCardDetails);
   const clearCard = useCollectionStore((s) => s.clearCard);
+  const setFilters = useCollectionStore((s) => s.setFilters);
+  const showFullColor = useCollectionStore((s) => s.filters.showFullColor);
+
+  const sameName = useMemo(() => relatedBySameName(card), [card]);
+  const sameStory = useMemo(() => relatedByStory(card), [card]);
+
+  /* "Same character" for Characters; for a Song, Action or Item the same name
+     means other printings of that card, which is still worth offering. */
+  const sameNameTitle = card.types.includes('Character') ? 'Same character' : 'Cards with this name';
+
+  const goToCard = (next: LorcanaCard) => {
+    setCard(next);
+    setShowZoom(false);
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  /* "See all" must mean all of them, not the leftovers of a stale ink or rarity
+     filter — so reset to defaults and apply exactly one condition. showFullColor
+     survives because it is a display preference, not a filter. */
+  const seeAll = (patch: Partial<CollectionFilters>) => {
+    setFilters({ ...DEFAULT_COLLECTION_FILTERS, showFullColor, ...patch });
+    onClose();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const variants = entry?.variants ?? {};
   const count = totalCopies(variants);
@@ -59,6 +91,7 @@ export function CardCollectionModal({ card, onClose }: Props) {
       onClick={onClose}
     >
       <div
+        ref={scrollRef}
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-4xl max-h-[92vh] overflow-y-auto scrollbar-thin rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl"
       >
@@ -97,6 +130,14 @@ export function CardCollectionModal({ card, onClose }: Props) {
                   <span className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] text-slate-300">
                     {card.setCode}
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => seeAll({ selectedStory: card.story })}
+                    title={`Show every card from ${card.story}`}
+                    className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-amber-200 hover:border-amber-500 hover:text-amber-100"
+                  >
+                    🎬 {card.story}
+                  </button>
                   <span className={`text-[10px] font-bold ${RARITY_STYLES[card.rarity]}`}>
                     {rarityLabel(card.rarity)}
                   </span>
@@ -279,6 +320,23 @@ export function CardCollectionModal({ card, onClose }: Props) {
             </div>
           </div>
         </div>
+
+        {(sameName.length > 0 || sameStory.length > 0) && (
+          <div className="border-t border-slate-800 px-4 py-3 space-y-3">
+            <RelatedCardStrip
+              title={sameNameTitle}
+              cards={sameName}
+              onSelect={goToCard}
+              onSeeAll={() => seeAll({ selectedCharacter: card.name })}
+            />
+            <RelatedCardStrip
+              title={`Same series — ${card.story}`}
+              cards={sameStory}
+              onSelect={goToCard}
+              onSeeAll={() => seeAll({ selectedStory: card.story })}
+            />
+          </div>
+        )}
       </div>
 
       {showZoom &&

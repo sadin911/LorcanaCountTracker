@@ -99,7 +99,11 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
         </>
       )}
 
-      {selectedCard && <CardCollectionModal card={selectedCard} onClose={() => setSelectedCard(null)} />}
+      {/* Keyed by id so opening a different card from the grid remounts the modal
+          and resets any walk through related cards. */}
+      {selectedCard && (
+        <CardCollectionModal key={selectedCard.id} card={selectedCard} onClose={() => setSelectedCard(null)} />
+      )}
     </div>
   );
 }
