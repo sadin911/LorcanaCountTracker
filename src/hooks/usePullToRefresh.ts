@@ -19,9 +19,11 @@ export function usePullToRefresh({
   const [isSuccess, setIsSuccess] = useState(false);
 
   const startYRef = useRef(0);
-  const isEligibleRef = useRef(false);
+  const startXRef = useRef(0);
+  const isPullingRef = useRef(false);
   const isThresholdMetRef = useRef(false);
   const hasVibratedRef = useRef(false);
+  const pullDistanceRef = useRef(0);
 
   const triggerHaptic = (pattern: number | number[]) => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
@@ -31,18 +33,24 @@ export function usePullToRefresh({
     }
   };
 
+  const isAtTop = () => {
+    return (
+      window.scrollY <= 2 &&
+      document.documentElement.scrollTop <= 2 &&
+      document.body.scrollTop <= 2
+    );
+  };
+
   const handleTouchStart = useCallback(
     (e: TouchEvent) => {
-      if (disabled || isRefreshing) return;
+      if (disabled || isRefreshing || e.touches.length !== 1) return;
 
-      // Only engage if at the absolute top of the page
-      if (window.scrollY <= 2) {
+      if (isAtTop()) {
         startYRef.current = e.touches[0].clientY;
-        isEligibleRef.current = true;
+        startXRef.current = e.touches[0].clientX;
+        isPullingRef.current = false;
         hasVibratedRef.current = false;
         isThresholdMetRef.current = false;
-      } else {
-        isEligibleRef.current = false;
       }
     },
     [disabled, isRefreshing]
@@ -50,15 +58,19 @@ export function usePullToRefresh({
 
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
-      if (!isEligibleRef.current || isRefreshing || disabled) return;
+      if (isRefreshing || disabled || e.touches.length !== 1) return;
 
       const currentY = e.touches[0].clientY;
-      const rawDiff = currentY - startYRef.current;
+      const currentX = e.touches[0].clientX;
+      const rawDiffY = currentY - startYRef.current;
+      const rawDiffX = currentX - startXRef.current;
 
-      // Only pull downwards from top
-      if (rawDiff > 0 && window.scrollY <= 0) {
+      // Only pull downwards from top when vertical movement dominates
+      if (rawDiffY > 0 && Math.abs(rawDiffY) > Math.abs(rawDiffX) * 1.3 && isAtTop()) {
+        isPullingRef.current = true;
         // Non-linear damping for a natural iOS/Android rubber-band resistance
-        const dampened = Math.min(maxPull, Math.pow(rawDiff, 0.82) * 2.2);
+        const dampened = Math.min(maxPull, Math.pow(rawDiffY, 0.82) * 2.2);
+        pullDistanceRef.current = dampened;
         setPullDistance(dampened);
         setIsPulling(true);
 
@@ -72,24 +84,30 @@ export function usePullToRefresh({
         isThresholdMetRef.current = met;
 
         // Prevent browser overscroll bounce if pulling actively
-        if (dampened > 10 && e.cancelable) {
+        if (dampened > 15 && e.cancelable) {
           e.preventDefault();
         }
       } else {
-        setPullDistance(0);
-        setIsPulling(false);
+        // Swiping up or sideways: reset only if we were actively pulling
+        if (isPullingRef.current || pullDistanceRef.current > 0) {
+          isPullingRef.current = false;
+          pullDistanceRef.current = 0;
+          setPullDistance(0);
+          setIsPulling(false);
+        }
       }
     },
     [disabled, isRefreshing, maxPull, threshold]
   );
 
   const handleTouchEnd = useCallback(async () => {
-    if (!isEligibleRef.current || isRefreshing || disabled) return;
+    if (!isPullingRef.current && pullDistanceRef.current === 0) return;
 
-    isEligibleRef.current = false;
+    const triggered = pullDistanceRef.current >= threshold;
+    isPullingRef.current = false;
     setIsPulling(false);
 
-    if (isThresholdMetRef.current) {
+    if (triggered && !isRefreshing) {
       triggerHaptic(30); // Action trigger vibration
       setIsRefreshing(true);
       setPullDistance(threshold * 0.85); // Lock at spinner height during sync
@@ -108,21 +126,23 @@ export function usePullToRefresh({
           setIsRefreshing(false);
           setIsSuccess(false);
           setPullDistance(0);
+          pullDistanceRef.current = 0;
           isThresholdMetRef.current = false;
         }, 500);
       }
     } else {
       setPullDistance(0);
+      pullDistanceRef.current = 0;
     }
-  }, [disabled, isRefreshing, onRefresh, threshold]);
+  }, [isRefreshing, onRefresh, threshold]);
 
   useEffect(() => {
     if (disabled) return;
 
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    window.addEventListener('touchend', handleTouchEnd);
-    window.addEventListener('touchcancel', handleTouchEnd);
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', handleTouchEnd, { passive: true });
 
     return () => {
       window.removeEventListener('touchstart', handleTouchStart);

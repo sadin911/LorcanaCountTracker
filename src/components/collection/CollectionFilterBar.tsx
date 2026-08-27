@@ -102,7 +102,9 @@ export function CollectionFilterBar({
             sets={sets}
             selectedSet={filters.selectedSet}
             onSelectSet={(code) => onChange({ selectedSet: code })}
-            className="w-full sm:w-auto sm:min-w-[250px]"
+            /* Half width, so Set and Series share a row on a phone. gap-2 is
+               0.5rem, hence the 0.25rem each side. */
+            className="w-[calc(50%-0.25rem)] sm:w-auto sm:min-w-[250px]"
           />
 
           {/* Disney Series Select */}
@@ -115,7 +117,7 @@ export function CollectionFilterBar({
             itemNoun="series"
             icon="🎬"
             showCode={false}
-            className="w-full sm:w-auto sm:min-w-[220px]"
+            className="w-[calc(50%-0.25rem)] sm:w-auto sm:min-w-[220px]"
           />
 
           {/* Action Toolbar Row on Mobile, Inline on Desktop: Sort, Vivid, Filters, and Results Count */}
@@ -195,7 +197,7 @@ export function CollectionFilterBar({
         {/* Row 2: Status Tabs Segment, Card Zoom / Columns Stepper, Lorcana Inks & Cost */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
           {/* Status Tabs (Compact & Meaningful Icons) */}
-          <div className="flex flex-wrap items-center gap-1 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/20">
+          <div className="flex flex-nowrap sm:flex-wrap items-center justify-between sm:justify-start gap-1 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/20 w-full sm:w-auto">
             {STATUS_TABS.map((tab) => {
               const active = filters.statusFilter === tab.id;
               return (
@@ -204,7 +206,7 @@ export function CollectionFilterBar({
                   type="button"
                   onClick={() => onChange({ statusFilter: tab.id })}
                   title={tab.label}
-                  className={`px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 active:scale-95 min-h-[36px] sm:min-h-[32px] ${
+                  className={`flex-1 sm:flex-initial justify-center px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 active:scale-95 min-h-[36px] sm:min-h-[32px] ${
                     active
                       ? 'bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] text-[#131627] shadow-md shadow-[#c8b07b]/20 font-extrabold'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-[#252a48]/50'
@@ -217,10 +219,16 @@ export function CollectionFilterBar({
             })}
           </div>
 
-          {/* Right Group: Grid Zoom, Minimal Ink Gems, Cost, and Inkwell */}
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Right Group: Grid Zoom, Minimal Ink Gems, Cost, and Inkwell.
+              Every capsule grows on a phone: flex-wrap packs what fits on a line
+              and the growers absorb the remainder, so no line ends in a gap. */}
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             {/* Grid Zoom & Custom Column Controls */}
-            <div className="flex items-center gap-0.5 p-1 sm:p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm min-h-[38px] sm:min-h-[34px]" title="Adjust Card Size / Column Count">
+            <div className="flex grow sm:grow-0 items-center justify-between sm:justify-start gap-0.5 p-1 sm:p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm min-h-[38px] sm:min-h-[34px]" title="Adjust Card Size / Column Count">
+              <span className="sm:hidden pl-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                Grid
+              </span>
+
               {/* Presets */}
               <div className="flex items-center">
                 <button
@@ -261,7 +269,9 @@ export function CollectionFilterBar({
                 </button>
               </div>
 
-              <span className="w-px h-4 bg-[#c8b07b]/30 my-auto mx-0.5" />
+              {/* A hairline in the middle of a stretched row reads as a stray mark,
+                  so it only appears once the capsule is content-width again. */}
+              <span className="hidden sm:block w-px h-4 bg-[#c8b07b]/30 my-auto mx-0.5" />
 
               {/* Custom Column Stepper */}
               <div className="flex items-center gap-0.5 px-0.5">
@@ -315,7 +325,7 @@ export function CollectionFilterBar({
             </div>
 
             {/* Lorcana 6-Inks Minimal Gem Capsule (Official SVG Icons) */}
-            <div className="flex items-center gap-1 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm" title="Filter by Ink Colour">
+            <div className="flex grow sm:grow-0 items-center justify-between sm:justify-start gap-1 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm w-full sm:w-auto" title="Filter by Ink Colour">
               <button
                 type="button"
                 onClick={() => onChange({ selectedInk: 'ALL' })}
@@ -349,8 +359,9 @@ export function CollectionFilterBar({
               })}
             </div>
 
-            {/* Mobile / Tablet Rarity Dropdown Selector (Compact, Never Overflows) */}
-            <div className="flex xl:hidden items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 shadow-sm min-h-[38px] sm:min-h-[34px]" title="Filter by Rarity">
+            {/* Tablet Rarity Dropdown. Hidden on a phone: the drawer already has a
+                full rarity picker, and a duplicate cost a whole row. */}
+            <div className="hidden sm:flex xl:hidden grow sm:grow-0 items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 shadow-sm min-h-[38px] sm:min-h-[34px]" title="Filter by Rarity">
               <span className="text-[11px] font-bold text-[#dfc792] shrink-0">Rarity:</span>
               <select
                 value={filters.selectedRarity}
@@ -400,8 +411,8 @@ export function CollectionFilterBar({
               })}
             </div>
 
-            {/* Ink Cost Selector (Compact Numeric Bar) */}
-            <div className="flex items-center gap-0.5 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm" title="Filter by Ink Cost">
+            {/* Ink Cost Selector. Phone reaches this through the drawer. */}
+            <div className="hidden sm:flex grow sm:grow-0 items-center justify-between sm:justify-start gap-0.5 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm" title="Filter by Ink Cost">
               <button
                 type="button"
                 onClick={() => onChange({ selectedCost: 'ALL' })}
@@ -442,7 +453,7 @@ export function CollectionFilterBar({
                 onChange({ selectedInkwell: next });
               }}
               title={`Inkwell: ${filters.selectedInkwell === 'inkable' ? 'Inkable cards only' : filters.selectedInkwell === 'uninkable' ? 'Uninkable cards only' : 'All cards'}`}
-              className={`px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 min-h-[38px] sm:min-h-[34px] ${
+              className={`hidden sm:flex grow sm:grow-0 justify-center sm:justify-start px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all items-center gap-1.5 active:scale-95 min-h-[38px] sm:min-h-[34px] ${
                 filters.selectedInkwell !== 'ALL'
                   ? 'bg-[#c8b07b]/20 border-[#c8b07b] text-[#dfc792] shadow-sm'
                   : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-400 hover:text-slate-200'
