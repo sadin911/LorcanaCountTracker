@@ -41,15 +41,27 @@ const RELEASE_MS = 420;
 const GYRO_IMPULSE = 1.6;
 
 /**
- * Per-frame pull back toward flat. At 0.88 and 60fps the tilt halves every ~5
- * frames: from a full-clamp flick it looks level again in roughly 0.5s and is
- * fully flat by 0.95s — long enough to read as weight, short enough that the card
- * is never still sitting crooked when the phone is.
+ * Per-frame pull back toward flat. At 0.82 and 60fps the tilt halves every ~3.5
+ * frames: measured against the update rule, a full-clamp flick looks level again
+ * ~0.38s after it starts and is fully flat by ~0.68s (0.48s / 0.95s at 0.88, the
+ * previous value). The card should be settled before you have finished noticing it
+ * moved — anything slower feels like the tilt is lagging behind the phone.
  */
-const GYRO_DECAY = 0.88;
+const GYRO_DECAY = 0.82;
 
 /** Sensor wrap-around (gamma flips through ±90) shows up as an absurd delta. */
 const GYRO_MAX_DELTA_DEG = 45;
+
+/**
+ * Rotation per reading, in degrees, that counts as holding still. A hand at rest
+ * still wobbles a few tenths of a degree between samples and a phone in a moving
+ * car never stops moving at all; without this the card twitches constantly and
+ * the effect reads as noise rather than as a surface.
+ *
+ * Subtracted from the movement rather than compared against it, so crossing the
+ * threshold eases in instead of jumping to full strength.
+ */
+const GYRO_DEADZONE_DEG = 0.45;
 
 /**
  * The card should behave like a physical card held behind the glass, staying
@@ -195,6 +207,14 @@ export function useFoilTilt<T extends HTMLElement>(enabled: boolean, options: Op
       let dy = gamma - prev.gamma;
       prev = { beta, gamma };
       if (Math.abs(dx) > GYRO_MAX_DELTA_DEG || Math.abs(dy) > GYRO_MAX_DELTA_DEG) return;
+
+      /* Dead zone on the movement vector, not per axis, so a slow diagonal drift
+         is suppressed as evenly as a slow one along either axis. */
+      const moved = Math.hypot(dx, dy);
+      if (moved <= GYRO_DEADZONE_DEG) return;
+      const past = (moved - GYRO_DEADZONE_DEG) / moved;
+      dx *= past;
+      dy *= past;
 
       /* Remap for the screen's own rotation, or a phone held sideways tilts the
          card along the wrong axis. */
