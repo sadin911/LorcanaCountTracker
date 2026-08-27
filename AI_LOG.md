@@ -128,3 +128,4 @@
 [2026-08-27 16:44] Major | Antigravity | Command | git push origin main - triggered GitHub Pages deploy
 [2026-08-27 16:47] Major | Antigravity | Edit | playwright.config.ts, package.json - added HTML reporter and test:e2e:report
 [2026-08-27 16:50] Major | Antigravity | Release | v0.2.4 - pull-to-refresh fix and Playwright HTML reporting
+[2026-08-27 17:34] Major | Antigravity | Edit | src/store/collectionStore.ts - set default showFullColor to true (Vivid full-color cards by default)

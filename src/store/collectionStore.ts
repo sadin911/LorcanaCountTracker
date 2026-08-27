@@ -33,7 +33,7 @@ export const DEFAULT_COLLECTION_FILTERS: CollectionFilters = {
   selectedClassification: 'ALL',
   sortBy: 'number',
   sortOrder: 'asc',
-  showFullColor: false,
+  showFullColor: true,
   cardZoom: 'normal',
   customColumns: 6,
 };
