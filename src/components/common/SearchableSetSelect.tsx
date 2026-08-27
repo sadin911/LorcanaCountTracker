@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { getSetBoosterImage } from '../../utils/boosterImages';
 
 /**
  * A pickable option. Named for its first user, the set filter; the series filter
@@ -47,6 +48,7 @@ export function SearchableSetSelect({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const selected = sets.find((s) => s.code === selectedSet);
+  const selectedBooster = selected && showCode ? getSetBoosterImage(selected.code) : null;
   const totalCards = sets.reduce((n, s) => n + s.count, 0);
   const totalOwned = sets.reduce((n, s) => n + s.owned, 0);
 
@@ -108,6 +110,14 @@ export function SearchableSetSelect({
         <span className="flex items-center gap-2 min-w-0">
           {selected ? (
             <>
+              {selectedBooster && (
+                <img
+                  src={selectedBooster}
+                  alt=""
+                  loading="lazy"
+                  className="w-4 h-5.5 rounded object-cover border border-[#c8b07b]/40 shrink-0 shadow-xs"
+                />
+              )}
               {showCode ? (
                 <span className="px-1.5 py-0.5 rounded bg-[#c8b07b]/20 border border-[#c8b07b]/40 font-mono text-[10px] text-[#dfc792] font-bold shrink-0">
                   {selected.code}
@@ -215,6 +225,7 @@ export function SearchableSetSelect({
             {filtered.map((s) => {
               const p = pct(s.owned, s.count);
               const isPicked = selectedSet === s.code;
+              const boosterImg = showCode ? getSetBoosterImage(s.code) : null;
               return (
                 <button
                   key={s.code}
@@ -228,6 +239,14 @@ export function SearchableSetSelect({
                 >
                   <div className="flex items-center justify-between gap-2 w-full">
                     <span className="flex items-center gap-2 min-w-0">
+                      {boosterImg ? (
+                        <img
+                          src={boosterImg}
+                          alt=""
+                          loading="lazy"
+                          className="w-4 h-5.5 rounded object-cover border border-[#c8b07b]/30 shrink-0 shadow-2xs group-hover:scale-105 transition-transform"
+                        />
+                      ) : null}
                       {showCode && (
                         <span className="px-1.5 py-0.5 rounded bg-[#131627] border border-[#c8b07b]/30 font-mono text-[10px] text-[#dfc792] font-bold shrink-0">
                           {s.code}
