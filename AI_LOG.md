@@ -93,3 +93,5 @@
 [2026-08-27 14:45] Major | Claude | Command | npm run lint && npm run build - verification passed
 [2026-08-27 14:59] Major | Antigravity | Commit | Lorcana booster pack preview integration and SetSelect thumbnails
 [2026-08-27 15:03] Major | Antigravity | Fix | Resolved mobile touch event scroll lock and optimized pull-to-refresh
+[2026-08-27 15:05] Major | Claude | Edit | src/components/collection/CollectionFilterBar.tsx - mobile filter layout: Set+Series share a row, capsules grow to fill, duplicate Rarity/Cost/Inkwell moved to the drawer on phones
+[2026-08-27 15:05] Major | Claude | Command | npm run lint && npm run build - verification passed
