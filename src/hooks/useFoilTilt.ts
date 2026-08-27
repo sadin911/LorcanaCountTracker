@@ -4,11 +4,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * 3D tilt for premium (foil-only) cards, driven by the pointer on a desktop and
  * by the device gyroscope on a phone.
  *
- * The two inputs answer different questions. A pointer says where you are
- * looking, so the card holds the angle while the cursor sits on it. A gyroscope
- * says how the phone is moving, so the card answers to movement and eases back
- * flat when the phone is held still — matching a card on a table, which does not
- * care what angle you are standing at.
+ * Both inputs hold their angle. A pointer says where you are looking, so the card
+ * stays leaned while the cursor sits on it; a gyroscope says how the phone is
+ * being held, so the card stays leaned until the phone is levelled again. Neither
+ * springs back on its own.
  *
  * What sells the illusion is not the rotation on its own — it is that the
  * specular highlight and the holographic bands move *against* the tilt, the way
@@ -38,35 +37,25 @@ const TRACK_MS = 70;
 const RELEASE_MS = 420;
 
 /**
- * Card degrees added per degree of device *rotation between two readings*, not
- * per degree of absolute angle. The card answers to movement: a flick swings it,
- * and holding the phone at any fixed angle lets it settle back flat, the way a
- * card lying on a table does not care how you are standing.
+ * Device degrees to card degrees. Well below 1:1 so a full lean takes about 10°
+ * of wrist — a deliberate movement rather than a twitch.
  */
-const GYRO_IMPULSE = 1.6;
-
-/**
- * Per-frame pull back toward flat. At 0.82 and 60fps the tilt halves every ~3.5
- * frames: measured against the update rule, a full-clamp flick looks level again
- * ~0.38s after it starts and is fully flat by ~0.68s (0.48s / 0.95s at 0.88, the
- * previous value). The card should be settled before you have finished noticing it
- * moved — anything slower feels like the tilt is lagging behind the phone.
- */
-const GYRO_DECAY = 0.82;
+const GYRO_GAIN = 0.35;
 
 /** Sensor wrap-around (gamma flips through ±90) shows up as an absurd delta. */
 const GYRO_MAX_DELTA_DEG = 45;
 
 /**
- * Rotation per reading, in degrees, that counts as holding still. A hand at rest
- * still wobbles a few tenths of a degree between samples and a phone in a moving
- * car never stops moving at all; without this the card twitches constantly and
- * the effect reads as noise rather than as a surface.
- *
- * Subtracted from the movement rather than compared against it, so crossing the
- * threshold eases in instead of jumping to full strength.
+ * Degrees away from where you were holding the phone that still count as holding
+ * it steady. A hand at rest wobbles a few tenths of a degree and a phone in a
+ * moving car never stops moving at all; without this the card twitches
+ * constantly. Subtracted from the deviation rather than compared against it, so
+ * crossing the threshold eases in instead of jumping.
  */
-const GYRO_DEADZONE_DEG = 0.45;
+const GYRO_DEADZONE_DEG = 0.8;
+
+/** Low-pass filter on the sensor. Raw readings are noisy enough to shimmer. */
+const GYRO_SMOOTHING = 0.16;
 
 /**
  * The card should behave like a physical card held behind the glass, staying
@@ -188,38 +177,40 @@ export function useFoilTilt<T extends HTMLElement>(enabled: boolean, options: Op
   }, [enabled, gyroAllowed]);
 
   const listening = useRef(false);
-  const decayFrame = useRef(0);
 
   const startGyro = useCallback(() => {
     if (listening.current) return undefined;
     listening.current = true;
 
-    /* Previous reading, not a fixed baseline: the tilt is built from rotation
-       between samples, so there is nothing to calibrate against. */
-    let prev: { beta: number; gamma: number } | null = null;
-    const tilt = { rx: 0, ry: 0 };
+    /* First reading becomes neutral: nobody holds a phone at beta 0, so absolute
+       angles would start the card pinned at full tilt. */
+    let baseline: { beta: number; gamma: number } | null = null;
+    const smoothed = { rx: 0, ry: 0 };
     const clamp = (v: number) => Math.max(-MAX_TILT_DEG, Math.min(MAX_TILT_DEG, v));
 
     const onOrientation = (e: DeviceOrientationEvent) => {
       const { beta, gamma } = e;
       if (beta === null || gamma === null) return;
-      if (!prev) {
-        prev = { beta, gamma };
+      if (!baseline) {
+        baseline = { beta, gamma };
         return;
       }
 
-      let dx = beta - prev.beta;
-      let dy = gamma - prev.gamma;
-      prev = { beta, gamma };
+      let dx = beta - baseline.beta;
+      let dy = gamma - baseline.gamma;
       if (Math.abs(dx) > GYRO_MAX_DELTA_DEG || Math.abs(dy) > GYRO_MAX_DELTA_DEG) return;
 
-      /* Dead zone on the movement vector, not per axis, so a slow diagonal drift
-         is suppressed as evenly as a slow one along either axis. */
-      const moved = Math.hypot(dx, dy);
-      if (moved <= GYRO_DEADZONE_DEG) return;
-      const past = (moved - GYRO_DEADZONE_DEG) / moved;
-      dx *= past;
-      dy *= past;
+      /* Dead zone on the deviation vector, not per axis, so a slight diagonal
+         lean is treated the same as a slight lean along either axis. */
+      const off = Math.hypot(dx, dy);
+      if (off <= GYRO_DEADZONE_DEG) {
+        dx = 0;
+        dy = 0;
+      } else {
+        const past = (off - GYRO_DEADZONE_DEG) / off;
+        dx *= past;
+        dy *= past;
+      }
 
       /* Remap for the screen's own rotation, or a phone held sideways tilts the
          card along the wrong axis. */
@@ -228,35 +219,22 @@ export function useFoilTilt<T extends HTMLElement>(enabled: boolean, options: Op
       else if (angle === 180) [dx, dy] = [-dx, -dy];
       else if (angle === 270) [dx, dy] = [-dy, dx];
 
-      tilt.rx = clamp(tilt.rx + GYRO_SIGN * dx * GYRO_IMPULSE);
-      tilt.ry = clamp(tilt.ry + GYRO_SIGN * dy * GYRO_IMPULSE);
-    };
+      /* Absolute: the card holds whatever lean the phone is being held at, and
+         only returns to level when the phone does. It does not spring back on its
+         own. */
+      const targetRx = clamp(GYRO_SIGN * dx * GYRO_GAIN);
+      const targetRy = clamp(GYRO_SIGN * dy * GYRO_GAIN);
+      smoothed.rx += (targetRx - smoothed.rx) * GYRO_SMOOTHING;
+      smoothed.ry += (targetRy - smoothed.ry) * GYRO_SMOOTHING;
 
-    /* The decay runs on its own frames rather than on sensor events: a phone
-       held perfectly still may stop emitting them entirely, and the card would
-       then hang at whatever angle the last movement left it. */
-    const step = () => {
-      tilt.rx *= GYRO_DECAY;
-      tilt.ry *= GYRO_DECAY;
-      if (Math.abs(tilt.rx) < 0.02) tilt.rx = 0;
-      if (Math.abs(tilt.ry) < 0.02) tilt.ry = 0;
-
-      const magnitude = Math.min(1, Math.hypot(tilt.rx, tilt.ry) / (MAX_TILT_DEG * 0.6));
-      write(
-        tilt.rx,
-        tilt.ry,
-        50 + (tilt.ry / MAX_TILT_DEG) * 45,
-        50 - (tilt.rx / MAX_TILT_DEG) * 45,
-        magnitude,
-        // No CSS transition: the decay above is the smoothing, and a transition
-        // on top of a per-frame write only adds lag.
-        0
-      );
-      decayFrame.current = requestAnimationFrame(step);
+      const { rx, ry } = smoothed;
+      const lean = Math.min(1, Math.hypot(rx, ry) / (MAX_TILT_DEG * 0.6));
+      /* Highlight tracks the lean so the bands slide against the rotation — the
+         parallax the eye reads as depth. */
+      write(rx, ry, 50 + (ry / MAX_TILT_DEG) * 45, 50 - (rx / MAX_TILT_DEG) * 45, lean, TRACK_MS);
     };
 
     window.addEventListener('deviceorientation', onOrientation);
-    decayFrame.current = requestAnimationFrame(step);
     setGyroStatus('active');
     return onOrientation;
   }, [write]);
@@ -293,7 +271,6 @@ export function useFoilTilt<T extends HTMLElement>(enabled: boolean, options: Op
   useEffect(
     () => () => {
       if (stopGyroRef.current) window.removeEventListener('deviceorientation', stopGyroRef.current);
-      cancelAnimationFrame(decayFrame.current);
       listening.current = false;
     },
     []
