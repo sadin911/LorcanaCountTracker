@@ -69,3 +69,5 @@
 [2026-08-27 13:19] Major | Claude | Edit | src/components/collection/CollectionGridView.tsx - booster thumbnail trigger on the set progress bar
 [2026-08-27 13:19] Major | Claude | Edit | package.json, scripts/upload-lorcana-r2.mjs - add data:boosters script, upload public/set-boosters to R2
 [2026-08-27 13:19] Major | Claude | Command | npm run lint && npm run build - verification passed
+[2026-08-27 13:25] Major | Claude | Edit | scripts/upload-lorcana-r2.mjs - accept dir filters so one directory can be uploaded alone
+[2026-08-27 13:25] Major | Claude | Command | npm run data:upload -- set-boosters - 22 booster covers live on R2 (verified 22/22 HTTP 200)

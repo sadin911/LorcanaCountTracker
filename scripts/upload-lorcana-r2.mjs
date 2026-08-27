@@ -9,13 +9,29 @@
  *
  * Object keys are relative to public/, e.g. card-images/1/125.webp, matching
  * what src/utils/cardImage.ts builds in production.
+ *
+ * Pass directory-name filters to scope the run — `npm run data:upload -- set-boosters`
+ * uploads the 22 booster covers without re-sending ~300 MB of card art. No
+ * filter uploads everything.
  */
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import fs from 'fs';
 import path from 'path';
 
 const CONCURRENCY = 30;
-const SOURCE_DIRS = ['public/card-images', 'public/card-images-lg', 'public/set-boosters'];
+const ALL_SOURCE_DIRS = ['public/card-images', 'public/card-images-lg', 'public/set-boosters'];
+
+// The script has no skip-existing logic — every run re-PUTs every file it picks
+// up — so scoping matters when only one directory changed.
+const FILTERS = process.argv.slice(2).filter((a) => !a.startsWith('-'));
+const SOURCE_DIRS = FILTERS.length
+  ? ALL_SOURCE_DIRS.filter((d) => FILTERS.some((f) => d.includes(f)))
+  : ALL_SOURCE_DIRS;
+
+if (FILTERS.length && !SOURCE_DIRS.length) {
+  console.error(`❌ no source dir matches ${FILTERS.join(', ')}. Known: ${ALL_SOURCE_DIRS.join(', ')}`);
+  process.exit(1);
+}
 
 const SECRET_FILE = 'secret.yaml';
 if (!fs.existsSync(SECRET_FILE)) {
@@ -65,10 +81,11 @@ async function upload(file) {
 async function main() {
   const files = SOURCE_DIRS.flatMap((d) => getAllFiles(path.resolve(d)));
   if (!files.length) {
-    console.error('❌ no .webp files found. Run `npm run data:images` first.');
+    console.error(`❌ no .webp files found in ${SOURCE_DIRS.join(', ')}. Run \`npm run data:images\` first.`);
     process.exit(1);
   }
-  console.log(`📦 uploading ${files.length} objects to R2 bucket "${BUCKET_NAME}"\n`);
+  console.log(`📦 uploading ${files.length} objects to R2 bucket "${BUCKET_NAME}"`);
+  console.log(`   from ${SOURCE_DIRS.join(', ')}\n`);
 
   let done = 0;
   const failures = [];
