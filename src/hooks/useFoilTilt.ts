@@ -4,6 +4,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * 3D tilt for premium (foil-only) cards, driven by the pointer on a desktop and
  * by the device gyroscope on a phone.
  *
+ * The two inputs answer different questions. A pointer says where you are
+ * looking, so the card holds the angle while the cursor sits on it. A gyroscope
+ * says how the phone is moving, so the card answers to movement and eases back
+ * flat when the phone is held still — matching a card on a table, which does not
+ * care what angle you are standing at.
+ *
  * What sells the illusion is not the rotation on its own — it is that the
  * specular highlight and the holographic bands move *against* the tilt, the way
  * light does on a real foil card. So this hook publishes both: the rotation, and
@@ -27,11 +33,23 @@ const TRACK_MS = 70;
 const RELEASE_MS = 420;
 
 /**
- * Device degrees to card degrees. Phones are held loosely, so this is below 1:1;
- * paired with the clamp it means a full tilt takes roughly 8° of wrist, which is
- * a deliberate movement rather than a twitch.
+ * Card degrees added per degree of device *rotation between two readings*, not
+ * per degree of absolute angle. The card answers to movement: a flick swings it,
+ * and holding the phone at any fixed angle lets it settle back flat, the way a
+ * card lying on a table does not care how you are standing.
  */
-const GYRO_GAIN = 0.9;
+const GYRO_IMPULSE = 1.6;
+
+/**
+ * Per-frame pull back toward flat. At 0.88 and 60fps the tilt halves every ~5
+ * frames: from a full-clamp flick it looks level again in roughly 0.5s and is
+ * fully flat by 0.95s — long enough to read as weight, short enough that the card
+ * is never still sitting crooked when the phone is.
+ */
+const GYRO_DECAY = 0.88;
+
+/** Sensor wrap-around (gamma flips through ±90) shows up as an absurd delta. */
+const GYRO_MAX_DELTA_DEG = 45;
 
 /**
  * The card should behave like a physical card held behind the glass, staying
@@ -40,9 +58,6 @@ const GYRO_GAIN = 0.9;
  * a sensor is the one thing that cannot be checked in a headless browser.
  */
 const GYRO_SIGN = -1;
-
-/** Low-pass filter on the sensor. Raw readings are noisy enough to shimmer. */
-const GYRO_SMOOTHING = 0.18;
 
 export type GyroStatus = 'unsupported' | 'idle' | 'active' | 'denied';
 
@@ -156,26 +171,30 @@ export function useFoilTilt<T extends HTMLElement>(enabled: boolean, options: Op
   }, [enabled, gyroAllowed]);
 
   const listening = useRef(false);
-  /** First reading becomes neutral: nobody holds a phone at beta 0. */
-  const baseline = useRef<{ beta: number; gamma: number } | null>(null);
-  const smoothed = useRef({ rx: 0, ry: 0 });
+  const decayFrame = useRef(0);
 
   const startGyro = useCallback(() => {
-    if (listening.current) return;
+    if (listening.current) return undefined;
     listening.current = true;
-    baseline.current = null;
-    smoothed.current = { rx: 0, ry: 0 };
+
+    /* Previous reading, not a fixed baseline: the tilt is built from rotation
+       between samples, so there is nothing to calibrate against. */
+    let prev: { beta: number; gamma: number } | null = null;
+    const tilt = { rx: 0, ry: 0 };
+    const clamp = (v: number) => Math.max(-MAX_TILT_DEG, Math.min(MAX_TILT_DEG, v));
 
     const onOrientation = (e: DeviceOrientationEvent) => {
       const { beta, gamma } = e;
       if (beta === null || gamma === null) return;
-      if (!baseline.current) {
-        baseline.current = { beta, gamma };
+      if (!prev) {
+        prev = { beta, gamma };
         return;
       }
 
-      let dx = beta - baseline.current.beta;
-      let dy = gamma - baseline.current.gamma;
+      let dx = beta - prev.beta;
+      let dy = gamma - prev.gamma;
+      prev = { beta, gamma };
+      if (Math.abs(dx) > GYRO_MAX_DELTA_DEG || Math.abs(dy) > GYRO_MAX_DELTA_DEG) return;
 
       /* Remap for the screen's own rotation, or a phone held sideways tilts the
          card along the wrong axis. */
@@ -184,20 +203,35 @@ export function useFoilTilt<T extends HTMLElement>(enabled: boolean, options: Op
       else if (angle === 180) [dx, dy] = [-dx, -dy];
       else if (angle === 270) [dx, dy] = [-dy, dx];
 
-      const clamp = (v: number) => Math.max(-MAX_TILT_DEG, Math.min(MAX_TILT_DEG, v));
-      const targetRx = clamp(GYRO_SIGN * dx * GYRO_GAIN);
-      const targetRy = clamp(GYRO_SIGN * dy * GYRO_GAIN);
+      tilt.rx = clamp(tilt.rx + GYRO_SIGN * dx * GYRO_IMPULSE);
+      tilt.ry = clamp(tilt.ry + GYRO_SIGN * dy * GYRO_IMPULSE);
+    };
 
-      smoothed.current.rx += (targetRx - smoothed.current.rx) * GYRO_SMOOTHING;
-      smoothed.current.ry += (targetRy - smoothed.current.ry) * GYRO_SMOOTHING;
+    /* The decay runs on its own frames rather than on sensor events: a phone
+       held perfectly still may stop emitting them entirely, and the card would
+       then hang at whatever angle the last movement left it. */
+    const step = () => {
+      tilt.rx *= GYRO_DECAY;
+      tilt.ry *= GYRO_DECAY;
+      if (Math.abs(tilt.rx) < 0.02) tilt.rx = 0;
+      if (Math.abs(tilt.ry) < 0.02) tilt.ry = 0;
 
-      const { rx, ry } = smoothed.current;
-      /* Highlight tracks the tilt so it slides against the rotation — the
-         parallax the eye reads as depth. */
-      write(rx, ry, 50 + (ry / MAX_TILT_DEG) * 45, 50 - (rx / MAX_TILT_DEG) * 45, 1, TRACK_MS);
+      const magnitude = Math.min(1, Math.hypot(tilt.rx, tilt.ry) / (MAX_TILT_DEG * 0.6));
+      write(
+        tilt.rx,
+        tilt.ry,
+        50 + (tilt.ry / MAX_TILT_DEG) * 45,
+        50 - (tilt.rx / MAX_TILT_DEG) * 45,
+        magnitude,
+        // No CSS transition: the decay above is the smoothing, and a transition
+        // on top of a per-frame write only adds lag.
+        0
+      );
+      decayFrame.current = requestAnimationFrame(step);
     };
 
     window.addEventListener('deviceorientation', onOrientation);
+    decayFrame.current = requestAnimationFrame(step);
     setGyroStatus('active');
     return onOrientation;
   }, [write]);
@@ -234,6 +268,7 @@ export function useFoilTilt<T extends HTMLElement>(enabled: boolean, options: Op
   useEffect(
     () => () => {
       if (stopGyroRef.current) window.removeEventListener('deviceorientation', stopGyroRef.current);
+      cancelAnimationFrame(decayFrame.current);
       listening.current = false;
     },
     []

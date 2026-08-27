@@ -95,3 +95,6 @@
 [2026-08-27 15:03] Major | Antigravity | Fix | Resolved mobile touch event scroll lock and optimized pull-to-refresh
 [2026-08-27 15:05] Major | Claude | Edit | src/components/collection/CollectionFilterBar.tsx - mobile filter layout: Set+Series share a row, capsules grow to fill, duplicate Rarity/Cost/Inkwell moved to the drawer on phones
 [2026-08-27 15:05] Major | Claude | Command | npm run lint && npm run build - verification passed
+[2026-08-27 15:12] Major | Claude | Edit | CollectionFilterBar.tsx - phone: Rarity back in the bar, grid density moved into the Filters drawer
+[2026-08-27 15:12] Major | Claude | Edit | src/hooks/useFoilTilt.ts - gyro tilt driven by rotation between readings with a per-frame decay to flat, replacing absolute-angle-from-baseline
+[2026-08-27 15:12] Major | Claude | Command | npm run lint && npm run build - verification passed

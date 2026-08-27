@@ -223,12 +223,10 @@ export function CollectionFilterBar({
               Every capsule grows on a phone: flex-wrap packs what fits on a line
               and the growers absorb the remainder, so no line ends in a gap. */}
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            {/* Grid Zoom & Custom Column Controls */}
-            <div className="flex grow sm:grow-0 items-center justify-between sm:justify-start gap-0.5 p-1 sm:p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm min-h-[38px] sm:min-h-[34px]" title="Adjust Card Size / Column Count">
-              <span className="sm:hidden pl-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Grid
-              </span>
-
+            {/* Grid Zoom & Custom Column Controls. Hidden on a phone — it sets how
+                the grid looks, not what is in it, so it does not earn a row next to
+                the filters. The drawer renders the same block there. */}
+            <div className="hidden sm:flex grow sm:grow-0 items-center justify-between sm:justify-start gap-0.5 p-1 sm:p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 shadow-sm min-h-[38px] sm:min-h-[34px]" title="Adjust Card Size / Column Count">
               {/* Presets */}
               <div className="flex items-center">
                 <button
@@ -269,9 +267,7 @@ export function CollectionFilterBar({
                 </button>
               </div>
 
-              {/* A hairline in the middle of a stretched row reads as a stray mark,
-                  so it only appears once the capsule is content-width again. */}
-              <span className="hidden sm:block w-px h-4 bg-[#c8b07b]/30 my-auto mx-0.5" />
+              <span className="w-px h-4 bg-[#c8b07b]/30 my-auto mx-0.5" />
 
               {/* Custom Column Stepper */}
               <div className="flex items-center gap-0.5 px-0.5">
@@ -359,9 +355,9 @@ export function CollectionFilterBar({
               })}
             </div>
 
-            {/* Tablet Rarity Dropdown. Hidden on a phone: the drawer already has a
-                full rarity picker, and a duplicate cost a whole row. */}
-            <div className="hidden sm:flex xl:hidden grow sm:grow-0 items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 shadow-sm min-h-[38px] sm:min-h-[34px]" title="Filter by Rarity">
+            {/* Rarity Dropdown, out in the bar right up to the desktop capsule
+                breakpoint: it is the filter people reach for most. */}
+            <div className="flex xl:hidden grow sm:grow-0 items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 shadow-sm min-h-[38px] sm:min-h-[34px]" title="Filter by Rarity">
               <span className="text-[11px] font-bold text-[#dfc792] shrink-0">Rarity:</span>
               <select
                 value={filters.selectedRarity}
@@ -605,6 +601,67 @@ export function CollectionFilterBar({
         {/* Collapsible Advanced Filters Drawer (No horizontal scroll, clean wrap) */}
         {showAdvanced && (
           <div className="pt-2.5 border-t border-[#c8b07b]/20 space-y-2.5 animate-fade-in">
+            {/* Grid density, phone only — the capsule in the bar above covers every
+                wider screen, so this never renders twice. */}
+            <div className="flex sm:hidden flex-wrap items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Grid:</span>
+              <div className="flex items-center gap-1">
+                {([
+                  { id: 'compact', label: 'Compact' },
+                  { id: 'normal', label: 'Standard' },
+                  { id: 'large', label: 'Large' },
+                ] as const).map((preset) => {
+                  const active = (filters.cardZoom ?? 'normal') === preset.id;
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => onChange({ cardZoom: preset.id })}
+                      className={`px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all active:scale-95 min-h-[34px] ${
+                        active
+                          ? 'bg-[#c8b07b]/25 border-[#c8b07b] text-[#dfc792] font-extrabold'
+                          : 'bg-[#131627] border-[#c8b07b]/20 text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Columns:</span>
+                <button
+                  type="button"
+                  aria-label="Fewer columns"
+                  onClick={() => {
+                    const curr = filters.cardZoom === 'custom' ? (filters.customColumns ?? 6) : 6;
+                    onChange({ cardZoom: 'custom', customColumns: Math.max(1, curr - 1) });
+                  }}
+                  className="w-8 h-8 rounded-lg bg-[#252a48] text-slate-200 text-sm font-black active:scale-90"
+                >
+                  −
+                </button>
+                <span
+                  className={`w-8 text-center font-mono text-xs font-bold ${
+                    filters.cardZoom === 'custom' ? 'text-[#dfc792]' : 'text-slate-500'
+                  }`}
+                >
+                  {filters.cardZoom === 'custom' ? (filters.customColumns ?? 6) : '–'}
+                </span>
+                <button
+                  type="button"
+                  aria-label="More columns"
+                  onClick={() => {
+                    const curr = filters.cardZoom === 'custom' ? (filters.customColumns ?? 6) : 6;
+                    onChange({ cardZoom: 'custom', customColumns: Math.min(12, curr + 1) });
+                  }}
+                  className="w-8 h-8 rounded-lg bg-[#252a48] text-slate-200 text-sm font-black active:scale-90"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
             {/* Card Types */}
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Type:</span>
