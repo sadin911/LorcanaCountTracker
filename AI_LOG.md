@@ -108,3 +108,6 @@
 [2026-08-27 15:34] Major | Claude | Edit | src/hooks/useFoilTilt.ts - MAX_TILT_DEG 7 -> 3.5
 [2026-08-27 15:34] Major | Claude | Edit | constants/lorcana.ts, CollectionCardItem.tsx, CardCollectionModal.tsx - foilSheenDelay back, stagger set on the foil layers themselves
 [2026-08-27 15:34] Major | Claude | Command | npm run lint && npm run build - verification passed
+[2026-08-27 15:36] Major | Claude | Edit | src/index.css - remove the sweeping glint layer entirely (foil-glint keyframes + foil-sheen utility)
+[2026-08-27 15:36] Major | Claude | Edit | constants/lorcana.ts, CollectionCardItem.tsx, CardCollectionModal.tsx - foilSheenDelay renamed foilPulseDelay, staggers the holo pulse over its 9s cycle
+[2026-08-27 15:36] Major | Claude | Command | npm run lint && npm run build - verification passed

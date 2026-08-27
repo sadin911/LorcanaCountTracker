@@ -6,7 +6,7 @@ import {
   INK_STYLES,
   RARITY_STYLES,
   TYPE_ICONS,
-  foilSheenDelay,
+  foilPulseDelay,
   isPremiumRarity,
 } from '../../constants/lorcana';
 import { DEFAULT_COLLECTION_FILTERS, useCollectionStore } from '../../store/collectionStore';
@@ -137,18 +137,13 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
               />
               {showSheen && (
                 <>
-                  {/* The stagger sits on these layers, not on the tilt target:
-                      custom properties inherit down through the wrappers,
-                      animation-delay does not. */}
+                  {/* The stagger sits on this layer, not on the tilt target: custom
+                      properties inherit down through the wrappers, animation-delay
+                      does not. */}
                   <div
                     className="foil-holo"
                     aria-hidden="true"
-                    style={{ animationDelay: `${foilSheenDelay(card.id)}s` }}
-                  />
-                  <div
-                    className="foil-sheen"
-                    aria-hidden="true"
-                    style={{ animationDelay: `${foilSheenDelay(card.id)}s` }}
+                    style={{ animationDelay: `${foilPulseDelay(card.id)}s` }}
                   />
                 </>
               )}

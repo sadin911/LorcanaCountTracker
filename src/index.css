@@ -14,27 +14,16 @@
    Enchanted, Epic and Iconic are the tiers Lorcana only ever prints as foil, so
    these are the cards that get the treatment.
 
-   The light is the point here, not the geometry. The card tilts only slightly —
-   just enough that the reflection has something to slide against — while the
-   glint and the holographic bands do the work. Three layers:
+   Two layers, and no sweeping band: a bright streak crossing every foil card in
+   a grid is clutter, however slow it is.
 
      foil-3d      a shallow rotation, from the pointer or the gyroscope
-     foil-sheen   a slow band crossing the card on its own clock
-     foil-holo    holographic bands whose position follows the tilt
-
-   The idle glint matters because a grid nobody is touching should still read as
-   foil, and because the tilt is now too shallow to carry the effect alone.
+     foil-holo    holographic bands that follow the tilt, breathing gently at rest
 
    Driven by the custom properties useFoilTilt writes:
      --foil-rx / --foil-ry   rotation
      --foil-mx / --foil-my   input position, for the bands
      --foil-on               0 at rest, 1 while something is driving the tilt */
-
-@keyframes foil-glint {
-  0%, 68%  { transform: translateX(-130%) skewX(-14deg); }
-  90%      { transform: translateX(215%) skewX(-14deg); }
-  100%     { transform: translateX(215%) skewX(-14deg); }
-}
 
 @keyframes foil-holo-pulse {
   0%, 100% { opacity: 0.6; }
@@ -65,53 +54,6 @@
     var(--foil-sx) var(--foil-sy) calc(14px + 8px * var(--foil-on))
       rgba(0, 0, 0, calc(0.28 + 0.2 * var(--foil-on))),
     0 0 0 1px rgba(223, 199, 146, calc(0.3 + 0.35 * var(--foil-on)));
-}
-
-@utility foil-sheen {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: inherit;
-  pointer-events: none;
-
-  /* The sweeping reflection, on its own clock. Deliberately NOT a hot spot
-     pinned to the cursor: a round highlight chasing the pointer reads as a torch
-     being shone on the card, where a band crossing it reads as the card catching
-     the light. Off-screen for two thirds of the cycle, so it is a glint rather
-     than a strobe. */
-  &::before {
-    content: '';
-    position: absolute;
-    top: -14%;
-    bottom: -14%;
-    left: 0;
-    width: 46%;
-    /* Normal blend, not screen: screen only lifts dark pixels, so on bright
-       artwork a screen-blended band is invisible and the effect appears to work
-       only while the image is still loading. */
-    background: linear-gradient(
-      100deg,
-      transparent 0%,
-      rgba(255, 252, 240, 0.06) 24%,
-      rgba(255, 250, 235, 0.22) 42%,
-      rgba(255, 254, 248, 0.42) 50%,
-      rgba(255, 250, 235, 0.22) 58%,
-      rgba(255, 252, 240, 0.06) 76%,
-      transparent 100%
-    );
-    will-change: transform;
-    animation: foil-glint 5.5s cubic-bezier(0.45, 0, 0.2, 1) infinite;
-    /* Picks up the per-card offset set inline, so a grid of Enchanteds does not
-       glint in lockstep. */
-    animation-delay: inherit;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    &::before {
-      animation: none;
-      transform: translateX(-130%) skewX(-14deg);
-    }
-  }
 }
 
 /* The holographic bands, oversized and positioned from the input, so they slide
