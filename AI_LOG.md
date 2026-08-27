@@ -92,3 +92,4 @@
 [2026-08-27 14:45] Major | Claude | Edit | constants/lorcana.ts, CollectionCardItem.tsx, CardCollectionModal.tsx - drop foilSheenDelay and the foil-sheen layer
 [2026-08-27 14:45] Major | Claude | Command | npm run lint && npm run build - verification passed
 [2026-08-27 14:59] Major | Antigravity | Commit | Lorcana booster pack preview integration and SetSelect thumbnails
+[2026-08-27 15:03] Major | Antigravity | Fix | Resolved mobile touch event scroll lock and optimized pull-to-refresh
