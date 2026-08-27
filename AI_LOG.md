@@ -127,3 +127,4 @@
 [2026-08-27 16:43] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 18/18 passed
 [2026-08-27 16:44] Major | Antigravity | Command | git push origin main - triggered GitHub Pages deploy
 [2026-08-27 16:47] Major | Antigravity | Edit | playwright.config.ts, package.json - added HTML reporter and test:e2e:report
+[2026-08-27 16:50] Major | Antigravity | Release | v0.2.4 - pull-to-refresh fix and Playwright HTML reporting
