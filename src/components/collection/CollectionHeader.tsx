@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useCollectionStore } from '../../store/collectionStore';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
 import type { CollectionStats } from '../../types/collection';
 import { isFirebaseConfigured } from '../../utils/firebase';
 import { CollectionBackupModal } from './CollectionBackupModal';
 import { ProfileManagerModal } from './ProfileManagerModal';
+import { PWAInstallModal } from '../common/PWAInstallModal';
 
 const SYNC_LABEL: Record<string, { text: string; className: string; dot: string }> = {
   idle: { text: 'Guest', className: 'bg-slate-800/80 text-slate-400 border-slate-700/60', dot: 'bg-slate-500' },
@@ -16,7 +18,21 @@ const SYNC_LABEL: Record<string, { text: string; className: string; dot: string 
 export function CollectionHeader({ stats }: { stats: CollectionStats }) {
   const [showProfiles, setShowProfiles] = useState(false);
   const [showBackup, setShowBackup] = useState(false);
+  const [showInstallModal, setShowInstallModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+
+  const { isInstalled, isIOS, canPromptDirectly, promptInstall } = usePWAInstall();
+
+  const handleInstallClick = async () => {
+    if (canPromptDirectly) {
+      const outcome = await promptInstall();
+      if (outcome === 'manual_instructions') {
+        setShowInstallModal(true);
+      }
+    } else {
+      setShowInstallModal(true);
+    }
+  };
 
   const user = useAuthStore((s) => s.user);
   const authLoading = useAuthStore((s) => s.loading);
@@ -86,6 +102,19 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
               <span className="text-base sm:text-sm">💾</span>
               <span className="hidden md:inline font-bold">Backup</span>
             </button>
+
+            {/* Install PWA (Hidden when running standalone) */}
+            {!isInstalled && (
+              <button
+                type="button"
+                onClick={handleInstallClick}
+                title="Install Lorcana Tracker App"
+                className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm flex items-center gap-1.5 min-h-[40px] sm:min-h-[36px] group"
+              >
+                <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">📲</span>
+                <span className="hidden md:inline font-bold">Install</span>
+              </button>
+            )}
 
             {/* Auth / Cloud Sync */}
             {!isFirebaseConfigured ? (
@@ -208,6 +237,17 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
 
       {showProfiles && <ProfileManagerModal onClose={() => setShowProfiles(false)} />}
       {showBackup && <CollectionBackupModal onClose={() => setShowBackup(false)} />}
+      {showInstallModal && (
+        <PWAInstallModal
+          onClose={() => setShowInstallModal(false)}
+          onDirectInstall={async () => {
+            await promptInstall();
+            setShowInstallModal(false);
+          }}
+          canPromptDirectly={canPromptDirectly}
+          isIOS={isIOS}
+        />
+      )}
     </header>
   );
 }
