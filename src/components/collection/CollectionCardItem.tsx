@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { RARITY_STYLES, FINISH_META, foilPulseDelay, isPremiumRarity } from '../../constants/lorcana';
 import type { LorcanaCard } from '../../types/card';
 import { cardDisplayName, rarityLabel } from '../../types/card';
@@ -18,7 +19,7 @@ interface Props {
   onToggleWishlist: (cardId: string) => void;
 }
 
-export function CollectionCardItem({
+export const CollectionCardItem = memo(function CollectionCardItem({
   card,
   variants,
   isWishlist,
@@ -62,8 +63,9 @@ export function CollectionCardItem({
           src={resolveCardImageUrl(card.setCode, card.collectorNumber)}
           alt={cardDisplayName(card)}
           loading="lazy"
+          decoding="async"
           onError={(e) => handleCardImageError(e, card.setCode, card.collectorNumber)}
-          className={`w-full h-full transition-all duration-300 ${
+          className={`w-full h-full ${
             card.layout === 'landscape' ? 'object-contain' : 'object-cover'
           } ${
             vivid
@@ -164,4 +166,4 @@ export function CollectionCardItem({
       </div>
     </div>
   );
-}
+});

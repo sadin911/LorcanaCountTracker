@@ -129,3 +129,5 @@
 [2026-08-27 16:47] Major | Antigravity | Edit | playwright.config.ts, package.json - added HTML reporter and test:e2e:report
 [2026-08-27 16:50] Major | Antigravity | Release | v0.2.4 - pull-to-refresh fix and Playwright HTML reporting
 [2026-08-27 17:34] Major | Antigravity | Edit | src/store/collectionStore.ts - set default showFullColor to true (Vivid full-color cards by default)
+[2026-08-27 18:22] Major | Antigravity | Fix | public/sw.js, CollectionCardItem.tsx - Cache-First for R2 images, memoize card grid, remove scroll flicker
+[2026-08-27 18:22] Major | Antigravity | Release | v0.2.5 - persistent card image caching and scroll performance optimization

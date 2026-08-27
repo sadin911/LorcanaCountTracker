@@ -1,4 +1,5 @@
-const CACHE_NAME = 'lorcana-tracker-v1';
+const CACHE_NAME = 'lorcana-tracker-v2';
+const IMAGE_CACHE_NAME = 'lorcana-card-images-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -24,7 +25,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) {
+          if (key !== CACHE_NAME && key !== IMAGE_CACHE_NAME) {
             return caches.delete(key);
           }
         })
@@ -49,9 +50,37 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Stale-While-Revalidate for images and static assets
+  // Cache-First for card images and static picture assets (fast, offline-ready, no reload flicker)
   if (
     request.destination === 'image' ||
+    url.pathname.includes('card-images') ||
+    url.pathname.endsWith('.webp') ||
+    url.pathname.endsWith('.svg') ||
+    url.pathname.endsWith('.png')
+  ) {
+    event.respondWith(
+      caches.open(IMAGE_CACHE_NAME).then(async (cache) => {
+        const cached = await cache.match(request);
+        if (cached) {
+          return cached;
+        }
+
+        try {
+          const networkResponse = await fetch(request);
+          if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
+            cache.put(request, networkResponse.clone());
+          }
+          return networkResponse;
+        } catch {
+          return caches.match('/card-placeholder.svg');
+        }
+      })
+    );
+    return;
+  }
+
+  // Stale-While-Revalidate for styles, scripts, and fonts
+  if (
     request.destination === 'style' ||
     request.destination === 'script' ||
     request.destination === 'font'

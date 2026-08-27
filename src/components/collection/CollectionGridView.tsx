@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useCollectionStore } from '../../store/collectionStore';
 import type { LorcanaCard } from '../../types/card';
 import type { SetProgress } from '../../types/collection';
@@ -28,6 +28,16 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
   const customColumns = useCollectionStore((s) => s.filters.customColumns ?? 6);
   const incrementFinish = useCollectionStore((s) => s.incrementFinish);
   const toggleWishlist = useCollectionStore((s) => s.toggleWishlist);
+
+  const handleSelect = useCallback((card: LorcanaCard) => setSelectedCard(card), []);
+  const handleQuickAdd = useCallback(
+    (c: LorcanaCard) => incrementFinish(c.id, c.finishes[0]),
+    [incrementFinish]
+  );
+  const handleToggleWishlist = useCallback(
+    (cardId: string) => toggleWishlist(cardId),
+    [toggleWishlist]
+  );
 
   useEffect(() => {
     setDisplayLimit(ITEMS_PER_PAGE);
@@ -132,11 +142,11 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
                 variants={activeCards[card.id]?.variants ?? {}}
                 isWishlist={activeCards[card.id]?.isWishlist}
                 showFullColor={showFullColor}
-                onSelect={setSelectedCard}
+                onSelect={handleSelect}
                 /* Quick-add targets the card's first real finish — no rarity
                    guessing needed, the catalogue already states it. */
-                onQuickAdd={(c) => incrementFinish(c.id, c.finishes[0])}
-                onToggleWishlist={toggleWishlist}
+                onQuickAdd={handleQuickAdd}
+                onToggleWishlist={handleToggleWishlist}
               />
             ))}
           </div>
