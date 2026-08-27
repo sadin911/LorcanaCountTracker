@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { isOverlayOpen } from './useScrollLock';
 
 interface UsePullToRefreshOptions {
   onRefresh: () => Promise<void> | void;
@@ -34,6 +35,9 @@ export function usePullToRefresh({
   };
 
   const isAtTop = () => {
+    /* An open overlay owns the gesture. Dragging inside the fullscreen artwork
+       viewer must not refresh the collection underneath it. */
+    if (isOverlayOpen()) return false;
     return (
       window.scrollY <= 2 &&
       document.documentElement.scrollTop <= 2 &&

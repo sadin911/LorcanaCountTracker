@@ -15,6 +15,7 @@ import { cardDisplayName, rarityLabel } from '../../types/card';
 import type { CardCondition, CollectionFilters } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
 import { useFoilTilt } from '../../hooks/useFoilTilt';
+import { useScrollLock } from '../../hooks/useScrollLock';
 import { relatedByStory, relatedBySameName } from '../../utils/cardRelations';
 import { handleCardImageError, resolveCardImageUrl } from '../../utils/cardImage';
 import { RelatedCardStrip } from './RelatedCardStrip';
@@ -50,6 +51,10 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
   const [card, setCard] = useState(initialCard);
   const [showZoom, setShowZoom] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  /* Held for the whole modal, so it covers the fullscreen viewer this opens on
+     top of itself too. */
+  useScrollLock();
 
   const entry = useCollectionStore((s) => s.profiles[s.activeProfileId]?.cards[card.id]);
   const setFinishCount = useCollectionStore((s) => s.setFinishCount);
@@ -112,7 +117,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
       <div
         ref={scrollRef}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-4xl max-h-[92vh] overflow-y-auto scrollbar-thin rounded-3xl border border-[#c8b07b]/40 bg-[#131627]/95 backdrop-blur-2xl shadow-2xl shadow-black/90"
+        className="w-full max-w-4xl max-h-[92vh] overflow-y-auto overscroll-contain scrollbar-thin rounded-3xl border border-[#c8b07b]/40 bg-[#131627]/95 backdrop-blur-2xl shadow-2xl shadow-black/90"
       >
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5 p-4 sm:p-6">
           {/* Image Column */}
@@ -420,8 +425,18 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
       {showZoom &&
         createPortal(
           <div
-            className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl animate-fade-in"
-            onClick={() => setShowZoom(false)}
+            /* touch-none: without it a drag here is handed to the page behind and
+               scrolls the grid, since this overlay has nothing to scroll itself. */
+            className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl animate-fade-in touch-none overscroll-none"
+            /* stopPropagation matters more than it looks: this is a portal, and a
+               portal's events bubble through the React tree, not the DOM tree. So
+               without it the click reaches the detail modal's own backdrop
+               onClick={onClose} and leaving fullscreen drops you all the way back
+               to the grid. */
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowZoom(false);
+            }}
           >
             <img
               src={imageUrl}
@@ -431,7 +446,10 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
             />
             <button
               type="button"
-              onClick={() => setShowZoom(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowZoom(false);
+              }}
               aria-label="Close fullscreen"
               className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800/90 text-slate-100 text-lg flex items-center justify-center hover:bg-slate-700"
             >

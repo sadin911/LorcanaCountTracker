@@ -115,3 +115,7 @@
 [2026-08-27 15:45] Major | Claude | Command | npm run build - compiles clean (browser verification skipped at the user's request)
 [2026-08-27 15:51] Major | Claude | Edit | src/hooks/useFoilTilt.ts - widen tilt range (3.5->7deg, gain 0.35->0.4), move the low-pass filter and the DOM write onto animation frames, drop the CSS transition on gyro writes
 [2026-08-27 15:51] Major | Claude | Command | npm run build - compiles clean (browser verification skipped at the user's request)
+[2026-08-27 16:00] Major | Claude | Write | src/hooks/useScrollLock.ts - reference-counted page scroll lock for overlays, exposes data-overlay-open
+[2026-08-27 16:00] Major | Claude | Edit | CardCollectionModal.tsx - stopPropagation on the fullscreen viewer (portal events bubble through the React tree), touch-none, scroll lock, overscroll-contain
+[2026-08-27 16:00] Major | Claude | Edit | src/hooks/usePullToRefresh.ts - stand down while an overlay is open
+[2026-08-27 16:00] Major | Claude | Command | npm run build - compiles clean (browser verification skipped at the user's request)
