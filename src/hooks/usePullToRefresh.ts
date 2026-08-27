@@ -30,6 +30,7 @@ export function usePullToRefresh({
   const isThresholdMetRef = useRef(false);
   const hasVibratedRef = useRef(false);
   const pullDistanceRef = useRef(0);
+  const startedAtTopRef = useRef(false);
 
   const triggerHaptic = (pattern: number | number[]) => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
@@ -52,12 +53,16 @@ export function usePullToRefresh({
   const handleTouchStart = useCallback(
     (e: TouchEvent) => {
       if (disabled || isRefreshing || e.touches.length !== 1) return;
+      if (isOverlayOpen()) return;
 
+      const top = isAtTop();
+      startedAtTopRef.current = top;
       startYRef.current = e.touches[0].clientY;
       startXRef.current = e.touches[0].clientX;
       isPullingRef.current = false;
       hasVibratedRef.current = false;
       isThresholdMetRef.current = false;
+      pullDistanceRef.current = 0;
     },
     [disabled, isRefreshing]
   );
@@ -75,17 +80,29 @@ export function usePullToRefresh({
         document.body.scrollTop ||
         0;
 
-      // If user reached the top during scroll, recalibrate start point so pull begins naturally
-      if (scrollTop <= 5 && startYRef.current < currentY && !isPullingRef.current) {
+      // If user started touch while scrolled down, but scrolled to top during this touch:
+      if (!startedAtTopRef.current && scrollTop <= 5) {
+        startedAtTopRef.current = true;
         startYRef.current = currentY;
         startXRef.current = currentX;
+        return;
+      }
+
+      if (!startedAtTopRef.current || !isAtTop()) {
+        if (isPullingRef.current || pullDistanceRef.current > 0) {
+          isPullingRef.current = false;
+          pullDistanceRef.current = 0;
+          setPullDistance(0);
+          setIsPulling(false);
+        }
+        return;
       }
 
       const rawDiffY = currentY - startYRef.current;
       const rawDiffX = currentX - startXRef.current;
 
       // Only pull downwards from top when vertical movement dominates
-      if (rawDiffY > 0 && Math.abs(rawDiffY) > Math.abs(rawDiffX) * 1.1 && isAtTop()) {
+      if (rawDiffY > 0 && Math.abs(rawDiffY) > Math.abs(rawDiffX)) {
         isPullingRef.current = true;
         // Non-linear damping for a natural rubber-band resistance
         const dampened = Math.min(maxPull, Math.pow(rawDiffY, 0.85) * 1.9);
@@ -102,12 +119,12 @@ export function usePullToRefresh({
         }
         isThresholdMetRef.current = met;
 
-        // Prevent browser overscroll bounce if pulling actively
-        if (dampened > 8 && e.cancelable) {
+        // Prevent browser overscroll bounce when pulling actively
+        if (e.cancelable) {
           e.preventDefault();
         }
-      } else {
-        // Swiping up or sideways: reset only if we were actively pulling
+      } else if (rawDiffY <= 0) {
+        // Pushing up above top
         if (isPullingRef.current || pullDistanceRef.current > 0) {
           isPullingRef.current = false;
           pullDistanceRef.current = 0;
@@ -120,10 +137,14 @@ export function usePullToRefresh({
   );
 
   const handleTouchEnd = useCallback(async () => {
-    if (!isPullingRef.current && pullDistanceRef.current === 0) return;
+    if (!isPullingRef.current && pullDistanceRef.current === 0) {
+      startedAtTopRef.current = false;
+      return;
+    }
 
     const triggered = pullDistanceRef.current >= threshold;
     isPullingRef.current = false;
+    startedAtTopRef.current = false;
     setIsPulling(false);
 
     if (triggered && !isRefreshing) {

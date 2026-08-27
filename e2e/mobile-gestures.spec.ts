@@ -19,18 +19,21 @@ test.describe('Mobile Viewport & Touch Gestures', () => {
     await expect(searchInput).toBeVisible();
   });
 
-  test('simulates touch pull-to-refresh gesture', async ({ page }) => {
+  test('simulates touch pull-to-refresh gesture and resets active filters', async ({ page }) => {
     // Scroll to top
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(150);
 
+    // Apply a search filter first
+    const searchInput = page.locator('input[placeholder*="Search"]');
+    await searchInput.fill('Elsa');
+    await expect(searchInput).toHaveValue('Elsa');
+
     // Perform a downward touch gesture starting near the top of the viewport
     const startX = 200;
     const startY = 120;
-    const endY = 280;
+    const endY = 320;
 
-    await page.touchscreen.tap(startX, startY);
-    
     // Dispatch touch sequence
     await page.evaluate(
       ({ sX, sY, eY }) => {
@@ -63,8 +66,8 @@ test.describe('Mobile Viewport & Touch Gestures', () => {
       { sX: startX, sY: startY, eY: endY }
     );
 
-    // Verify indicator triggers or page handles touch smoothly without errors
-    await page.waitForTimeout(500);
+    // Verify search input is cleared and filters are reset by the pull gesture
+    await expect(searchInput).toHaveValue('', { timeout: 4000 });
     await expect(page.locator('main')).toBeVisible();
   });
 });
