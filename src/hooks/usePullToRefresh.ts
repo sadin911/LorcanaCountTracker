@@ -19,9 +19,20 @@ export function usePullToRefresh({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  /* Kept in a ref so handleTouchEnd has a stable identity. onRefresh is rebuilt
+     on every render by its caller, and the listener effect depends on the
+     handlers — so without this all four touch listeners were torn down and
+     re-attached on every render, including the ~60 renders a single pull causes
+     through setPullDistance. */
+  const onRefreshRef = useRef(onRefresh);
+  useEffect(() => {
+    onRefreshRef.current = onRefresh;
+  }, [onRefresh]);
+
   const startYRef = useRef(0);
   const startXRef = useRef(0);
   const isPullingRef = useRef(false);
+  /**
   const isThresholdMetRef = useRef(false);
   const hasVibratedRef = useRef(false);
   const pullDistanceRef = useRef(0);
@@ -35,27 +46,24 @@ export function usePullToRefresh({
   };
 
   const isAtTop = () => {
-    /* An open overlay owns the gesture. Dragging inside the fullscreen artwork
-       viewer must not refresh the collection underneath it. */
     if (isOverlayOpen()) return false;
-    return (
-      window.scrollY <= 2 &&
-      document.documentElement.scrollTop <= 2 &&
-      document.body.scrollTop <= 2
-    );
+    const scrollY =
+      window.scrollY ||
+      document.documentElement.scrollTop ||
+      document.body.scrollTop ||
+      0;
+    return scrollY <= 5;
   };
 
   const handleTouchStart = useCallback(
     (e: TouchEvent) => {
       if (disabled || isRefreshing || e.touches.length !== 1) return;
 
-      if (isAtTop()) {
-        startYRef.current = e.touches[0].clientY;
-        startXRef.current = e.touches[0].clientX;
-        isPullingRef.current = false;
-        hasVibratedRef.current = false;
-        isThresholdMetRef.current = false;
-      }
+      startYRef.current = e.touches[0].clientY;
+      startXRef.current = e.touches[0].clientX;
+      isPullingRef.current = false;
+      hasVibratedRef.current = false;
+      isThresholdMetRef.current = false;
     },
     [disabled, isRefreshing]
   );
@@ -63,17 +71,30 @@ export function usePullToRefresh({
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
       if (isRefreshing || disabled || e.touches.length !== 1) return;
+      if (isOverlayOpen()) return;
 
       const currentY = e.touches[0].clientY;
       const currentX = e.touches[0].clientX;
+      const scrollTop =
+        window.scrollY ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop ||
+        0;
+
+      // If user reached the top during scroll, recalibrate start point so pull begins naturally
+      if (scrollTop <= 5 && startYRef.current < currentY && !isPullingRef.current) {
+        startYRef.current = currentY;
+        startXRef.current = currentX;
+      }
+
       const rawDiffY = currentY - startYRef.current;
       const rawDiffX = currentX - startXRef.current;
 
       // Only pull downwards from top when vertical movement dominates
-      if (rawDiffY > 0 && Math.abs(rawDiffY) > Math.abs(rawDiffX) * 1.3 && isAtTop()) {
+      if (rawDiffY > 0 && Math.abs(rawDiffY) > Math.abs(rawDiffX) * 1.1 && isAtTop()) {
         isPullingRef.current = true;
-        // Non-linear damping for a natural iOS/Android rubber-band resistance
-        const dampened = Math.min(maxPull, Math.pow(rawDiffY, 0.82) * 2.2);
+        // Non-linear damping for a natural rubber-band resistance
+        const dampened = Math.min(maxPull, Math.pow(rawDiffY, 0.85) * 1.9);
         pullDistanceRef.current = dampened;
         setPullDistance(dampened);
         setIsPulling(true);
@@ -88,7 +109,7 @@ export function usePullToRefresh({
         isThresholdMetRef.current = met;
 
         // Prevent browser overscroll bounce if pulling actively
-        if (dampened > 15 && e.cancelable) {
+        if (dampened > 8 && e.cancelable) {
           e.preventDefault();
         }
       } else {

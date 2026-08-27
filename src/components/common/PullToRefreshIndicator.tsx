@@ -23,11 +23,11 @@ export function PullToRefreshIndicator({
 
   return (
     <div
-      className="fixed left-0 right-0 z-30 pointer-events-none flex justify-center transition-transform duration-100 ease-out"
+      className="fixed left-0 right-0 z-50 pointer-events-none flex justify-center transition-transform duration-100 ease-out"
       style={{
-        top: 'calc(env(safe-area-inset-top, 0px) + 52px)',
-        transform: `translateY(${Math.min(pullDistance, 70)}px)`,
-        opacity: Math.min(1, Math.max(0, (pullDistance - 10) / 30)),
+        top: 'calc(env(safe-area-inset-top, 0px) + 12px)',
+        transform: `translateY(${Math.min(pullDistance, 75)}px)`,
+        opacity: isRefreshing ? 1 : Math.min(1, Math.max(0, pullDistance / 24)),
       }}
     >
       <div className="px-4 py-2 rounded-2xl bg-[#131627]/95 border border-[#c8b07b]/40 backdrop-blur-xl shadow-[0_4px_25px_rgba(0,0,0,0.8),0_0_20px_rgba(200,176,123,0.35)] flex items-center gap-3 animate-fade-in text-slate-100">
