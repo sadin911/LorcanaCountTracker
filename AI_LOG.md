@@ -126,3 +126,4 @@
 [2026-08-27 16:43] Major | Antigravity | Fix | src/hooks/usePullToRefresh.ts - fixed touch delta calculation on pull
 [2026-08-27 16:43] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 18/18 passed
 [2026-08-27 16:44] Major | Antigravity | Command | git push origin main - triggered GitHub Pages deploy
+[2026-08-27 16:47] Major | Antigravity | Edit | playwright.config.ts, package.json - added HTML reporter and test:e2e:report
