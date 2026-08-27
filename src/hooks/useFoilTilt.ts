@@ -19,15 +19,19 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * pointermove would be the one thing guaranteed to make it feel cheap.
  */
 
-/** Degrees at the extremes. Past ~12° the card reads as broken rather than tilted. */
-const MAX_TILT_DEG = 12;
+/** Degrees at the extremes. Past ~10° the card starts reading as broken rather than tilted. */
+const MAX_TILT_DEG = 7;
 
 /** Snappy while an input drives it, unhurried on the way back to rest. */
 const TRACK_MS = 70;
 const RELEASE_MS = 420;
 
-/** Device degrees to card degrees. Phones are held loosely; 1:1 is jittery. */
-const GYRO_GAIN = 1.5;
+/**
+ * Device degrees to card degrees. Phones are held loosely, so this is below 1:1;
+ * paired with the clamp it means a full tilt takes roughly 8° of wrist, which is
+ * a deliberate movement rather than a twitch.
+ */
+const GYRO_GAIN = 0.9;
 
 /**
  * The card should behave like a physical card held behind the glass, staying
