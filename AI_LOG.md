@@ -122,3 +122,4 @@
 [2026-08-27 16:29] Major | Claude | Edit | src/hooks/usePullToRefresh.ts - always record the gesture origin (stale startY was the intermittent failure), require the gesture to start at the top, hold onRefresh in a ref so the touch listeners stop rebinding every render
 [2026-08-27 16:29] Major | Claude | Command | npm run build - compiles clean (browser verification skipped at the user's request)
 [2026-08-27 16:30] Major | Antigravity | Fix | Enhanced pull-to-refresh touch detection and responsiveness
+[2026-08-27 16:35] Major | Antigravity | Write | e2e/ - automated Playwright E2E testing framework

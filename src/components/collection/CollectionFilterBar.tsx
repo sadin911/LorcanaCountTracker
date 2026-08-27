@@ -71,7 +71,7 @@ export function CollectionFilterBar({
     filters.sortOrder !== DEFAULT_COLLECTION_FILTERS.sortOrder;
 
   return (
-    <div className="relative z-20 space-y-2.5">
+    <div className="relative z-20 space-y-2.5" data-testid="filter-bar">
       {/* Main Command Bar (Card Container with glass styling) */}
       <div className="relative z-20 p-2.5 sm:p-3 rounded-2xl border border-[#c8b07b]/25 bg-[#131627]/85 backdrop-blur-xl shadow-lg shadow-black/50 space-y-2.5">
         {/* Row 1: Search, Set, Series, and Quick Action Toggles */}
@@ -186,7 +186,11 @@ export function CollectionFilterBar({
             </button>
 
             {/* Results Count Badge */}
-            <div className="px-2.5 py-2 sm:px-3 sm:py-2 shrink-0 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 text-[11px] font-bold text-slate-300 whitespace-nowrap flex items-center gap-1.5 min-h-[40px] sm:min-h-[38px]">
+            <div
+              data-testid="result-count"
+              data-count={totalFiltered}
+              className="px-2.5 py-2 sm:px-3 sm:py-2 shrink-0 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 text-[11px] font-bold text-slate-300 whitespace-nowrap flex items-center gap-1.5 min-h-[40px] sm:min-h-[38px]"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-[#dfc792]" />
               <span className="text-[#dfc792]">{totalFiltered.toLocaleString()}</span>
               <span className="text-slate-400 font-normal hidden xs:inline">cards</span>

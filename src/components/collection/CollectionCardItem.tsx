@@ -39,6 +39,9 @@ export function CollectionCardItem({
   return (
     <div
       ref={tilt.ref}
+      data-testid="card-tile"
+      data-card-id={card.id}
+      data-rarity={card.rarity}
       onClick={() => onSelect(card)}
       onPointerMove={showSheen ? tilt.onPointerMove : undefined}
       onPointerLeave={showSheen ? tilt.onPointerLeave : undefined}

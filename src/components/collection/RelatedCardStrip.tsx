@@ -25,7 +25,12 @@ export function RelatedCardStrip({ title, cards, onSelect, onSeeAll }: Props) {
   if (!cards.length) return null;
 
   return (
-    <section className="space-y-2">
+    <section
+      className="space-y-2"
+      data-testid="related-strip"
+      data-relation={title}
+      data-related-count={cards.length}
+    >
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-xs font-bold tracking-wide text-slate-300 flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />

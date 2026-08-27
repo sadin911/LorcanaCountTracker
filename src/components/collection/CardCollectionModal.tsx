@@ -116,6 +116,8 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
     >
       <div
         ref={scrollRef}
+        data-testid="card-detail"
+        data-card-id={card.id}
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-4xl max-h-[92vh] overflow-y-auto overscroll-contain scrollbar-thin rounded-3xl border border-[#c8b07b]/40 bg-[#131627]/95 backdrop-blur-2xl shadow-2xl shadow-black/90"
       >
@@ -427,6 +429,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
           <div
             /* touch-none: without it a drag here is handed to the page behind and
                scrolls the grid, since this overlay has nothing to scroll itself. */
+            data-testid="artwork-fullscreen"
             className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl animate-fade-in touch-none overscroll-none"
             /* stopPropagation matters more than it looks: this is a portal, and a
                portal's events bubble through the React tree, not the DOM tree. So
