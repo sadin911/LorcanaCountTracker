@@ -118,74 +118,77 @@ export function CollectionFilterBar({
             className="w-full sm:w-auto sm:min-w-[220px]"
           />
 
-          {/* Quick Sort By & Direction Toggle */}
-          <div className="flex items-center gap-1 p-1 sm:p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 shadow-sm min-h-[42px] sm:min-h-[38px]" title="Sort cards">
-            <span className="text-[10px] font-bold text-slate-400 pl-2 hidden lg:inline">Sort:</span>
-            <select
-              value={filters.sortBy}
-              onChange={(e) => onChange({ sortBy: e.target.value as CollectionSortBy })}
-              aria-label="Sort cards by"
-              className="bg-transparent text-xs font-bold text-slate-200 focus:outline-none cursor-pointer py-1.5 px-2 rounded-lg hover:text-[#dfc792] transition-colors"
-            >
-              {SORT_OPTIONS.map((o) => (
-                <option key={o.id} value={o.id} className="bg-[#1b2038] text-slate-200">
-                  {o.label}
-                </option>
-              ))}
-            </select>
+          {/* Action Toolbar Row on Mobile, Inline on Desktop: Sort, Vivid, Filters, and Results Count */}
+          <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-between sm:justify-start">
+            {/* Quick Sort By & Direction Toggle */}
+            <div className="flex-1 sm:flex-initial flex items-center gap-1 p-1 sm:p-0.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 shadow-sm min-h-[40px] sm:min-h-[38px] min-w-0" title="Sort cards">
+              <span className="text-[10px] font-bold text-slate-400 pl-2 hidden lg:inline">Sort:</span>
+              <select
+                value={filters.sortBy}
+                onChange={(e) => onChange({ sortBy: e.target.value as CollectionSortBy })}
+                aria-label="Sort cards by"
+                className="bg-transparent text-xs font-bold text-slate-200 focus:outline-none cursor-pointer py-1.5 px-1.5 sm:px-2 rounded-lg hover:text-[#dfc792] transition-colors truncate w-full"
+              >
+                {SORT_OPTIONS.map((o) => (
+                  <option key={o.id} value={o.id} className="bg-[#1b2038] text-slate-200">
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                title={`Sort Order: ${filters.sortOrder === 'asc' ? 'Ascending (Click for Descending)' : 'Descending (Click for Ascending)'}`}
+                onClick={() => onChange({ sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc' })}
+                className="w-7 h-7 sm:w-7 sm:h-7 shrink-0 rounded-lg bg-[#252a48] hover:bg-[#2e3459] text-xs font-black text-[#dfc792] flex items-center justify-center transition-all active:scale-90 border border-[#c8b07b]/20"
+              >
+                {filters.sortOrder === 'asc' ? '↑' : '↓'}
+              </button>
+            </div>
+
+            {/* Vivid Color Mode Toggle */}
             <button
               type="button"
-              title={`Sort Order: ${filters.sortOrder === 'asc' ? 'Ascending (Click for Descending)' : 'Descending (Click for Ascending)'}`}
-              onClick={() => onChange({ sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc' })}
-              className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg bg-[#252a48] hover:bg-[#2e3459] text-xs font-black text-[#dfc792] flex items-center justify-center transition-all active:scale-90 border border-[#c8b07b]/20"
+              onClick={() => onChange({ showFullColor: !filters.showFullColor })}
+              title="Toggle Vivid full-color for unowned cards"
+              className={`px-2.5 py-2 sm:px-3 sm:py-2 shrink-0 rounded-xl border text-xs font-bold transition-all shadow-sm flex items-center gap-1 min-h-[40px] sm:min-h-[38px] active:scale-95 ${
+                filters.showFullColor
+                  ? 'bg-[#c8b07b]/20 border-[#c8b07b] text-[#dfc792] shadow-[#c8b07b]/10'
+                  : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-400 hover:text-slate-200 hover:border-[#c8b07b]/50'
+              }`}
             >
-              {filters.sortOrder === 'asc' ? '↑' : '↓'}
-            </button>
-          </div>
-
-          {/* Vivid Color Mode Toggle */}
-          <button
-            type="button"
-            onClick={() => onChange({ showFullColor: !filters.showFullColor })}
-            title="Toggle Vivid full-color for unowned cards"
-            className={`px-3.5 py-2.5 sm:px-3 sm:py-2 rounded-xl border text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 min-h-[42px] sm:min-h-[38px] active:scale-95 ${
-              filters.showFullColor
-                ? 'bg-[#c8b07b]/20 border-[#c8b07b] text-[#dfc792] shadow-[#c8b07b]/10'
-                : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-400 hover:text-slate-200 hover:border-[#c8b07b]/50'
-            }`}
-          >
-            <span>🎨</span>
-            <span className="hidden sm:inline">Vivid</span>
-            <span className={`text-[10px] font-mono ${filters.showFullColor ? 'text-[#dfc792]' : 'text-slate-500'}`}>
-              {filters.showFullColor ? 'ON' : 'OFF'}
-            </span>
-          </button>
-
-          {/* Advanced Filters Drawer Toggle */}
-          <button
-            type="button"
-            onClick={() => setShowAdvanced((v) => !v)}
-            className={`px-3.5 py-2.5 sm:px-3 sm:py-2 rounded-xl border text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 min-h-[42px] sm:min-h-[38px] active:scale-95 ${
-              showAdvanced || activeSecondaryFilterCount > 0
-                ? 'bg-[#252a48] border-[#c8b07b] text-[#dfc792] shadow-[#c8b07b]/15'
-                : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-300 hover:text-slate-100 hover:border-[#c8b07b]/50'
-            }`}
-          >
-            <span>⚙️</span>
-            <span>Filters</span>
-            {activeSecondaryFilterCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-[#dfc792] text-[#131627] text-[10px] font-extrabold">
-                {activeSecondaryFilterCount}
+              <span>🎨</span>
+              <span className="hidden md:inline">Vivid</span>
+              <span className={`text-[10px] font-mono ${filters.showFullColor ? 'text-[#dfc792]' : 'text-slate-500'}`}>
+                {filters.showFullColor ? 'ON' : 'OFF'}
               </span>
-            )}
-            <span className={`text-[10px] transition-transform ${showAdvanced ? 'rotate-180' : ''}`}>▾</span>
-          </button>
+            </button>
 
-          {/* Results Count Badge */}
-          <div className="px-3.5 py-2.5 sm:px-3 sm:py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 text-[11px] font-bold text-slate-300 whitespace-nowrap ml-auto sm:ml-0 flex items-center gap-1.5 min-h-[42px] sm:min-h-[38px]">
-            <span className="w-2 h-2 rounded-full bg-[#dfc792]" />
-            <span className="text-[#dfc792]">{totalFiltered.toLocaleString()}</span>
-            <span className="text-slate-400 font-normal">cards</span>
+            {/* Advanced Filters Drawer Toggle */}
+            <button
+              type="button"
+              onClick={() => setShowAdvanced((v) => !v)}
+              className={`px-2.5 py-2 sm:px-3 sm:py-2 shrink-0 rounded-xl border text-xs font-bold transition-all shadow-sm flex items-center gap-1 min-h-[40px] sm:min-h-[38px] active:scale-95 ${
+                showAdvanced || activeSecondaryFilterCount > 0
+                  ? 'bg-[#252a48] border-[#c8b07b] text-[#dfc792] shadow-[#c8b07b]/15'
+                  : 'bg-[#1b2038] border-[#c8b07b]/25 text-slate-300 hover:text-slate-100 hover:border-[#c8b07b]/50'
+              }`}
+            >
+              <span>⚙️</span>
+              <span className="hidden xs:inline">Filters</span>
+              {activeSecondaryFilterCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-[#dfc792] text-[#131627] text-[10px] font-extrabold">
+                  {activeSecondaryFilterCount}
+                </span>
+              )}
+              <span className={`text-[10px] transition-transform ${showAdvanced ? 'rotate-180' : ''}`}>▾</span>
+            </button>
+
+            {/* Results Count Badge */}
+            <div className="px-2.5 py-2 sm:px-3 sm:py-2 shrink-0 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 text-[11px] font-bold text-slate-300 whitespace-nowrap flex items-center gap-1.5 min-h-[40px] sm:min-h-[38px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#dfc792]" />
+              <span className="text-[#dfc792]">{totalFiltered.toLocaleString()}</span>
+              <span className="text-slate-400 font-normal hidden xs:inline">cards</span>
+            </div>
           </div>
         </div>
 
