@@ -25,22 +25,23 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  */
 
 /**
- * Degrees at the extremes. Deliberately shallow: the light is meant to carry this
- * effect, and the rotation only exists to give the reflection something to slide
- * against. Past ~5° the card starts looking like a rotated picture rather than a
- * glossy one.
+ * Degrees at the extremes. Shallow enough that the light still carries the effect,
+ * but 3.5° was too tight: paired with the gain below it saturated inside the first
+ * few degrees of wrist, so the card sat pinned at the limit and every bit of
+ * sensor noise showed up as a judder around it.
  */
-const MAX_TILT_DEG = 3.5;
+const MAX_TILT_DEG = 7;
 
 /** Snappy while an input drives it, unhurried on the way back to rest. */
 const TRACK_MS = 70;
 const RELEASE_MS = 420;
 
 /**
- * Device degrees to card degrees. Well below 1:1 so a full lean takes about 10°
- * of wrist — a deliberate movement rather than a twitch.
+ * Device degrees to card degrees. A full lean takes about 17° of wrist, so most of
+ * a comfortable range of movement maps to actual rotation instead of running into
+ * the clamp.
  */
-const GYRO_GAIN = 0.35;
+const GYRO_GAIN = 0.4;
 
 /** Sensor wrap-around (gamma flips through ±90) shows up as an absurd delta. */
 const GYRO_MAX_DELTA_DEG = 45;
@@ -54,8 +55,13 @@ const GYRO_MAX_DELTA_DEG = 45;
  */
 const GYRO_DEADZONE_DEG = 0.8;
 
-/** Low-pass filter on the sensor. Raw readings are noisy enough to shimmer. */
-const GYRO_SMOOTHING = 0.16;
+/**
+ * Low-pass filter, applied once per animation frame rather than once per sensor
+ * reading. Per reading its time constant rides on the sensor's rate — and phones
+ * deliver orientation events anywhere from 20Hz to 60Hz, often in bursts — so the
+ * same number produced smooth motion on one handset and steps on another.
+ */
+const GYRO_SMOOTHING = 0.12;
 
 /**
  * The card should behave like a physical card held behind the glass, staying
@@ -177,6 +183,7 @@ export function useFoilTilt<T extends HTMLElement>(enabled: boolean, options: Op
   }, [enabled, gyroAllowed]);
 
   const listening = useRef(false);
+  const easeFrame = useRef(0);
 
   const startGyro = useCallback(() => {
     if (listening.current) return undefined;
@@ -185,7 +192,11 @@ export function useFoilTilt<T extends HTMLElement>(enabled: boolean, options: Op
     /* First reading becomes neutral: nobody holds a phone at beta 0, so absolute
        angles would start the card pinned at full tilt. */
     let baseline: { beta: number; gamma: number } | null = null;
-    const smoothed = { rx: 0, ry: 0 };
+    /* The sensor only ever sets a target. Easing toward it and writing to the DOM
+       happens on animation frames, which decouples both the filter's time
+       constant and the write rate from however fast the handset reports. */
+    const target = { rx: 0, ry: 0 };
+    const shown = { rx: 0, ry: 0 };
     const clamp = (v: number) => Math.max(-MAX_TILT_DEG, Math.min(MAX_TILT_DEG, v));
 
     const onOrientation = (e: DeviceOrientationEvent) => {
@@ -219,22 +230,34 @@ export function useFoilTilt<T extends HTMLElement>(enabled: boolean, options: Op
       else if (angle === 180) [dx, dy] = [-dx, -dy];
       else if (angle === 270) [dx, dy] = [-dy, dx];
 
-      /* Absolute: the card holds whatever lean the phone is being held at, and
-         only returns to level when the phone does. It does not spring back on its
-         own. */
-      const targetRx = clamp(GYRO_SIGN * dx * GYRO_GAIN);
-      const targetRy = clamp(GYRO_SIGN * dy * GYRO_GAIN);
-      smoothed.rx += (targetRx - smoothed.rx) * GYRO_SMOOTHING;
-      smoothed.ry += (targetRy - smoothed.ry) * GYRO_SMOOTHING;
+      /* Absolute: the target is the lean the phone is being held at. Hold the
+         phone still and the target stops moving, so the card settles there and
+         stays — it never springs back to level on its own. */
+      target.rx = clamp(GYRO_SIGN * dx * GYRO_GAIN);
+      target.ry = clamp(GYRO_SIGN * dy * GYRO_GAIN);
+    };
 
-      const { rx, ry } = smoothed;
-      const lean = Math.min(1, Math.hypot(rx, ry) / (MAX_TILT_DEG * 0.6));
-      /* Highlight tracks the lean so the bands slide against the rotation — the
-         parallax the eye reads as depth. */
-      write(rx, ry, 50 + (ry / MAX_TILT_DEG) * 45, 50 - (rx / MAX_TILT_DEG) * 45, lean, TRACK_MS);
+    const ease = () => {
+      const dRx = target.rx - shown.rx;
+      const dRy = target.ry - shown.ry;
+      /* Below a fifth of a degree there is nothing to see, and skipping the write
+         keeps a phone held steady from restyling the card sixty times a second. */
+      if (Math.abs(dRx) > 0.02 || Math.abs(dRy) > 0.02) {
+        shown.rx += dRx * GYRO_SMOOTHING;
+        shown.ry += dRy * GYRO_SMOOTHING;
+        const { rx, ry } = shown;
+        const lean = Math.min(1, Math.hypot(rx, ry) / (MAX_TILT_DEG * 0.6));
+        /* Highlight tracks the lean so the bands slide against the rotation — the
+           parallax the eye reads as depth. Written with no CSS transition: the
+           easing above is the smoothing, and a transition restarting every frame
+           is exactly what makes this look stepped. */
+        write(rx, ry, 50 + (ry / MAX_TILT_DEG) * 45, 50 - (rx / MAX_TILT_DEG) * 45, lean, 0);
+      }
+      easeFrame.current = requestAnimationFrame(ease);
     };
 
     window.addEventListener('deviceorientation', onOrientation);
+    easeFrame.current = requestAnimationFrame(ease);
     setGyroStatus('active');
     return onOrientation;
   }, [write]);
@@ -271,6 +294,7 @@ export function useFoilTilt<T extends HTMLElement>(enabled: boolean, options: Op
   useEffect(
     () => () => {
       if (stopGyroRef.current) window.removeEventListener('deviceorientation', stopGyroRef.current);
+      cancelAnimationFrame(easeFrame.current);
       listening.current = false;
     },
     []

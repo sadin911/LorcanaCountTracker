@@ -113,3 +113,5 @@
 [2026-08-27 15:36] Major | Claude | Command | npm run lint && npm run build - verification passed
 [2026-08-27 15:45] Major | Claude | Edit | src/hooks/useFoilTilt.ts - gyro back to absolute angle from a captured baseline; no impulse, no decay, no spring-back to level
 [2026-08-27 15:45] Major | Claude | Command | npm run build - compiles clean (browser verification skipped at the user's request)
+[2026-08-27 15:51] Major | Claude | Edit | src/hooks/useFoilTilt.ts - widen tilt range (3.5->7deg, gain 0.35->0.4), move the low-pass filter and the DOM write onto animation frames, drop the CSS transition on gyro writes
+[2026-08-27 15:51] Major | Claude | Command | npm run build - compiles clean (browser verification skipped at the user's request)
