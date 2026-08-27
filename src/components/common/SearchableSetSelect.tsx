@@ -46,6 +46,8 @@ export function SearchableSetSelect({
   const [query, setQuery] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  /** How the list was opened, so the effect below knows whether to focus. */
+  const openedByTouch = useRef(false);
 
   const selected = sets.find((s) => s.code === selectedSet);
   const selectedBooster = selected && showCode ? getSetBoosterImage(selected.code) : null;
@@ -66,8 +68,18 @@ export function SearchableSetSelect({
     };
     document.addEventListener('mousedown', onDown);
 
+    /* Focus the search field only when the list was opened with a mouse, where it
+       lets you type straight away. Opened with a finger, focusing would summon the
+       on-screen keyboard over the very list you just opened — the keyboard belongs
+       to the moment you tap the field yourself.
+       This reads how the list was actually opened rather than inferring it from a
+       media query, which is more direct and stays right on a tablet with a
+       trackpad attached. */
+    const t = openedByTouch.current ? undefined : setTimeout(() => inputRef.current?.focus(), 50);
+
     return () => {
       document.removeEventListener('mousedown', onDown);
+      if (t !== undefined) clearTimeout(t);
     };
   }, [isOpen]);
 
@@ -97,6 +109,9 @@ export function SearchableSetSelect({
     <div ref={containerRef} className={`relative ${isOpen ? 'z-50' : 'z-20'} ${className}`}>
       <button
         type="button"
+        onPointerDown={(e) => {
+          openedByTouch.current = e.pointerType === 'touch' || e.pointerType === 'pen';
+        }}
         onClick={() => setIsOpen((v) => !v)}
         className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 sm:px-3 sm:py-2 rounded-xl border text-sm sm:text-xs font-semibold transition-all shadow-sm min-h-[42px] sm:min-h-[38px] active:scale-98 ${
           isOpen

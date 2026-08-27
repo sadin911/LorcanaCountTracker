@@ -101,3 +101,5 @@
 [2026-08-27 15:16] Major | Claude | Edit | src/hooks/useFoilTilt.ts - isotropic dead zone on gyro movement (0.45°/reading) and faster decay (0.88 -> 0.82)
 [2026-08-27 15:16] Major | Claude | Command | npm run lint && npm run build - verification passed
 [2026-08-27 15:18] Major | Antigravity | Fix | Disabled auto-focus on dropdown open to prevent keyboard popup
+[2026-08-27 15:21] Major | Claude | Edit | src/components/common/SearchableSetSelect.tsx - focus the search field only when the list was opened with a mouse, so a tap no longer summons the keyboard
+[2026-08-27 15:21] Major | Claude | Command | npm run lint && npm run build - verification passed
