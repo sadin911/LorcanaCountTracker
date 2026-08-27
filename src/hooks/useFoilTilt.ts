@@ -25,8 +25,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * pointermove would be the one thing guaranteed to make it feel cheap.
  */
 
-/** Degrees at the extremes. Past ~10° the card starts reading as broken rather than tilted. */
-const MAX_TILT_DEG = 7;
+/**
+ * Degrees at the extremes. Deliberately shallow: the light is meant to carry this
+ * effect, and the rotation only exists to give the reflection something to slide
+ * against. Past ~5° the card starts looking like a rotated picture rather than a
+ * glossy one.
+ */
+const MAX_TILT_DEG = 3.5;
 
 /** Snappy while an input drives it, unhurried on the way back to rest. */
 const TRACK_MS = 70;

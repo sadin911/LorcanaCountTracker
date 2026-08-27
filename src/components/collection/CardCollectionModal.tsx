@@ -6,6 +6,7 @@ import {
   INK_STYLES,
   RARITY_STYLES,
   TYPE_ICONS,
+  foilSheenDelay,
   isPremiumRarity,
 } from '../../constants/lorcana';
 import { DEFAULT_COLLECTION_FILTERS, useCollectionStore } from '../../store/collectionStore';
@@ -134,7 +135,23 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 onError={(e) => handleCardImageError(e, card.setCode, card.collectorNumber)}
                 className="w-full h-auto transition-transform duration-300 group-hover:scale-[1.02]"
               />
-              {showSheen && <div className="foil-holo" aria-hidden="true" />}
+              {showSheen && (
+                <>
+                  {/* The stagger sits on these layers, not on the tilt target:
+                      custom properties inherit down through the wrappers,
+                      animation-delay does not. */}
+                  <div
+                    className="foil-holo"
+                    aria-hidden="true"
+                    style={{ animationDelay: `${foilSheenDelay(card.id)}s` }}
+                  />
+                  <div
+                    className="foil-sheen"
+                    aria-hidden="true"
+                    style={{ animationDelay: `${foilSheenDelay(card.id)}s` }}
+                  />
+                </>
+              )}
             </button>
             {/* iOS 13+ will only open the motion permission prompt from a user
                 gesture, so the tilt needs a button rather than an effect.

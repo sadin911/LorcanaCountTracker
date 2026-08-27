@@ -14,19 +14,32 @@
    Enchanted, Epic and Iconic are the tiers Lorcana only ever prints as foil, so
    these are the cards that get the treatment.
 
-   Nothing here moves on a timer. Every bit of light is a function of how the
-   card is being held — pointer on a desktop, gyroscope in the detail view on a
-   phone — because a reflection that animates on its own reads as a screen
-   effect, and one that only answers to the hand reads as a surface.
+   The light is the point here, not the geometry. The card tilts only slightly —
+   just enough that the reflection has something to slide against — while the
+   glint and the holographic bands do the work. Three layers:
 
-   Two layers, both driven by the custom properties useFoilTilt writes:
+     foil-3d      a shallow rotation, from the pointer or the gyroscope
+     foil-sheen   a slow band crossing the card on its own clock
+     foil-holo    holographic bands whose position follows the tilt
+
+   The idle glint matters because a grid nobody is touching should still read as
+   foil, and because the tilt is now too shallow to carry the effect alone.
+
+   Driven by the custom properties useFoilTilt writes:
      --foil-rx / --foil-ry   rotation
-     --foil-mx / --foil-my   input position, for the reflection
-     --foil-on               0 at rest, 1 while something is driving the tilt
+     --foil-mx / --foil-my   input position, for the bands
+     --foil-on               0 at rest, 1 while something is driving the tilt */
 
-   The 3D illusion is not the rotation. It is the bands sliding *against* the
-   tilt while the frame rotates with it; the parallax between the two is what the
-   eye reads as depth. Rotation alone just looks like a rotated picture. */
+@keyframes foil-glint {
+  0%, 68%  { transform: translateX(-130%) skewX(-14deg); }
+  90%      { transform: translateX(215%) skewX(-14deg); }
+  100%     { transform: translateX(215%) skewX(-14deg); }
+}
+
+@keyframes foil-holo-pulse {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
 
 @utility foil-3d {
   --foil-rx: 0deg;
@@ -34,30 +47,80 @@
   --foil-mx: 50%;
   --foil-my: 50%;
   --foil-sx: 0px;
-  --foil-sy: 10px;
+  --foil-sy: 8px;
   --foil-on: 0;
   --foil-dur: 420ms;
 
   transform-style: preserve-3d;
   /* translateZ keeps the card on its own compositor layer, so tracking the
      input never triggers layout. */
-  transform: perspective(760px) rotateX(var(--foil-rx)) rotateY(var(--foil-ry))
-    scale(calc(1 + 0.055 * var(--foil-on))) translateZ(0);
+  transform: perspective(900px) rotateX(var(--foil-rx)) rotateY(var(--foil-ry))
+    scale(calc(1 + 0.02 * var(--foil-on))) translateZ(0);
   transition:
     transform var(--foil-dur) cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow var(--foil-dur) ease-out;
-  /* Shadow swings opposite the tilt: the card looks lifted off the grid rather
-     than painted onto it. */
+  /* Shadow leans opposite the tilt. Kept subtle: with a shallow rotation a heavy
+     shadow is the thing that would look overdone. */
   box-shadow:
-    var(--foil-sx) var(--foil-sy) calc(18px + 16px * var(--foil-on))
-      rgba(0, 0, 0, calc(0.3 + 0.35 * var(--foil-on))),
-    0 0 0 1px rgba(223, 199, 146, calc(0.3 + 0.45 * var(--foil-on)));
+    var(--foil-sx) var(--foil-sy) calc(14px + 8px * var(--foil-on))
+      rgba(0, 0, 0, calc(0.28 + 0.2 * var(--foil-on))),
+    0 0 0 1px rgba(223, 199, 146, calc(0.3 + 0.35 * var(--foil-on)));
 }
 
-/* The reflection: holographic bands, oversized and positioned from the input, so
-   they slide across the art as the card turns. color-dodge is what makes them
-   read as light rather than as paint; the alphas stay low to keep it the right
-   side of gaudy. */
+@utility foil-sheen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+
+  /* The sweeping reflection, on its own clock. Deliberately NOT a hot spot
+     pinned to the cursor: a round highlight chasing the pointer reads as a torch
+     being shone on the card, where a band crossing it reads as the card catching
+     the light. Off-screen for two thirds of the cycle, so it is a glint rather
+     than a strobe. */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -14%;
+    bottom: -14%;
+    left: 0;
+    width: 46%;
+    /* Normal blend, not screen: screen only lifts dark pixels, so on bright
+       artwork a screen-blended band is invisible and the effect appears to work
+       only while the image is still loading. */
+    background: linear-gradient(
+      100deg,
+      transparent 0%,
+      rgba(255, 252, 240, 0.06) 24%,
+      rgba(255, 250, 235, 0.22) 42%,
+      rgba(255, 254, 248, 0.42) 50%,
+      rgba(255, 250, 235, 0.22) 58%,
+      rgba(255, 252, 240, 0.06) 76%,
+      transparent 100%
+    );
+    will-change: transform;
+    animation: foil-glint 5.5s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+    /* Picks up the per-card offset set inline, so a grid of Enchanteds does not
+       glint in lockstep. */
+    animation-delay: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      animation: none;
+      transform: translateX(-130%) skewX(-14deg);
+    }
+  }
+}
+
+/* The holographic bands, oversized and positioned from the input, so they slide
+   across the art as the card turns. color-dodge is what makes them read as light
+   rather than as paint.
+
+   Two elements deep on purpose: the wrapper's opacity carries the tilt ramp, and
+   ::before carries the idle pulse. Put both on one element and the animation wins
+   over the declaration every frame. */
 @utility foil-holo {
   position: absolute;
   inset: 0;
@@ -65,8 +128,7 @@
   border-radius: inherit;
   pointer-events: none;
   mix-blend-mode: color-dodge;
-  /* Present but quiet at rest; the tilt brings it up. */
-  opacity: calc(0.2 + 0.55 * var(--foil-on));
+  opacity: calc(0.22 + 0.4 * var(--foil-on));
   transition: opacity var(--foil-dur) ease-out;
 
   &::before {
@@ -76,17 +138,25 @@
     background-image:
       repeating-linear-gradient(
         112deg,
-        rgba(255, 214, 148, 0.32) 0%,
-        rgba(150, 226, 255, 0.28) 7%,
-        rgba(206, 164, 255, 0.26) 14%,
-        rgba(255, 236, 176, 0.32) 21%,
-        rgba(255, 214, 148, 0.32) 28%
+        rgba(255, 214, 148, 0.3) 0%,
+        rgba(150, 226, 255, 0.26) 7%,
+        rgba(206, 164, 255, 0.24) 14%,
+        rgba(255, 236, 176, 0.3) 21%,
+        rgba(255, 214, 148, 0.3) 28%
       ),
-      radial-gradient(58% 42% at 24% 14%, rgba(223, 199, 146, 0.5), transparent 70%),
-      radial-gradient(52% 44% at 78% 78%, rgba(146, 206, 232, 0.42), transparent 70%);
+      radial-gradient(58% 42% at 24% 14%, rgba(223, 199, 146, 0.48), transparent 70%),
+      radial-gradient(52% 44% at 78% 78%, rgba(146, 206, 232, 0.4), transparent 70%);
     background-size: 240% 240%, auto, auto;
     background-position: var(--foil-mx) var(--foil-my);
     transition: background-position var(--foil-dur) ease-out;
+    animation: foil-holo-pulse 9s ease-in-out infinite;
+    animation-delay: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      animation: none;
+    }
   }
 }
 

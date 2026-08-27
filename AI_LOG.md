@@ -103,3 +103,8 @@
 [2026-08-27 15:18] Major | Antigravity | Fix | Disabled auto-focus on dropdown open to prevent keyboard popup
 [2026-08-27 15:21] Major | Claude | Edit | src/components/common/SearchableSetSelect.tsx - focus the search field only when the list was opened with a mouse, so a tap no longer summons the keyboard
 [2026-08-27 15:21] Major | Claude | Command | npm run lint && npm run build - verification passed
+[2026-08-27 15:24] Major | Antigravity | Fix | Fixed dropdown z-index stacking above card grid in PokeCountTracker
+[2026-08-27 15:34] Major | Claude | Edit | src/index.css - idle glint restored alongside the tilt-tracked holo; shallower rotation, lighter shadow
+[2026-08-27 15:34] Major | Claude | Edit | src/hooks/useFoilTilt.ts - MAX_TILT_DEG 7 -> 3.5
+[2026-08-27 15:34] Major | Claude | Edit | constants/lorcana.ts, CollectionCardItem.tsx, CardCollectionModal.tsx - foilSheenDelay back, stagger set on the foil layers themselves
+[2026-08-27 15:34] Major | Claude | Command | npm run lint && npm run build - verification passed

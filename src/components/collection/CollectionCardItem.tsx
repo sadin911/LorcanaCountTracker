@@ -1,4 +1,4 @@
-import { RARITY_STYLES, FINISH_META, isPremiumRarity } from '../../constants/lorcana';
+import { RARITY_STYLES, FINISH_META, foilSheenDelay, isPremiumRarity } from '../../constants/lorcana';
 import type { LorcanaCard } from '../../types/card';
 import { cardDisplayName, rarityLabel } from '../../types/card';
 import type { FinishCount } from '../../types/collection';
@@ -69,7 +69,23 @@ export function CollectionCardItem({
           }`}
         />
 
-        {showSheen && <div className="foil-holo" aria-hidden="true" />}
+        {showSheen && (
+          <>
+            {/* The stagger sits on these layers, not on the tilt target:
+                custom properties inherit down through the wrappers,
+                animation-delay does not. */}
+            <div
+              className="foil-holo"
+              aria-hidden="true"
+              style={{ animationDelay: `${foilSheenDelay(card.id)}s` }}
+            />
+            <div
+              className="foil-sheen"
+              aria-hidden="true"
+              style={{ animationDelay: `${foilSheenDelay(card.id)}s` }}
+            />
+          </>
+        )}
 
         {/* Top Right: Quantity Owned Badge */}
         {count > 0 && (
