@@ -10,8 +10,8 @@ interface UsePullToRefreshOptions {
 
 export function usePullToRefresh({
   onRefresh,
-  threshold = 72,
-  maxPull = 110,
+  threshold = 58,
+  maxPull = 95,
   disabled = false,
 }: UsePullToRefreshOptions) {
   const [pullDistance, setPullDistance] = useState(0);
@@ -19,11 +19,6 @@ export function usePullToRefresh({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  /* Kept in a ref so handleTouchEnd has a stable identity. onRefresh is rebuilt
-     on every render by its caller, and the listener effect depends on the
-     handlers — so without this all four touch listeners were torn down and
-     re-attached on every render, including the ~60 renders a single pull causes
-     through setPullDistance. */
   const onRefreshRef = useRef(onRefresh);
   useEffect(() => {
     onRefreshRef.current = onRefresh;
@@ -32,7 +27,6 @@ export function usePullToRefresh({
   const startYRef = useRef(0);
   const startXRef = useRef(0);
   const isPullingRef = useRef(false);
-  /**
   const isThresholdMetRef = useRef(false);
   const hasVibratedRef = useRef(false);
   const pullDistanceRef = useRef(0);
@@ -139,7 +133,7 @@ export function usePullToRefresh({
 
       try {
         await Promise.all([
-          Promise.resolve(onRefresh()),
+          Promise.resolve(onRefreshRef.current()),
           new Promise((resolve) => setTimeout(resolve, 650)), // Smooth minimum display duration
         ]);
         setIsSuccess(true);
@@ -159,7 +153,7 @@ export function usePullToRefresh({
       setPullDistance(0);
       pullDistanceRef.current = 0;
     }
-  }, [isRefreshing, onRefresh, threshold]);
+  }, [isRefreshing, threshold]);
 
   useEffect(() => {
     if (disabled) return;
