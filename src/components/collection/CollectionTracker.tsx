@@ -1,5 +1,5 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
-import { ALL_CARDS, ALL_CLASSIFICATIONS, ALL_SETS, ALL_STORIES, SET_ORDER } from '../../data/catalogue';
+import { ALL_CARDS, ALL_CLASSIFICATIONS, ALL_STORIES, SET_ORDER, SETS_NEWEST_FIRST } from '../../data/catalogue';
 import { useAuthStore } from '../../store/authStore';
 import { useCollectionStore } from '../../store/collectionStore';
 import { usePullToRefresh } from '../../hooks/usePullToRefresh';
@@ -85,12 +85,13 @@ export function CollectionTracker() {
       setCounts.set(card.setCode, bucket);
     }
 
-    const setOptions: SetOption[] = ALL_SETS.map((s) => ({
+    // Newest release first — see SETS_NEWEST_FIRST. Already ordered, so no sort here.
+    const setOptions: SetOption[] = SETS_NEWEST_FIRST.map((s) => ({
       code: s.code,
       name: s.name,
       count: setCounts.get(s.code)?.count ?? 0,
       owned: setCounts.get(s.code)?.owned ?? 0,
-    })).sort((a, b) => (SET_ORDER.get(a.code) ?? 0) - (SET_ORDER.get(b.code) ?? 0));
+    }));
 
     // A story is its own key: `code` and `name` are both the story name.
     const storyOptions: SetOption[] = ALL_STORIES.map((s) => ({

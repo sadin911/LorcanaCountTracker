@@ -71,3 +71,7 @@
 [2026-08-27 13:19] Major | Claude | Command | npm run lint && npm run build - verification passed
 [2026-08-27 13:25] Major | Claude | Edit | scripts/upload-lorcana-r2.mjs - accept dir filters so one directory can be uploaded alone
 [2026-08-27 13:25] Major | Claude | Command | npm run data:upload -- set-boosters - 22 booster covers live on R2 (verified 22/22 HTTP 200)
+[2026-08-27 13:32] Major | Claude | Edit | scripts/download-set-boosters.mjs, src/data/setBoosterImages.json - keep booster art for the 13 numbered sets only; promo/special sets have no retail pack and their URLs pointed at unrelated products (7 shipped byte-identical art)
+[2026-08-27 13:32] Major | Claude | Command | git rm public/set-boosters/{P1,P2,P3,cp,C2,D23,DIS,Coconut,PD1}.webp - wrong art removed
+[2026-08-27 13:32] Major | Claude | Edit | src/data/catalogue.ts, CollectionTracker.tsx - SETS_NEWEST_FIRST: set filter lists newest release first (card sorting still uses SET_ORDER ascending)
+[2026-08-27 13:32] Major | Claude | Command | npm run lint && npm run build - verification passed

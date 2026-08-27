@@ -1,3 +1,16 @@
+/**
+ * Download one booster-pack cover per Lorcana set, convert it to WebP and write
+ * the setCode -> path map the app reads.
+ *
+ * Only the 13 numbered expansions are listed. The promo and special sets — P1,
+ * P2, P3, cp, C2, D23, DIS, Coconut, PD1 — have no retail booster product at
+ * all: they are convention exclusives, challenge prizes and promo inserts. The
+ * URLs previously listed for them pointed at unrelated products (a starter set,
+ * another set's box) or reused one placeholder URL across several sets, so seven
+ * of them shipped byte-identical art. Showing no pack is more honest than
+ * showing the wrong one, and src/utils/boosterImages.ts returns null for an
+ * unmapped set, which hides the trigger.
+ */
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
@@ -103,69 +116,6 @@ const SET_BOOSTER_SOURCES = [
     name: 'Attack of the Vine!',
     urls: [
       'https://tcgplayer-cdn.tcgplayer.com/product/690386_in_1000x1000.jpg'
-    ]
-  },
-  {
-    code: 'D23',
-    name: 'D23 Collection',
-    urls: [
-      'https://tcgplayer-cdn.tcgplayer.com/product/531521_in_1000x1000.jpg'
-    ]
-  },
-  {
-    code: 'P1',
-    name: 'Promo Set 1',
-    urls: [
-      'https://collectorsemporium.com/cdn/shop/files/rav8820.jpg?v=1759207737'
-    ]
-  },
-  {
-    code: 'P2',
-    name: 'Promo Set 2',
-    urls: [
-      'https://blogmickey.com/wp-content/uploads/2023/09/disney-lorcana-rise-floodborn-5.jpg'
-    ]
-  },
-  {
-    code: 'P3',
-    name: 'Promo Set 3',
-    urls: [
-      'https://product-images.tcgplayer.com/491183.jpg'
-    ]
-  },
-  {
-    code: 'cp',
-    name: 'Challenge Promo',
-    urls: [
-      'https://lecrocodeal.com/wp-content/uploads/2023/03/liste-coffrets-boosters-disney-lorcana-2048x1104.jpg'
-    ]
-  },
-  {
-    code: 'C2',
-    name: 'Lorcana Challenge Year 3',
-    urls: [
-      'https://lecrocodeal.com/wp-content/uploads/2023/03/liste-coffrets-boosters-disney-lorcana-2048x1104.jpg'
-    ]
-  },
-  {
-    code: 'DIS',
-    name: 'EPCOT Festival of the Arts',
-    urls: [
-      'https://product-images.tcgplayer.com/491183.jpg'
-    ]
-  },
-  {
-    code: 'Coconut',
-    name: 'Format Coconut',
-    urls: [
-      'https://tcgplayer-cdn.tcgplayer.com/product/531521_in_1000x1000.jpg'
-    ]
-  },
-  {
-    code: 'PD1',
-    name: 'PD1',
-    urls: [
-      'https://tcgplayer-cdn.tcgplayer.com/product/531521_in_1000x1000.jpg'
     ]
   }
 ];
