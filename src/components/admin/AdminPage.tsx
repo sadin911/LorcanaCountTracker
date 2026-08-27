@@ -55,7 +55,14 @@ export function AdminPage() {
   return (
     <div className="min-h-screen bg-[#0d0f1b] text-slate-200 flex flex-col">
       {/* Top Admin Navigation Header */}
-      <header className="sticky top-0 z-30 border-b border-[#c8b07b]/20 bg-[#131627]/95 backdrop-blur-xl shadow-lg">
+      <header
+        className="sticky top-0 z-30 border-b border-[#c8b07b]/20 bg-[#131627]/95 backdrop-blur-xl shadow-lg"
+        style={{
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingLeft: 'env(safe-area-inset-left, 0px)',
+          paddingRight: 'env(safe-area-inset-right, 0px)',
+        }}
+      >
         <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#c8b07b] to-transparent" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -121,7 +128,10 @@ export function AdminPage() {
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col">
+      <main
+        className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col"
+        style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }}
+      >
         {!isAuthenticated ? (
           <div className="flex-1 flex items-center justify-center py-12">
             <div className="w-full max-w-md bg-[#131627] border border-[#c8b07b]/40 rounded-3xl p-6 shadow-2xl">

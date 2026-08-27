@@ -59,3 +59,6 @@
 [2026-08-27 11:29] Major | Antigravity | Command | npm run lint && npm run build - verification passed
 [2026-08-27 11:59] Major | Antigravity | Edit | src/components/collection/CollectionHeader.tsx, CollectionFilterBar.tsx - fix z-index stacking
 [2026-08-27 11:59] Major | Antigravity | Command | npm run lint && npm run build - verification passed
+[2026-08-27 12:59] Major | Antigravity | Write | src/hooks/usePullToRefresh.ts, src/components/common/PullToRefreshIndicator.tsx - PTR
+[2026-08-27 12:59] Major | Antigravity | Edit | index.html, index.css, CollectionHeader.tsx, CollectionTracker.tsx, AdminPage.tsx, Modals - safe-area
+[2026-08-27 12:59] Major | Antigravity | Command | npm run lint && npm run build - verification passed

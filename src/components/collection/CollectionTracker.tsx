@@ -1,12 +1,15 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { ALL_CARDS, ALL_CLASSIFICATIONS, ALL_SETS, ALL_STORIES, SET_ORDER } from '../../data/catalogue';
+import { useAuthStore } from '../../store/authStore';
 import { useCollectionStore } from '../../store/collectionStore';
+import { usePullToRefresh } from '../../hooks/usePullToRefresh';
 import type { CollectionStats, SetProgress } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
 import { normalizeCardName } from '../../utils/cardRelations';
 import { createCardMatcher } from '../../utils/searchHelpers';
 import { analytics } from '../../utils/analytics';
 import type { SetOption } from '../common/SearchableSetSelect';
+import { PullToRefreshIndicator } from '../common/PullToRefreshIndicator';
 import { CollectionFilterBar } from './CollectionFilterBar';
 import { CollectionGridView } from './CollectionGridView';
 import { CollectionHeader } from './CollectionHeader';
@@ -14,11 +17,24 @@ import { CollectionHeader } from './CollectionHeader';
 export function CollectionTracker() {
   const [showBackToTop, setShowBackToTop] = useState(false);
 
+  const user = useAuthStore((s) => s.user);
   const profiles = useCollectionStore((s) => s.profiles);
   const activeProfileId = useCollectionStore((s) => s.activeProfileId);
   const filters = useCollectionStore((s) => s.filters);
   const setFilters = useCollectionStore((s) => s.setFilters);
   const resetFilters = useCollectionStore((s) => s.resetFilters);
+  const loadUserFromCloud = useCollectionStore((s) => s.loadUserFromCloud);
+
+  const handleRefresh = async () => {
+    if (user) {
+      await loadUserFromCloud(user.uid);
+    }
+    resetFilters();
+  };
+
+  const pullState = usePullToRefresh({
+    onRefresh: handleRefresh,
+  });
 
   const ownedCards = profiles[activeProfileId]?.cards ?? {};
 
@@ -262,9 +278,13 @@ export function CollectionTracker() {
 
   return (
     <div className="min-h-screen">
+      <PullToRefreshIndicator {...pullState} />
       <CollectionHeader stats={overallStats} />
 
-      <main className="px-3 sm:px-4 py-3 space-y-3">
+      <main
+        className="px-3 sm:px-4 py-3 space-y-3"
+        style={{ paddingBottom: 'calc(2.5rem + env(safe-area-inset-bottom, 0px))' }}
+      >
         <h1 className="sr-only">Disney Lorcana Card Collection Tracker - Track Inks, Foils, Cards, and Sets</h1>
         <CollectionFilterBar
           filters={filters}
@@ -288,7 +308,11 @@ export function CollectionTracker() {
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-4 right-4 z-40 px-3 py-2 rounded-full bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-lg shadow-black/50"
+          className="fixed z-40 px-3.5 py-2.5 rounded-full bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] text-[#131627] text-xs font-black shadow-xl shadow-black/80 hover:brightness-110 active:scale-95 transition-all border border-[#c8b07b]"
+          style={{
+            bottom: 'calc(1.25rem + env(safe-area-inset-bottom, 0px))',
+            right: 'calc(1.25rem + env(safe-area-inset-right, 0px))',
+          }}
         >
           ↑ Top
         </button>

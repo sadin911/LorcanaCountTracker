@@ -51,7 +51,14 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
   const logoUrl = `${import.meta.env.BASE_URL}logo-br-2x-Sweb4xgr.png`;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#c8b07b]/20 bg-[#131627]/95 backdrop-blur-xl shadow-lg shadow-black/50">
+    <header
+      className="sticky top-0 z-40 border-b border-[#c8b07b]/20 bg-[#131627]/95 backdrop-blur-xl shadow-lg shadow-black/50"
+      style={{
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingLeft: 'env(safe-area-inset-left, 0px)',
+        paddingRight: 'env(safe-area-inset-right, 0px)',
+      }}
+    >
       {/* Signature Disney Lorcana Gold Filigree Header Line */}
       <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#c8b07b] to-transparent" />
 

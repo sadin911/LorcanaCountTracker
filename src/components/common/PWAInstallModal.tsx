@@ -25,6 +25,12 @@ export function PWAInstallModal({
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in"
+      style={{
+        paddingTop: 'max(0.75rem, env(safe-area-inset-top, 0px))',
+        paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))',
+        paddingLeft: 'max(0.75rem, env(safe-area-inset-left, 0px))',
+        paddingRight: 'max(0.75rem, env(safe-area-inset-right, 0px))',
+      }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="w-full max-w-md rounded-2xl sm:rounded-3xl border border-[#c8b07b]/40 bg-[#131627]/95 text-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.8),0_0_30px_rgba(200,176,123,0.2)] p-5 sm:p-6 space-y-5">
