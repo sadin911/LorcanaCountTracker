@@ -65,10 +65,9 @@ export function SearchableSetSelect({
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) setIsOpen(false);
     };
     document.addEventListener('mousedown', onDown);
-    const t = setTimeout(() => inputRef.current?.focus(), 50);
+
     return () => {
       document.removeEventListener('mousedown', onDown);
-      clearTimeout(t);
     };
   }, [isOpen]);
 
