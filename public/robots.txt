@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://sadin911.github.io/LorcanaCountTracker/sitemap.xml
+Sitemap: https://lore.tcgcount.com/sitemap.xml
