@@ -91,3 +91,4 @@
 [2026-08-27 14:45] Major | Claude | Edit | src/index.css - remove every time-driven foil layer (sweeping glint, holo idle pulse); light is now purely a function of tilt
 [2026-08-27 14:45] Major | Claude | Edit | constants/lorcana.ts, CollectionCardItem.tsx, CardCollectionModal.tsx - drop foilSheenDelay and the foil-sheen layer
 [2026-08-27 14:45] Major | Claude | Command | npm run lint && npm run build - verification passed
+[2026-08-27 14:59] Major | Antigravity | Commit | Lorcana booster pack preview integration and SetSelect thumbnails
