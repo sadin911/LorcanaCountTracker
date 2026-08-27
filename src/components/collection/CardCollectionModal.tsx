@@ -14,6 +14,7 @@ import type { FinishKey, LorcanaCard } from '../../types/card';
 import { cardDisplayName, rarityLabel } from '../../types/card';
 import type { CardCondition, CollectionFilters } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
+import { useFoilTilt } from '../../hooks/useFoilTilt';
 import { relatedByStory, relatedBySameName } from '../../utils/cardRelations';
 import { handleCardImageError, resolveCardImageUrl } from '../../utils/cardImage';
 import { RelatedCardStrip } from './RelatedCardStrip';
@@ -93,6 +94,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
 
   const imageUrl = resolveCardImageUrl(card.setCode, card.collectorNumber, true);
   const showSheen = isPremiumRarity(card.rarity);
+  const tilt = useFoilTilt<HTMLButtonElement>(showSheen);
 
   return createPortal(
     <div
@@ -116,10 +118,14 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
             <button
               type="button"
               onClick={() => setShowZoom(true)}
-              className={`relative block w-full rounded-2xl overflow-hidden border bg-[#1b2038] transition-all shadow-xl shadow-black/50 group ${
+              ref={tilt.ref}
+              onPointerMove={showSheen ? tilt.onPointerMove : undefined}
+              onPointerLeave={showSheen ? tilt.onPointerLeave : undefined}
+              style={showSheen ? { animationDelay: `${foilSheenDelay(card.id)}s` } : undefined}
+              className={`relative block w-full rounded-2xl overflow-hidden border bg-[#1b2038] group ${
                 showSheen
-                  ? 'border-[#dfc792]/50 hover:border-[#dfc792]'
-                  : 'border-[#c8b07b]/30 hover:border-[#c8b07b]'
+                  ? 'foil-3d border-[#dfc792]/50 hover:border-[#dfc792]'
+                  : 'border-[#c8b07b]/30 hover:border-[#c8b07b] transition-all shadow-xl shadow-black/50'
               }`}
             >
               <img
@@ -129,11 +135,10 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 className="w-full h-auto transition-transform duration-300 group-hover:scale-[1.02]"
               />
               {showSheen && (
-                <div
-                  className="foil-sheen"
-                  style={{ animationDelay: `${foilSheenDelay(card.id)}s` }}
-                  aria-hidden="true"
-                />
+                <>
+                  <div className="foil-holo" aria-hidden="true" />
+                  <div className="foil-sheen" aria-hidden="true" />
+                </>
               )}
             </button>
             <button

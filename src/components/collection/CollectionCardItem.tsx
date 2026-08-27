@@ -3,6 +3,7 @@ import type { LorcanaCard } from '../../types/card';
 import { cardDisplayName, rarityLabel } from '../../types/card';
 import type { FinishCount } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
+import { useFoilTilt } from '../../hooks/useFoilTilt';
 import { handleCardImageError, resolveCardImageUrl } from '../../utils/cardImage';
 import { LorcanaInkIcon, LorcanaRarityIcon } from '../icons/LorcanaIcons';
 import { analytics } from '../../utils/analytics';
@@ -32,16 +33,27 @@ export function CollectionCardItem({
   const primaryInk = card.inks[0];
   /* Only on a card that is actually rendered in colour — a sheen riding a
      desaturated placeholder reads as a glitch, not as foil. */
-  const showSheen = isPremiumRarity(card.rarity) && vivid;
+  const showSheen = isPremiumRarity(card.rarity) && !!vivid;
+  const tilt = useFoilTilt<HTMLDivElement>(showSheen);
 
   return (
     <div
+      ref={tilt.ref}
       onClick={() => onSelect(card)}
-      className={`group relative rounded-2xl border cursor-pointer transition-all duration-200 hover:scale-[1.04] sm:hover:scale-[1.05] hover:-translate-y-1.5 hover:z-10 overflow-hidden active:scale-98 ${
+      onPointerMove={showSheen ? tilt.onPointerMove : undefined}
+      onPointerLeave={showSheen ? tilt.onPointerLeave : undefined}
+      style={showSheen ? { animationDelay: `${foilSheenDelay(card.id)}s` } : undefined}
+      className={`group relative rounded-2xl border cursor-pointer hover:z-10 overflow-hidden ${
         owned
-          ? 'border-[#c8b07b]/60 bg-[#1b2038]/95 shadow-md shadow-[#c8b07b]/20 ring-1 ring-[#c8b07b]/20'
+          ? 'border-[#c8b07b]/60 bg-[#1b2038]/95 ring-1 ring-[#c8b07b]/20'
           : 'bg-[#131627]/80 border-[#c8b07b]/20 hover:border-[#c8b07b]/60'
-      } ${showSheen ? 'ring-1 ring-[#dfc792]/45 shadow-lg shadow-[#dfc792]/10' : ''}`}
+      } ${
+        showSheen
+          ? /* The 3D transform replaces the flat hover lift; an inline transform
+               and a Tailwind hover:scale would otherwise overwrite each other. */
+            'foil-3d border-[#dfc792]/50'
+          : 'transition-all duration-200 hover:scale-[1.04] sm:hover:scale-[1.05] hover:-translate-y-1.5 active:scale-98 shadow-md shadow-[#c8b07b]/20'
+      }`}
     >
       <div className="relative aspect-[2.5/3.5] overflow-hidden bg-[#0d0f1b]">
         <img
@@ -59,11 +71,10 @@ export function CollectionCardItem({
         />
 
         {showSheen && (
-          <div
-            className="foil-sheen"
-            style={{ animationDelay: `${foilSheenDelay(card.id)}s` }}
-            aria-hidden="true"
-          />
+          <>
+            <div className="foil-holo" aria-hidden="true" />
+            <div className="foil-sheen" aria-hidden="true" />
+          </>
         )}
 
         {/* Top Right: Quantity Owned Badge */}

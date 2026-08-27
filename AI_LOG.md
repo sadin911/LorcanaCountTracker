@@ -80,3 +80,7 @@
 [2026-08-27 14:00] Major | Claude | Edit | src/constants/lorcana.ts - isPremiumRarity (Enchanted/Epic/Iconic) + foilSheenDelay FNV-1a stagger
 [2026-08-27 14:00] Major | Claude | Edit | CollectionCardItem.tsx, CardCollectionModal.tsx - sheen on premium cards only, and only when rendered in colour
 [2026-08-27 14:00] Major | Claude | Command | npm run lint && npm run build - verification passed
+[2026-08-27 14:11] Major | Claude | Write | src/hooks/useFoilTilt.ts - pointer-tracked 3D tilt, writes CSS vars (no React state per pointermove)
+[2026-08-27 14:11] Major | Claude | Edit | src/index.css - foil-3d + foil-sheen + foil-holo: perspective tilt, cursor-tracked specular, color-dodge holo bands with parallax
+[2026-08-27 14:11] Major | Claude | Edit | CollectionCardItem.tsx, CardCollectionModal.tsx - tilt handlers + holo layer on premium cards
+[2026-08-27 14:11] Major | Claude | Command | npm run lint && npm run build - verification passed
