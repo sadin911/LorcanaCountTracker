@@ -84,3 +84,7 @@
 [2026-08-27 14:11] Major | Claude | Edit | src/index.css - foil-3d + foil-sheen + foil-holo: perspective tilt, cursor-tracked specular, color-dodge holo bands with parallax
 [2026-08-27 14:11] Major | Claude | Edit | CollectionCardItem.tsx, CardCollectionModal.tsx - tilt handlers + holo layer on premium cards
 [2026-08-27 14:11] Major | Claude | Command | npm run lint && npm run build - verification passed
+[2026-08-27 14:39] Major | Claude | Edit | src/hooks/useFoilTilt.ts - gyroscope tilt (opt-in per call site), baseline calibration, screen-orientation remap, iOS permission gesture
+[2026-08-27 14:39] Major | Claude | Edit | src/index.css - drop the cursor-following specular spot; keep tilt + sweeping reflection only
+[2026-08-27 14:39] Major | Claude | Edit | CardCollectionModal.tsx - gyro enabled here only, plus the iOS enable button
+[2026-08-27 14:39] Major | Claude | Command | npm run lint && npm run build - verification passed

@@ -94,7 +94,9 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
 
   const imageUrl = resolveCardImageUrl(card.setCode, card.collectorNumber, true);
   const showSheen = isPremiumRarity(card.rarity);
-  const tilt = useFoilTilt<HTMLButtonElement>(showSheen);
+  /* Gyro only here, on a card being looked at on its own — sixty grid tiles
+     tilting in unison every time the phone moves is motion sickness, not depth. */
+  const tilt = useFoilTilt<HTMLButtonElement>(showSheen, { gyro: true });
 
   return createPortal(
     <div
@@ -141,6 +143,25 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 </>
               )}
             </button>
+            {/* iOS 13+ will only open the motion permission prompt from a user
+                gesture, so the tilt needs a button rather than an effect.
+                Android starts on its own and never renders this. */}
+            {showSheen && tilt.gyro.needsGesture && (
+              <button
+                type="button"
+                onClick={tilt.gyro.enable}
+                className="w-full py-2 rounded-xl border border-[#dfc792]/40 bg-[#dfc792]/10 text-xs font-bold text-[#dfc792] hover:bg-[#dfc792]/20 transition-all flex items-center justify-center gap-1.5"
+              >
+                <span>✨</span>
+                <span>Tilt your phone to catch the foil</span>
+              </button>
+            )}
+            {showSheen && tilt.gyro.status === 'denied' && (
+              <p className="text-[10px] text-slate-400 text-center">
+                Motion access was declined — the foil still shifts, just without the tilt.
+              </p>
+            )}
+
             <button
               type="button"
               onClick={() => setShowZoom(true)}
