@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useCollectionStore } from '../../store/collectionStore';
 import type { LorcanaCard } from '../../types/card';
 import type { SetProgress } from '../../types/collection';
+import { getSetBoosterImage } from '../../utils/boosterImages';
+import { BoosterPackPreviewModal } from './BoosterPackPreviewModal';
 import { CardCollectionModal } from './CardCollectionModal';
 import { CollectionCardItem } from './CollectionCardItem';
 
@@ -18,6 +20,7 @@ interface Props {
 export function CollectionGridView({ cards, currentSetProgress, showFullColor, filterKey }: Props) {
   const [displayLimit, setDisplayLimit] = useState(ITEMS_PER_PAGE);
   const [selectedCard, setSelectedCard] = useState<LorcanaCard | null>(null);
+  const [showBooster, setShowBooster] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const activeCards = useCollectionStore((s) => s.profiles[s.activeProfileId]?.cards ?? {});
@@ -57,6 +60,10 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
           ? 'gap-2.5 sm:gap-3.5'
           : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-3 md:gap-4';
 
+  /* Null for a set with no booster art on file, which is how the trigger stays
+     hidden instead of opening an empty modal. */
+  const boosterImageUrl = currentSetProgress ? getSetBoosterImage(currentSetProgress.setCode) : null;
+
   const customGridStyle = isCustom
     ? { gridTemplateColumns: `repeat(${Math.max(1, Math.min(12, customColumns))}, minmax(0, 1fr))` }
     : undefined;
@@ -65,15 +72,33 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
     <div className="relative z-0 space-y-3">
       {currentSetProgress && (
         <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-900/90 backdrop-blur-md p-4 shadow-xl">
-          <div className="flex items-center justify-between text-xs mb-2">
-            <span className="font-bold text-amber-100 flex items-center gap-1.5">
+          <div className="flex items-center justify-between text-xs mb-2 gap-2">
+            <span className="font-bold text-amber-100 flex items-center gap-1.5 min-w-0">
               <span className="text-amber-400">✦</span>
-              <span>{currentSetProgress.setName}</span>
+              <span className="truncate">{currentSetProgress.setName}</span>
             </span>
-            <span className="text-slate-300 font-medium">
-              <span className="font-bold text-white">{currentSetProgress.uniqueOwned}</span> / {currentSetProgress.totalCards} cards ·{' '}
-              <span className="text-amber-400 font-extrabold">{currentSetProgress.percentage}%</span>
-            </span>
+            <div className="flex items-center gap-2.5 shrink-0">
+              <span className="text-slate-300 font-medium whitespace-nowrap">
+                <span className="font-bold text-white">{currentSetProgress.uniqueOwned}</span> / {currentSetProgress.totalCards} cards ·{' '}
+                <span className="text-amber-400 font-extrabold">{currentSetProgress.percentage}%</span>
+              </span>
+              {boosterImageUrl && (
+                <button
+                  type="button"
+                  onClick={() => setShowBooster(true)}
+                  title={`View the ${currentSetProgress.setName} booster pack`}
+                  aria-label={`View the ${currentSetProgress.setName} booster pack`}
+                  className="shrink-0 h-9 w-7 rounded-md overflow-hidden border border-amber-500/40 bg-slate-950/60 hover:border-amber-400 hover:scale-105 transition-all active:scale-95"
+                >
+                  <img
+                    src={boosterImageUrl}
+                    alt=""
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              )}
+            </div>
           </div>
           <div className="h-2.5 rounded-full bg-slate-950/80 p-0.5 border border-slate-800/80 overflow-hidden">
             <div
@@ -128,6 +153,19 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
 
       {/* Keyed by id so opening a different card from the grid remounts the modal
           and resets any walk through related cards. */}
+      {showBooster && currentSetProgress && boosterImageUrl && (
+        <BoosterPackPreviewModal
+          setId={currentSetProgress.setCode}
+          setName={currentSetProgress.setName}
+          boosterImageUrl={boosterImageUrl}
+          totalCards={currentSetProgress.totalCards}
+          uniqueOwned={currentSetProgress.uniqueOwned}
+          totalCount={currentSetProgress.totalCount}
+          percentage={currentSetProgress.percentage}
+          onClose={() => setShowBooster(false)}
+        />
+      )}
+
       {selectedCard && (
         <CardCollectionModal key={selectedCard.id} card={selectedCard} onClose={() => setSelectedCard(null)} />
       )}

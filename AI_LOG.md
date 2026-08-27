@@ -64,3 +64,8 @@
 [2026-08-27 12:59] Major | Antigravity | Command | npm run lint && npm run build - verification passed
 [2026-08-27 13:02] Major | Antigravity | Edit | src/components/collection/CollectionFilterBar.tsx - fix mobile action toolbar wrapping
 [2026-08-27 13:02] Major | Antigravity | Command | npm run lint && npm run build - verification passed
+[2026-08-27 13:19] Major | Claude | Command | git checkout -b feat/booster-pack-preview
+[2026-08-27 13:19] Major | Claude | Edit | src/components/collection/BoosterPackPreviewModal.tsx - drop framer-motion (uninstalled dep broke tsc), use project animate-fade-in
+[2026-08-27 13:19] Major | Claude | Edit | src/components/collection/CollectionGridView.tsx - booster thumbnail trigger on the set progress bar
+[2026-08-27 13:19] Major | Claude | Edit | package.json, scripts/upload-lorcana-r2.mjs - add data:boosters script, upload public/set-boosters to R2
+[2026-08-27 13:19] Major | Claude | Command | npm run lint && npm run build - verification passed
