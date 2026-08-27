@@ -57,3 +57,5 @@
 [2026-08-27 11:29] Major | Antigravity | Write | public/sw.js, src/hooks/usePWAInstall.ts, src/components/common/PWAInstallModal.tsx - PWA suite
 [2026-08-27 11:29] Major | Antigravity | Edit | src/components/collection/CollectionHeader.tsx, manifest.json, main.tsx, index.html - Install PWA
 [2026-08-27 11:29] Major | Antigravity | Command | npm run lint && npm run build - verification passed
+[2026-08-27 11:59] Major | Antigravity | Edit | src/components/collection/CollectionHeader.tsx, CollectionFilterBar.tsx - fix z-index stacking
+[2026-08-27 11:59] Major | Antigravity | Command | npm run lint && npm run build - verification passed

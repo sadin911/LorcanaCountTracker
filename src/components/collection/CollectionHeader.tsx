@@ -51,7 +51,7 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
   const logoUrl = `${import.meta.env.BASE_URL}logo-br-2x-Sweb4xgr.png`;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[#c8b07b]/20 bg-[#131627]/95 backdrop-blur-xl shadow-lg shadow-black/50">
+    <header className="sticky top-0 z-40 border-b border-[#c8b07b]/20 bg-[#131627]/95 backdrop-blur-xl shadow-lg shadow-black/50">
       {/* Signature Disney Lorcana Gold Filigree Header Line */}
       <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#c8b07b] to-transparent" />
 
@@ -143,8 +143,8 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
 
                 {showUserMenu && (
                   <>
-                    <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)} />
-                    <div className="absolute right-0 mt-2 z-20 w-60 rounded-2xl border border-[#c8b07b]/30 bg-[#1b2038]/95 backdrop-blur-xl shadow-2xl p-3 animate-fade-in space-y-2">
+                    <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
+                    <div className="absolute right-0 mt-2 z-50 w-60 rounded-2xl border border-[#c8b07b]/30 bg-[#1b2038]/95 backdrop-blur-xl shadow-2xl p-3 animate-fade-in space-y-2">
                       <div className="border-b border-slate-700/60 pb-2">
                         <p className="text-xs font-bold text-slate-100 truncate">{user.displayName || 'Illumite'}</p>
                         <p className="text-[10px] text-slate-400 truncate">{user.email}</p>

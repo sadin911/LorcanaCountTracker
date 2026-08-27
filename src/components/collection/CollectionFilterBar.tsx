@@ -71,11 +71,11 @@ export function CollectionFilterBar({
     filters.sortOrder !== DEFAULT_COLLECTION_FILTERS.sortOrder;
 
   return (
-    <div className="relative z-40 space-y-2.5">
+    <div className="relative z-20 space-y-2.5">
       {/* Main Command Bar (Card Container with glass styling) */}
-      <div className="relative z-40 p-2.5 sm:p-3 rounded-2xl border border-[#c8b07b]/25 bg-[#131627]/85 backdrop-blur-xl shadow-lg shadow-black/50 space-y-2.5">
+      <div className="relative z-20 p-2.5 sm:p-3 rounded-2xl border border-[#c8b07b]/25 bg-[#131627]/85 backdrop-blur-xl shadow-lg shadow-black/50 space-y-2.5">
         {/* Row 1: Search, Set, Series, and Quick Action Toggles */}
-        <div className="relative z-40 flex flex-wrap items-center gap-2">
+        <div className="relative z-20 flex flex-wrap items-center gap-2">
           {/* Search Box */}
           <div className="relative flex-1 min-w-[220px]">
             <input
