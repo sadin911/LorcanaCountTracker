@@ -100,3 +100,4 @@
 [2026-08-27 15:12] Major | Claude | Command | npm run lint && npm run build - verification passed
 [2026-08-27 15:16] Major | Claude | Edit | src/hooks/useFoilTilt.ts - isotropic dead zone on gyro movement (0.45°/reading) and faster decay (0.88 -> 0.82)
 [2026-08-27 15:16] Major | Claude | Command | npm run lint && npm run build - verification passed
+[2026-08-27 15:18] Major | Antigravity | Fix | Disabled auto-focus on dropdown open to prevent keyboard popup
