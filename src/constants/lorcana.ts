@@ -123,22 +123,3 @@ const PREMIUM_RARITIES = new Set<string>(['Enchanted', 'Epic', 'Iconic']);
 export function isPremiumRarity(rarity: string): boolean {
   return PREMIUM_RARITIES.has(rarity);
 }
-
-/**
- * Seconds of delay before this card's glint, derived from its id. Synchronized
- * glints across a grid of Enchanteds look mechanical, and Math.random() would
- * re-roll on every render, so the offset is a hash of the id instead.
- *
- * FNV-1a rather than the usual `h * 31 + c`: card ids run in runs of consecutive
- * numbers ("1-205", "1-206", "1-207"), and a weakly-mixing hash maps those to
- * adjacent delays — the first attempt produced 5.15s, 5.16s, 5.17s down the row,
- * which is no stagger at all.
- */
-export function foilSheenDelay(cardId: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < cardId.length; i++) {
-    h ^= cardId.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return ((h >>> 0) % 600) / 100;
-}

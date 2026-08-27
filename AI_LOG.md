@@ -88,3 +88,6 @@
 [2026-08-27 14:39] Major | Claude | Edit | src/index.css - drop the cursor-following specular spot; keep tilt + sweeping reflection only
 [2026-08-27 14:39] Major | Claude | Edit | CardCollectionModal.tsx - gyro enabled here only, plus the iOS enable button
 [2026-08-27 14:39] Major | Claude | Command | npm run lint && npm run build - verification passed
+[2026-08-27 14:45] Major | Claude | Edit | src/index.css - remove every time-driven foil layer (sweeping glint, holo idle pulse); light is now purely a function of tilt
+[2026-08-27 14:45] Major | Claude | Edit | constants/lorcana.ts, CollectionCardItem.tsx, CardCollectionModal.tsx - drop foilSheenDelay and the foil-sheen layer
+[2026-08-27 14:45] Major | Claude | Command | npm run lint && npm run build - verification passed

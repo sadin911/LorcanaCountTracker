@@ -1,4 +1,4 @@
-import { RARITY_STYLES, FINISH_META, foilSheenDelay, isPremiumRarity } from '../../constants/lorcana';
+import { RARITY_STYLES, FINISH_META, isPremiumRarity } from '../../constants/lorcana';
 import type { LorcanaCard } from '../../types/card';
 import { cardDisplayName, rarityLabel } from '../../types/card';
 import type { FinishCount } from '../../types/collection';
@@ -42,7 +42,6 @@ export function CollectionCardItem({
       onClick={() => onSelect(card)}
       onPointerMove={showSheen ? tilt.onPointerMove : undefined}
       onPointerLeave={showSheen ? tilt.onPointerLeave : undefined}
-      style={showSheen ? { animationDelay: `${foilSheenDelay(card.id)}s` } : undefined}
       className={`group relative rounded-2xl border cursor-pointer hover:z-10 overflow-hidden ${
         owned
           ? 'border-[#c8b07b]/60 bg-[#1b2038]/95 ring-1 ring-[#c8b07b]/20'
@@ -70,12 +69,7 @@ export function CollectionCardItem({
           }`}
         />
 
-        {showSheen && (
-          <>
-            <div className="foil-holo" aria-hidden="true" />
-            <div className="foil-sheen" aria-hidden="true" />
-          </>
-        )}
+        {showSheen && <div className="foil-holo" aria-hidden="true" />}
 
         {/* Top Right: Quantity Owned Badge */}
         {count > 0 && (

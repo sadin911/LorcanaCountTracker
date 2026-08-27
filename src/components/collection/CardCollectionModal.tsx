@@ -6,7 +6,6 @@ import {
   INK_STYLES,
   RARITY_STYLES,
   TYPE_ICONS,
-  foilSheenDelay,
   isPremiumRarity,
 } from '../../constants/lorcana';
 import { DEFAULT_COLLECTION_FILTERS, useCollectionStore } from '../../store/collectionStore';
@@ -123,7 +122,6 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
               ref={tilt.ref}
               onPointerMove={showSheen ? tilt.onPointerMove : undefined}
               onPointerLeave={showSheen ? tilt.onPointerLeave : undefined}
-              style={showSheen ? { animationDelay: `${foilSheenDelay(card.id)}s` } : undefined}
               className={`relative block w-full rounded-2xl overflow-hidden border bg-[#1b2038] group ${
                 showSheen
                   ? 'foil-3d border-[#dfc792]/50 hover:border-[#dfc792]'
@@ -136,12 +134,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 onError={(e) => handleCardImageError(e, card.setCode, card.collectorNumber)}
                 className="w-full h-auto transition-transform duration-300 group-hover:scale-[1.02]"
               />
-              {showSheen && (
-                <>
-                  <div className="foil-holo" aria-hidden="true" />
-                  <div className="foil-sheen" aria-hidden="true" />
-                </>
-              )}
+              {showSheen && <div className="foil-holo" aria-hidden="true" />}
             </button>
             {/* iOS 13+ will only open the motion permission prompt from a user
                 gesture, so the tilt needs a button rather than an effect.
