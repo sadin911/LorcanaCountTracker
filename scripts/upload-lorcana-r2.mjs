@@ -15,7 +15,7 @@ import fs from 'fs';
 import path from 'path';
 
 const CONCURRENCY = 30;
-const SOURCE_DIRS = ['public/card-images', 'public/card-images-lg'];
+const SOURCE_DIRS = ['public/card-images', 'public/card-images-lg', 'public/set-boosters'];
 
 const SECRET_FILE = 'secret.yaml';
 if (!fs.existsSync(SECRET_FILE)) {
