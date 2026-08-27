@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { CONDITIONS, FINISH_META, INK_STYLES, RARITY_STYLES, TYPE_ICONS } from '../../constants/lorcana';
+import {
+  CONDITIONS,
+  FINISH_META,
+  INK_STYLES,
+  RARITY_STYLES,
+  TYPE_ICONS,
+  foilSheenDelay,
+  isPremiumRarity,
+} from '../../constants/lorcana';
 import { DEFAULT_COLLECTION_FILTERS, useCollectionStore } from '../../store/collectionStore';
 import type { FinishKey, LorcanaCard } from '../../types/card';
 import { cardDisplayName, rarityLabel } from '../../types/card';
@@ -84,6 +92,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
   }, [onClose, showZoom]);
 
   const imageUrl = resolveCardImageUrl(card.setCode, card.collectorNumber, true);
+  const showSheen = isPremiumRarity(card.rarity);
 
   return createPortal(
     <div
@@ -107,7 +116,11 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
             <button
               type="button"
               onClick={() => setShowZoom(true)}
-              className="block w-full rounded-2xl overflow-hidden border border-[#c8b07b]/30 bg-[#1b2038] hover:border-[#c8b07b] transition-all shadow-xl shadow-black/50 group"
+              className={`relative block w-full rounded-2xl overflow-hidden border bg-[#1b2038] transition-all shadow-xl shadow-black/50 group ${
+                showSheen
+                  ? 'border-[#dfc792]/50 hover:border-[#dfc792]'
+                  : 'border-[#c8b07b]/30 hover:border-[#c8b07b]'
+              }`}
             >
               <img
                 src={imageUrl}
@@ -115,6 +128,13 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 onError={(e) => handleCardImageError(e, card.setCode, card.collectorNumber)}
                 className="w-full h-auto transition-transform duration-300 group-hover:scale-[1.02]"
               />
+              {showSheen && (
+                <div
+                  className="foil-sheen"
+                  style={{ animationDelay: `${foilSheenDelay(card.id)}s` }}
+                  aria-hidden="true"
+                />
+              )}
             </button>
             <button
               type="button"

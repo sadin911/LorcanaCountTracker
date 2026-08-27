@@ -75,3 +75,8 @@
 [2026-08-27 13:32] Major | Claude | Command | git rm public/set-boosters/{P1,P2,P3,cp,C2,D23,DIS,Coconut,PD1}.webp - wrong art removed
 [2026-08-27 13:32] Major | Claude | Edit | src/data/catalogue.ts, CollectionTracker.tsx - SETS_NEWEST_FIRST: set filter lists newest release first (card sorting still uses SET_ORDER ascending)
 [2026-08-27 13:32] Major | Claude | Command | npm run lint && npm run build - verification passed
+[2026-08-27 14:00] Major | Claude | Command | git checkout -b feat/premium-rarity-shimmer
+[2026-08-27 14:00] Major | Claude | Edit | src/index.css - foil-sheen utility: slow specular glint + soft-light iridescence, frozen under prefers-reduced-motion
+[2026-08-27 14:00] Major | Claude | Edit | src/constants/lorcana.ts - isPremiumRarity (Enchanted/Epic/Iconic) + foilSheenDelay FNV-1a stagger
+[2026-08-27 14:00] Major | Claude | Edit | CollectionCardItem.tsx, CardCollectionModal.tsx - sheen on premium cards only, and only when rendered in colour
+[2026-08-27 14:00] Major | Claude | Command | npm run lint && npm run build - verification passed

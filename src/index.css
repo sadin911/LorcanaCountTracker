@@ -10,6 +10,86 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* --- Premium rarity foil sheen ---------------------------------------------
+   Enchanted, Epic and Iconic are the tiers Lorcana only ever prints as foil, so
+   these are the cards that get a sheen: a slow specular glint plus an
+   iridescence that sits near the threshold of notice.
+
+   Deliberately restrained. The glint is off-screen for roughly three quarters of
+   its cycle, so it reads as expensive card stock catching the light once in a
+   while rather than as a sparkle filter. Both layers animate on transform and
+   opacity only, so they stay on the compositor. */
+@keyframes foil-glint {
+  0%, 70%  { transform: translateX(-130%) skewX(-12deg); }
+  92%      { transform: translateX(210%) skewX(-12deg); }
+  100%     { transform: translateX(210%) skewX(-12deg); }
+}
+
+@keyframes foil-drift {
+  0%, 100% { opacity: 0.35; transform: translate3d(0, 0, 0); }
+  50%      { opacity: 0.7; transform: translate3d(0, -3%, 0); }
+}
+
+@utility foil-sheen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+
+  /* The specular band. */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -12%;
+    bottom: -12%;
+    left: 0;
+    width: 42%;
+    background: linear-gradient(
+      100deg,
+      transparent 0%,
+      rgba(255, 252, 240, 0.04) 26%,
+      rgba(255, 250, 235, 0.16) 42%,
+      rgba(255, 253, 245, 0.3) 50%,
+      rgba(255, 250, 235, 0.16) 58%,
+      rgba(255, 252, 240, 0.04) 74%,
+      transparent 100%
+    );
+    /* Normal blend, not screen: screen only lifts dark pixels, so on bright
+       artwork — Hades' gold, Stitch's water — it was invisible, and the effect
+       looked like it worked only while the image was still loading. */
+    will-change: transform;
+    animation: foil-glint 6s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+    /* Picks up the per-card offset set inline, so a grid of Enchanteds does not
+       glint in lockstep. */
+    animation-delay: inherit;
+  }
+
+  /* Iridescence: the theme's gold against one cool tint, not a spectrum. */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -20%;
+    background:
+      radial-gradient(58% 40% at 24% 14%, rgba(223, 199, 146, 0.55), transparent 70%),
+      radial-gradient(52% 44% at 78% 78%, rgba(146, 206, 232, 0.45), transparent 70%);
+    mix-blend-mode: soft-light;
+    animation: foil-drift 9s ease-in-out infinite;
+    animation-delay: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      animation: none;
+      transform: translateX(-130%) skewX(-12deg);
+    }
+    &::after {
+      animation: none;
+      opacity: 0.5;
+    }
+  }
+}
+
 @utility scrollbar-none {
   scrollbar-width: none;
   -ms-overflow-style: none;

@@ -1,4 +1,4 @@
-import { RARITY_STYLES, FINISH_META } from '../../constants/lorcana';
+import { RARITY_STYLES, FINISH_META, foilSheenDelay, isPremiumRarity } from '../../constants/lorcana';
 import type { LorcanaCard } from '../../types/card';
 import { cardDisplayName, rarityLabel } from '../../types/card';
 import type { FinishCount } from '../../types/collection';
@@ -30,6 +30,9 @@ export function CollectionCardItem({
   const owned = count > 0;
   const vivid = owned || showFullColor;
   const primaryInk = card.inks[0];
+  /* Only on a card that is actually rendered in colour — a sheen riding a
+     desaturated placeholder reads as a glitch, not as foil. */
+  const showSheen = isPremiumRarity(card.rarity) && vivid;
 
   return (
     <div
@@ -38,7 +41,7 @@ export function CollectionCardItem({
         owned
           ? 'border-[#c8b07b]/60 bg-[#1b2038]/95 shadow-md shadow-[#c8b07b]/20 ring-1 ring-[#c8b07b]/20'
           : 'bg-[#131627]/80 border-[#c8b07b]/20 hover:border-[#c8b07b]/60'
-      }`}
+      } ${showSheen ? 'ring-1 ring-[#dfc792]/45 shadow-lg shadow-[#dfc792]/10' : ''}`}
     >
       <div className="relative aspect-[2.5/3.5] overflow-hidden bg-[#0d0f1b]">
         <img
@@ -54,6 +57,14 @@ export function CollectionCardItem({
               : 'grayscale-[85%] opacity-40 group-hover:opacity-90 group-hover:grayscale-[15%]'
           }`}
         />
+
+        {showSheen && (
+          <div
+            className="foil-sheen"
+            style={{ animationDelay: `${foilSheenDelay(card.id)}s` }}
+            aria-hidden="true"
+          />
+        )}
 
         {/* Top Right: Quantity Owned Badge */}
         {count > 0 && (
