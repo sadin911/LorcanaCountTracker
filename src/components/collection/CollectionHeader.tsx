@@ -95,6 +95,19 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
             <div className="flex items-center gap-1.5 shrink-0">
               <OTAUpdateButton variant="badge" />
 
+              {/* Install PWA Button (Mobile) */}
+              {!isInstalled && (
+                <button
+                  type="button"
+                  onClick={handleInstallClick}
+                  title="Install Lorcana Tracker App"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm min-h-[36px] font-bold shrink-0"
+                >
+                  <span className="text-sm">📲</span>
+                  <span className="hidden xs:inline">Install</span>
+                </button>
+              )}
+
               {/* Profile Picker Button */}
               <button
                 type="button"
@@ -150,6 +163,20 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
                         <div className="pt-1">
                           <OTAUpdateButton variant="menu" />
                         </div>
+
+                        {!isInstalled && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowUserMenu(false);
+                              handleInstallClick();
+                            }}
+                            className="w-full py-2 px-2.5 rounded-xl bg-[#1b2038] hover:bg-[#252c4d] border border-[#c8b07b]/40 text-xs font-semibold text-[#dfc792] transition-colors flex items-center justify-center gap-1.5"
+                          >
+                            <span>📲</span>
+                            <span>Install App</span>
+                          </button>
+                        )}
 
                         <button
                           type="button"

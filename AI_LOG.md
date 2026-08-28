@@ -157,3 +157,5 @@
 [2026-08-28 11:08] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
 [2026-08-28 11:12] Major | Antigravity | Fix | deckStore.ts - fix reserved firestore doc id (__lorcana_decks__ -> lorcana_decks_vault)
 [2026-08-28 11:12] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
+[2026-08-28 11:15] Major | Antigravity | Fix | CollectionHeader.tsx, DeckHeader.tsx - restored Install PWA button on mobile & deck builder
+[2026-08-28 11:15] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed

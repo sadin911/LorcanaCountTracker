@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useDeckStore } from '../../store/deckStore';
 import { useCollectionStore } from '../../store/collectionStore';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { isFirebaseConfigured } from '../../utils/firebase';
 import { APP_VERSION } from '../../constants/version';
 import { ProfileManagerModal } from '../collection/ProfileManagerModal';
+import { PWAInstallModal } from '../common/PWAInstallModal';
 import { OTAUpdateButton } from '../common/OTAUpdateButton';
 
 function getSyncBadge(status: string, hasUser: boolean) {
@@ -37,7 +39,21 @@ export function DeckHeader({
   onSwitchToCollection,
 }: Props) {
   const [showProfiles, setShowProfiles] = useState(false);
+  const [showInstallModal, setShowInstallModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+
+  const { isInstalled, isIOS, canPromptDirectly, promptInstall } = usePWAInstall();
+
+  const handleInstallClick = async () => {
+    if (canPromptDirectly) {
+      const outcome = await promptInstall();
+      if (outcome === 'manual_instructions') {
+        setShowInstallModal(true);
+      }
+    } else {
+      setShowInstallModal(true);
+    }
+  };
 
   const user = useAuthStore((s) => s.user);
   const authLoading = useAuthStore((s) => s.loading);
@@ -98,6 +114,19 @@ export function DeckHeader({
 
             <div className="flex items-center gap-1.5 shrink-0">
               <OTAUpdateButton variant="badge" />
+
+              {/* Install PWA Button (Mobile) */}
+              {!isInstalled && (
+                <button
+                  type="button"
+                  onClick={handleInstallClick}
+                  title="Install Lorcana Tracker App"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm min-h-[36px] font-bold shrink-0"
+                >
+                  <span className="text-sm">📲</span>
+                  <span className="hidden xs:inline">Install</span>
+                </button>
+              )}
 
               {/* Import / Export */}
               <button
@@ -174,6 +203,19 @@ export function DeckHeader({
                         <div className="pt-1">
                           <OTAUpdateButton variant="menu" />
                         </div>
+                        {!isInstalled && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowUserMenu(false);
+                              handleInstallClick();
+                            }}
+                            className="w-full text-left px-2.5 py-1.5 rounded-xl bg-[#1b2038] hover:bg-[#252c4d] border border-[#c8b07b]/40 text-xs font-semibold text-[#dfc792] transition-colors flex items-center gap-2"
+                          >
+                            <span>📲</span>
+                            <span>Install App</span>
+                          </button>
+                        )}
                         <button
                           type="button"
                           onClick={() => {
@@ -301,6 +343,19 @@ export function DeckHeader({
             {/* OTA Update Button */}
             <OTAUpdateButton variant="badge" />
 
+            {/* Install PWA */}
+            {!isInstalled && (
+              <button
+                type="button"
+                onClick={handleInstallClick}
+                title="Install Lorcana Tracker App"
+                className="flex p-2 px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm items-center gap-1.5 min-h-[36px] group"
+              >
+                <span className="text-sm group-hover:scale-110 transition-transform">📲</span>
+                <span className="font-bold">Install</span>
+              </button>
+            )}
+
             {/* Import / Export */}
             <button
               type="button"
@@ -369,6 +424,19 @@ export function DeckHeader({
                       <div className="pt-1">
                         <OTAUpdateButton variant="menu" />
                       </div>
+                      {!isInstalled && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            handleInstallClick();
+                          }}
+                          className="w-full text-left px-2.5 py-1.5 rounded-xl bg-[#1b2038] hover:bg-[#252c4d] border border-[#c8b07b]/40 text-xs font-semibold text-[#dfc792] transition-colors flex items-center gap-2"
+                        >
+                          <span>📲</span>
+                          <span>Install App</span>
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => {
@@ -409,6 +477,17 @@ export function DeckHeader({
       </div>
 
       {showProfiles && <ProfileManagerModal onClose={() => setShowProfiles(false)} />}
+      {showInstallModal && (
+        <PWAInstallModal
+          onClose={() => setShowInstallModal(false)}
+          onDirectInstall={async () => {
+            await promptInstall();
+            setShowInstallModal(false);
+          }}
+          canPromptDirectly={canPromptDirectly}
+          isIOS={isIOS}
+        />
+      )}
     </header>
   );
 }
