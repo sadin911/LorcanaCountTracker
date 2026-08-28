@@ -75,7 +75,7 @@ function loadInitialGuestDecks(): { decks: Record<string, Deck>; activeDeckId: s
   };
 }
 
-let deckSaveTimeout: ReturnType<typeof setTimeout> | null = null;
+const deckSaveTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
 function triggerDeckSave(get: () => DeckState, deckId: string) {
   const user = auth?.currentUser;
@@ -89,10 +89,15 @@ function triggerDeckSave(get: () => DeckState, deckId: string) {
       );
     } catch {}
 
-    if (deckSaveTimeout) clearTimeout(deckSaveTimeout);
-    deckSaveTimeout = setTimeout(() => {
-      state.syncDeckToCloud(deckId);
-    }, 600);
+    const existing = deckSaveTimers.get(deckId);
+    if (existing) clearTimeout(existing);
+    deckSaveTimers.set(
+      deckId,
+      setTimeout(() => {
+        deckSaveTimers.delete(deckId);
+        void get().syncDeckToCloud(deckId);
+      }, 400)
+    );
   } else {
     try {
       localStorage.setItem(
@@ -479,6 +484,8 @@ export const useDeckStore = create<DeckState>((set, get) => ({
   },
 
   resetToGuestDecks: () => {
+    deckSaveTimers.forEach((timer) => clearTimeout(timer));
+    deckSaveTimers.clear();
     const guest = loadInitialGuestDecks();
     set({
       decks: guest.decks,

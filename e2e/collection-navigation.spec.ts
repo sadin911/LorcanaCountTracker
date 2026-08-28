@@ -24,7 +24,7 @@ test.describe('Collection Navigation & Core App State', () => {
 
   test('displays profile switcher and switches profile tabs smoothly', async ({ page }) => {
     // Open profile menu if exists or check profile trigger
-    const profileTrigger = page.locator('button:has-text("Main"), button:has-text("Profile"), header button').first();
+    const profileTrigger = page.locator('header button[title*="Binder"], header button:has-text("Binder")').first();
     await expect(profileTrigger).toBeVisible();
   });
 });

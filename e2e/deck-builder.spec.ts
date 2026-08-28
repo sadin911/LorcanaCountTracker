@@ -5,7 +5,7 @@ test('Deck Builder allows creating, viewing stats, and calculating missing cards
   await openApp(page);
 
   // Switch to Deck Builder via BottomNav
-  const deckNavBtn = page.locator('button:has-text("Decks")').first();
+  const deckNavBtn = page.locator('nav button:has-text("Decks"), button:has-text("Decks"):visible').first();
   await expect(deckNavBtn).toBeVisible();
   await deckNavBtn.click();
 

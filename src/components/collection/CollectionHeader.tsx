@@ -71,14 +71,14 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
       <div className="px-3 sm:px-6 py-2 sm:py-2.5 space-y-2 max-w-7xl mx-auto">
         <div className="flex items-center justify-between gap-2.5">
           {/* Logo & Identity */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
             <img
               src={logoUrl}
               alt="Disney Lorcana TCG"
-              className="h-7 sm:h-9 w-auto object-contain drop-shadow-[0_2px_10px_rgba(200,176,123,0.35)] shrink-0 select-none"
+              className="h-6 sm:h-9 w-auto object-contain drop-shadow-[0_2px_10px_rgba(200,176,123,0.35)] shrink-0 select-none"
             />
-            <div className="flex items-center gap-1.5 shrink-0">
-              <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-widest text-[#dfc792] px-2 py-0.5 rounded-lg bg-[#c8b07b]/15 border border-[#c8b07b]/30 shadow-sm">
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+              <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-widest text-[#dfc792] px-1.5 sm:px-2 py-0.5 rounded-lg bg-[#c8b07b]/15 border border-[#c8b07b]/30 shadow-sm">
                 Tracker
               </span>
               <span
@@ -92,16 +92,16 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
 
           {/* Right Action Tools */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Quick Switch to Deck Builder */}
+            {/* Quick Switch to Deck Builder (Hidden on mobile as BottomNav has it) */}
             {onSwitchToDeck && (
               <button
                 type="button"
                 onClick={onSwitchToDeck}
                 title="Open Deck Builder"
-                className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl bg-gradient-to-r from-[#1b2038] to-[#252c4d] hover:from-[#252c4d] hover:to-[#313962] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm min-h-[40px] sm:min-h-[36px] font-bold group"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#1b2038] to-[#252c4d] hover:from-[#252c4d] hover:to-[#313962] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm min-h-[36px] font-bold group"
               >
-                <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">🃏</span>
-                <span className="hidden sm:inline">Decks</span>
+                <span className="text-sm group-hover:scale-110 transition-transform">🃏</span>
+                <span>Decks</span>
               </button>
             )}
 
@@ -109,39 +109,40 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
             <button
               type="button"
               onClick={() => setShowProfiles(true)}
-              className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs transition-all shadow-sm group hover:text-[#dfc792] min-h-[40px] sm:min-h-[36px]"
+              title={`Active Binder: ${activeProfile?.name ?? 'Binder'}`}
+              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs transition-all shadow-sm group hover:text-[#dfc792] min-h-[36px]"
             >
-              <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">{activeProfile?.icon ?? '📘'}</span>
-              <span className="hidden sm:inline max-w-[130px] truncate font-bold text-slate-200">
+              <span className="text-sm group-hover:scale-110 transition-transform">{activeProfile?.icon ?? '📘'}</span>
+              <span className="hidden sm:inline max-w-[120px] truncate font-bold text-slate-200">
                 {activeProfile?.name ?? 'Binder'}
               </span>
               <span className="text-amber-400/80 text-[10px]">▾</span>
             </button>
 
-            {/* Backup / Export */}
+            {/* Backup / Export (Hidden on mobile to save space) */}
             <button
               type="button"
               onClick={() => setShowBackup(true)}
               title="Backup & restore collection"
-              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm flex items-center gap-1.5 min-h-[40px] sm:min-h-[36px]"
+              className="hidden sm:flex p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm items-center gap-1.5 min-h-[36px]"
             >
-              <span className="text-base sm:text-sm">💾</span>
+              <span className="text-sm">💾</span>
               <span className="hidden md:inline font-bold">Backup</span>
             </button>
 
             {/* OTA Update Button */}
             <OTAUpdateButton variant="badge" />
 
-            {/* Install PWA (Hidden when running standalone) */}
+            {/* Install PWA (Hidden on mobile to prevent clutter) */}
             {!isInstalled && (
               <button
                 type="button"
                 onClick={handleInstallClick}
                 title="Install Lorcana Tracker App"
-                className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm flex items-center gap-1.5 min-h-[40px] sm:min-h-[36px] group"
+                className="hidden md:flex p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm items-center gap-1.5 min-h-[36px] group"
               >
-                <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">📲</span>
-                <span className="hidden md:inline font-bold">Install</span>
+                <span className="text-sm group-hover:scale-110 transition-transform">📲</span>
+                <span className="font-bold">Install</span>
               </button>
             )}
 
@@ -149,7 +150,7 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
             {!isFirebaseConfigured ? (
               <span
                 title="Set VITE_FIREBASE_* in .env.local to enable cloud sync"
-                className="px-2.5 py-1.5 rounded-xl bg-[#1b2038]/60 border border-[#c8b07b]/20 text-[10px] text-slate-400 font-medium flex items-center min-h-[40px] sm:min-h-[36px]"
+                className="px-2 py-1 rounded-xl bg-[#1b2038]/60 border border-[#c8b07b]/20 text-[10px] text-slate-400 font-medium flex items-center min-h-[36px]"
               >
                 Offline
               </span>
@@ -158,12 +159,12 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
                 <button
                   type="button"
                   onClick={() => setShowUserMenu((v) => !v)}
-                  className="flex items-center gap-1.5 p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 transition-all min-h-[40px] sm:min-h-[36px]"
+                  className="flex items-center gap-1 p-1 sm:px-2.5 sm:py-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 transition-all min-h-[36px]"
                 >
                   {user.photoURL ? (
-                    <img src={user.photoURL} alt="" className="w-7 h-7 sm:w-6 sm:h-6 rounded-full ring-1 ring-[#c8b07b]" />
+                    <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full ring-1 ring-[#c8b07b]" />
                   ) : (
-                    <span className="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-gradient-to-tr from-[#dfc792] to-[#c8b07b] text-[#131627] text-xs font-extrabold flex items-center justify-center shadow">
+                    <span className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#dfc792] to-[#c8b07b] text-[#131627] text-xs font-extrabold flex items-center justify-center shadow">
                       {(user.displayName ?? user.email ?? '?').charAt(0).toUpperCase()}
                     </span>
                   )}

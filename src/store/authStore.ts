@@ -3,6 +3,7 @@ import type { User } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, isFirebaseConfigured, logOut, signInWithGoogle } from '../utils/firebase';
 import { useCollectionStore } from './collectionStore';
+import { useDeckStore } from './deckStore';
 
 interface AuthState {
   user: User | null;
@@ -58,10 +59,13 @@ export function initAuth() {
 
     if (user) {
       void useCollectionStore.getState().loadUserFromCloud(user.uid);
+      void useDeckStore.getState().loadUserDecksFromCloud(user.uid);
     } else if (previous) {
       // Only reset on an actual sign-out, not on the initial "no user" callback,
       // which would otherwise discard guest state loaded a moment earlier.
       useCollectionStore.getState().resetToGuest();
+      useDeckStore.getState().resetToGuestDecks();
     }
   });
 }
+

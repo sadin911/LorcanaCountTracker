@@ -70,4 +70,21 @@ test.describe('Mobile Viewport & Touch Gestures', () => {
     await expect(searchInput).toHaveValue('', { timeout: 4000 });
     await expect(page.locator('main')).toBeVisible();
   });
+
+  test('small viewport (360px) header buttons are clickable without overlapping', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 640 });
+    await page.goto('/');
+    await page.waitForSelector('header');
+
+    // Verify profile picker is clickable and opens modal
+    const profileBtn = page.locator('header button[title*="Binder"], header button:has-text("Binder")').first();
+    await expect(profileBtn).toBeVisible();
+    await profileBtn.click();
+
+    // Verify Profile Manager Modal opened
+    await expect(page.getByRole('heading', { name: 'Binders' })).toBeVisible();
+
+    // Close modal
+    await page.locator('button:has-text("✕")').first().click();
+  });
 });

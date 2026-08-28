@@ -39,6 +39,7 @@ export function DeckHeader({
   const clearError = useAuthStore((s) => s.clearError);
 
   const syncStatus = useDeckStore((s) => s.syncStatus);
+  const loadUserDecksFromCloud = useDeckStore((s) => s.loadUserDecksFromCloud);
   const profiles = useCollectionStore((s) => s.profiles);
   const activeProfileId = useCollectionStore((s) => s.activeProfileId);
   const activeProfile = profiles[activeProfileId];
@@ -61,25 +62,25 @@ export function DeckHeader({
       <div className="px-3 sm:px-6 py-2 sm:py-2.5 space-y-2 max-w-7xl mx-auto">
         <div className="flex items-center justify-between gap-2.5">
           {/* Left: Logo or Back Button */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
             {isEditing && onBackToDecks ? (
               <button
                 type="button"
                 onClick={onBackToDecks}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] text-slate-200 hover:text-[#dfc792] transition-all font-bold text-xs sm:text-sm active:scale-95 shadow-sm"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] text-slate-200 hover:text-[#dfc792] transition-all font-bold text-xs sm:text-sm active:scale-95 shadow-sm min-h-[36px]"
               >
                 <span>‹</span>
                 <span>Decks</span>
               </button>
             ) : (
-              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
                 <img
                   src={logoUrl}
                   alt="Disney Lorcana TCG"
-                  className="h-7 sm:h-9 w-auto object-contain drop-shadow-[0_2px_10px_rgba(200,176,123,0.35)] shrink-0 select-none"
+                  className="h-6 sm:h-9 w-auto object-contain drop-shadow-[0_2px_10px_rgba(200,176,123,0.35)] shrink-0 select-none"
                 />
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-widest text-[#dfc792] px-2 py-0.5 rounded-lg bg-[#c8b07b]/15 border border-[#c8b07b]/30 shadow-sm">
+                <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                  <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-widest text-[#dfc792] px-1.5 sm:px-2 py-0.5 rounded-lg bg-[#c8b07b]/15 border border-[#c8b07b]/30 shadow-sm">
                     Deck Builder
                   </span>
                   <span
@@ -107,7 +108,7 @@ export function DeckHeader({
               <button
                 type="button"
                 onClick={onSwitchToCollection}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1b2038]/80 hover:bg-[#1b2038] border border-slate-700 hover:border-[#c8b07b]/60 active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1b2038]/80 hover:bg-[#1b2038] border border-slate-700 hover:border-[#c8b07b]/60 active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm min-h-[36px]"
               >
                 <span>📖</span>
                 <span className="font-semibold">Collection</span>
@@ -119,9 +120,9 @@ export function DeckHeader({
               type="button"
               onClick={() => setShowProfiles(true)}
               title="Select binder to compare missing cards"
-              className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs transition-all shadow-sm group hover:text-[#dfc792] min-h-[40px] sm:min-h-[36px]"
+              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs transition-all shadow-sm group hover:text-[#dfc792] min-h-[36px]"
             >
-              <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">
+              <span className="text-sm group-hover:scale-110 transition-transform">
                 {activeProfile?.icon ?? '📘'}
               </span>
               <span className="hidden lg:inline max-w-[110px] truncate font-bold text-slate-200">
@@ -138,9 +139,9 @@ export function DeckHeader({
               type="button"
               onClick={onOpenImportExport}
               title="Import & Export deck"
-              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm flex items-center gap-1.5 min-h-[40px] sm:min-h-[36px]"
+              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm flex items-center gap-1.5 min-h-[36px]"
             >
-              <span className="text-base sm:text-sm">📥</span>
+              <span className="text-sm">📥</span>
               <span className="hidden md:inline font-bold">Import / Export</span>
             </button>
 
@@ -151,7 +152,7 @@ export function DeckHeader({
                   <button
                     type="button"
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center gap-1.5 p-1 sm:px-2.5 sm:py-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] text-xs transition-all min-h-[40px] sm:min-h-[36px]"
+                    className="flex items-center gap-1 p-1 sm:px-2.5 sm:py-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] text-xs transition-all min-h-[36px]"
                   >
                     {user.photoURL ? (
                       <img
@@ -167,13 +168,13 @@ export function DeckHeader({
                     <span className="hidden sm:inline font-bold max-w-[100px] truncate text-slate-200">
                       {user.displayName?.split(' ')[0] ?? 'Cloud'}
                     </span>
-                    <span className="text-amber-400/80 text-[10px]">▾</span>
+                    <span className="text-slate-400 text-[10px]">▾</span>
                   </button>
 
                   {showUserMenu && (
                     <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#131627] border border-[#c8b07b]/40 shadow-2xl p-2.5 space-y-2 z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="px-2 py-1.5 border-b border-[#c8b07b]/15">
-                        <div className="text-xs font-black text-[#dfc792] truncate">{user.displayName}</div>
+                        <div className="text-xs font-black text-[#dfc792] truncate">{user.displayName || 'Illumite'}</div>
                         <div className="text-[10px] text-slate-400 truncate">{user.email}</div>
                       </div>
                       <div className="flex items-center justify-between px-2 py-1 text-[11px] text-slate-300">
@@ -182,6 +183,18 @@ export function DeckHeader({
                           {badge.text}
                         </span>
                       </div>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (user?.uid) {
+                            await loadUserDecksFromCloud(user.uid);
+                          }
+                        }}
+                        className="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-slate-850 text-slate-200 text-xs font-semibold transition-all flex items-center gap-2 border border-slate-800"
+                      >
+                        <span>🔄</span>
+                        <span>Sync Decks Now</span>
+                      </button>
                       <div className="pt-1">
                         <OTAUpdateButton variant="menu" />
                       </div>
@@ -204,10 +217,10 @@ export function DeckHeader({
                   type="button"
                   onClick={() => signIn()}
                   disabled={authLoading}
-                  className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-1.5 min-h-[40px] sm:min-h-[36px]"
+                  className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-1.5 min-h-[36px]"
                 >
                   <span>☁️</span>
-                  <span>{authLoading ? 'Signing in…' : 'Sync Cloud'}</span>
+                  <span>{authLoading ? '...' : 'Sign In'}</span>
                 </button>
               )
             ) : null}
