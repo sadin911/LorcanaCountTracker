@@ -4,6 +4,8 @@ import { DeckManager } from './components/deck/DeckManager';
 import { AdminPage } from './components/admin/AdminPage';
 import { BottomNav, type AppMode } from './components/layout/BottomNav';
 import { OTAUpdateBanner } from './components/common/OTAUpdateBanner';
+import { useAuthStore } from './store/authStore';
+import { usePricingStore } from './store/pricingStore';
 
 function getModeFromURL(): AppMode {
   if (typeof window === 'undefined') return 'collection';
@@ -49,6 +51,13 @@ function updateURLForMode(mode: AppMode) {
 function App() {
   const [appMode, setAppMode] = useState<AppMode>(() => getModeFromURL());
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(() => getModeFromURL() === 'admin');
+
+  const user = useAuthStore((s) => s.user);
+  const initPricing = usePricingStore((s) => s.initPricing);
+
+  useEffect(() => {
+    void initPricing(user?.uid);
+  }, [user?.uid, initPricing]);
 
   const handleSelectMode = (mode: AppMode) => {
     setAppMode(mode);

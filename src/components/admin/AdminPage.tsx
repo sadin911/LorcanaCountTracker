@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { analytics, type AnalyticsSummary } from '../../utils/analytics';
 import { AdminAuthGate } from './AdminAuthGate';
+import { AdminPriceManager } from './AdminPriceManager';
 import { INK_STYLES } from '../../constants/lorcana';
 import { LorcanaInkIcon } from '../icons/LorcanaIcons';
 import { useAuthStore } from '../../store/authStore';
 
-type AdminTab = 'overview' | 'cards' | 'trends' | 'events' | 'ga4';
+type AdminTab = 'overview' | 'pricing' | 'cards' | 'trends' | 'events' | 'ga4';
 
 export function AdminPage() {
   const user = useAuthStore((s) => s.user);
@@ -158,6 +159,17 @@ export function AdminPage() {
               </button>
               <button
                 type="button"
+                onClick={() => setActiveTab('pricing')}
+                className={`px-4 py-2 rounded-xl transition-all ${
+                  activeTab === 'pricing'
+                    ? 'bg-gradient-to-r from-[#b39552] to-[#dfc792] text-[#131627] font-extrabold shadow'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#1b2038]'
+                }`}
+              >
+                💎 Card Pricing
+              </button>
+              <button
+                type="button"
                 onClick={() => setActiveTab('cards')}
                 className={`px-4 py-2 rounded-xl transition-all ${
                   activeTab === 'cards'
@@ -225,6 +237,8 @@ export function AdminPage() {
             </div>
 
             {/* Content Body */}
+            {activeTab === 'pricing' && <AdminPriceManager />}
+
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 {/* Metric Cards */}

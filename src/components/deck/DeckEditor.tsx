@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useDeferredValue } from 'react';
 import { useDeckStore } from '../../store/deckStore';
 import { useCollectionStore } from '../../store/collectionStore';
+import { usePricingStore } from '../../store/pricingStore';
 import { calculateDeckStats, calculateMissingCards } from '../../utils/deckCalculator';
 import { resolveCardImageUrl, handleCardImageError } from '../../utils/cardImage';
 import { MissingCardsModal } from './MissingCardsModal';
@@ -53,6 +54,23 @@ export function DeckEditor({ deck }: Props) {
     () => calculateMissingCards(deck, cardDataMap, userCollectionCards),
     [deck, cardDataMap, userCollectionCards]
   );
+
+  const currency = usePricingStore((s) => s.currency);
+  const setCurrency = usePricingStore((s) => s.setCurrency);
+  const formatPrice = usePricingStore((s) => s.formatPrice);
+  const marketPrices = usePricingStore((s) => s.marketPrices);
+
+  const deckValueUsd = useMemo(() => {
+    let total = 0;
+    for (const [cardId, entry] of Object.entries(deck.cards)) {
+      const count = typeof entry === 'number' ? entry : entry?.count ?? 0;
+      if (!count) continue;
+      const mp = marketPrices[cardId];
+      const price = mp?.regular ?? 0;
+      total += price * count;
+    }
+    return total;
+  }, [deck.cards, marketPrices]);
 
   // States
   const [deckName, setDeckName] = useState(deck.name);
@@ -336,6 +354,24 @@ export function DeckEditor({ deck }: Props) {
               </div>
               <span className="text-lg font-black text-[#dfc792]">
                 {stats.inkableCount} <span className="text-xs text-slate-400 font-normal">({stats.inkablePercentage}%)</span>
+              </span>
+            </div>
+
+            {/* Deck Market Value */}
+            <div className="px-3.5 py-2 rounded-2xl bg-gradient-to-br from-[#1b2038] to-[#14182b] border border-[#c8b07b]/30 flex flex-col items-center shadow-md">
+              <div className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider text-[#dfc792]">
+                <span>💎 Value</span>
+                <button
+                  type="button"
+                  onClick={() => setCurrency(currency === 'THB' ? 'USD' : 'THB')}
+                  title="Toggle Currency (THB / USD)"
+                  className="text-[9px] px-1 py-0.2 bg-[#c8b07b]/20 hover:bg-[#c8b07b]/40 rounded text-amber-200"
+                >
+                  {currency}
+                </button>
+              </div>
+              <span className="text-lg font-black text-slate-100">
+                {deckValueUsd > 0 ? formatPrice(deckValueUsd, currency) : '—'}
               </span>
             </div>
 

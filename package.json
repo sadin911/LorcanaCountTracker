@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "data:cards": "node scripts/fetch-lorcana-cards.mjs",
+    "data:prices": "node scripts/fetch-lorcana-prices.mjs",
     "data:images": "node scripts/download-lorcana-images.mjs",
     "data:boosters": "node scripts/download-set-boosters.mjs",
     "data:upload": "node scripts/upload-lorcana-r2.mjs",

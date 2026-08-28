@@ -163,4 +163,11 @@
 [2026-08-28 11:19] Major | Antigravity | Write | AGENTS.md, CLAUDE.md, .agents/rules - enforce version bump & git tagging
 [2026-08-28 11:19] Major | Antigravity | Release | v0.3.1 - restored Install PWA & cross-agent deploy tagging rule
 [2026-08-28 11:22] Major | Antigravity | Merge | merged main (v0.3.1) into feature/card-pricing
-
+[2026-08-28 11:25] Major | Antigravity | Write | src/types/pricing.ts, scripts/fetch-lorcana-prices.mjs - pricing pipeline
+[2026-08-28 11:25] Major | Antigravity | Write | .github/workflows/update-prices-cron.yml - automated daily price fetch cron
+[2026-08-28 11:26] Major | Antigravity | Write | src/store/pricingStore.ts, firestore.rules - market & user price persistence
+[2026-08-28 11:26] Major | Antigravity | Write | src/components/admin/AdminPriceManager.tsx - 1-click sync & price editor
+[2026-08-28 11:28] Major | Antigravity | Edit | CardCollectionModal.tsx - Market Reference & User Custom Price valuation UI
+[2026-08-28 11:28] Major | Antigravity | Edit | DeckEditor.tsx - live deck market value calculation & currency switcher
+[2026-08-28 11:31] Major | Antigravity | Write | e2e/pricing.spec.ts - pricing system E2E tests
+[2026-08-28 11:31] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 28/28 passed

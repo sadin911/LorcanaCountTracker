@@ -27,6 +27,8 @@ import {
   LorcanaStrengthIcon,
   LorcanaWillpowerIcon,
 } from '../icons/LorcanaIcons';
+import { useAuthStore } from '../../store/authStore';
+import { usePricingStore } from '../../store/pricingStore';
 import { analytics } from '../../utils/analytics';
 
 interface Props {
@@ -65,6 +67,51 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
   const clearCard = useCollectionStore((s) => s.clearCard);
   const setFilters = useCollectionStore((s) => s.setFilters);
   const showFullColor = useCollectionStore((s) => s.filters.showFullColor);
+
+  const user = useAuthStore((s) => s.user);
+  const marketPrice = usePricingStore((s) => s.getCardMarketPrice(card.id));
+  const userPrice = usePricingStore((s) => s.getCardUserPrice(card.id));
+  const setUserPrice = usePricingStore((s) => s.setUserPrice);
+  const currency = usePricingStore((s) => s.currency);
+  const setCurrency = usePricingStore((s) => s.setCurrency);
+  const formatPrice = usePricingStore((s) => s.formatPrice);
+  const calculateCardTotalValue = usePricingStore((s) => s.calculateCardTotalValue);
+
+  const [costInput, setCostInput] = useState<string>('');
+  const [sellInput, setSellInput] = useState<string>('');
+
+  useEffect(() => {
+    setCostInput(userPrice?.costPrice !== null && userPrice?.costPrice !== undefined ? String(userPrice.costPrice) : '');
+    setSellInput(userPrice?.sellPrice !== null && userPrice?.sellPrice !== undefined ? String(userPrice.sellPrice) : '');
+  }, [userPrice, card.id]);
+
+  const handleUpdateCost = (val: string) => {
+    setCostInput(val);
+    const cost = val.trim() === '' ? null : parseFloat(val);
+    const sell = sellInput.trim() === '' ? null : parseFloat(sellInput);
+    void setUserPrice(
+      card.id,
+      {
+        costPrice: isNaN(Number(cost)) ? null : cost,
+        sellPrice: isNaN(Number(sell)) ? null : sell,
+      },
+      user?.uid
+    );
+  };
+
+  const handleUpdateSell = (val: string) => {
+    setSellInput(val);
+    const cost = costInput.trim() === '' ? null : parseFloat(costInput);
+    const sell = val.trim() === '' ? null : parseFloat(val);
+    void setUserPrice(
+      card.id,
+      {
+        costPrice: isNaN(Number(cost)) ? null : cost,
+        sellPrice: isNaN(Number(sell)) ? null : sell,
+      },
+      user?.uid
+    );
+  };
 
   const sameName = useMemo(() => relatedBySameName(card), [card]);
   const sameStory = useMemo(() => relatedByStory(card), [card]);
@@ -352,6 +399,103 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                   </div>
                 );
               })}
+            </div>
+
+            {/* Pricing & Valuation Section */}
+            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-[#1b2038] to-[#14182b] border border-[#c8b07b]/30 space-y-3 shadow-md">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">💎</span>
+                  <span className="text-xs font-black uppercase tracking-wider text-[#dfc792]">Market Price & Valuation</span>
+                </div>
+                <div className="flex items-center gap-1 bg-[#131627] p-0.5 rounded-lg border border-[#c8b07b]/20">
+                  <button
+                    type="button"
+                    onClick={() => setCurrency('THB')}
+                    className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${
+                      currency === 'THB'
+                        ? 'bg-[#c8b07b] text-[#131627] shadow'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    THB (฿)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCurrency('USD')}
+                    className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${
+                      currency === 'USD'
+                        ? 'bg-[#c8b07b] text-[#131627] shadow'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    USD ($)
+                  </button>
+                </div>
+              </div>
+
+              {/* Market Reference Row */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-2 rounded-xl bg-[#131627]/80 border border-[#c8b07b]/15">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Regular Market</span>
+                  <span className="text-sm font-extrabold text-slate-100 mt-0.5 block">
+                    {marketPrice?.regular !== null && marketPrice?.regular !== undefined
+                      ? formatPrice(marketPrice.regular, currency)
+                      : '—'}
+                  </span>
+                </div>
+                <div className="p-2 rounded-xl bg-[#131627]/80 border border-[#c8b07b]/15">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#dfc792] block">✨ Foil Market</span>
+                  <span className="text-sm font-extrabold text-[#dfc792] mt-0.5 block">
+                    {marketPrice?.foil !== null && marketPrice?.foil !== undefined
+                      ? formatPrice(marketPrice.foil, currency)
+                      : '—'}
+                  </span>
+                </div>
+              </div>
+
+              {/* User Custom Prices (Purchase Cost / Valuation) */}
+              <div className="pt-2 border-t border-[#c8b07b]/15 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">My Custom Pricing</span>
+                  {count > 0 && (() => {
+                    const regCount = variants.normal ?? 0;
+                    const foilCount = variants.foil ?? 0;
+                    const summary = calculateCardTotalValue(card.id, regCount, foilCount);
+                    return (
+                      <span className="text-[10px] font-semibold text-[#dfc792]">
+                        Total Value: {formatPrice(summary.marketUSD, currency)}
+                      </span>
+                    );
+                  })()}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="block">
+                    <span className="text-[10px] text-slate-400">My Purchase Cost ({currency === 'THB' ? '฿' : '$'})</span>
+                    <input
+                      type="number"
+                      step="any"
+                      min={0}
+                      value={costInput}
+                      onChange={(e) => handleUpdateCost(e.target.value)}
+                      placeholder="e.g. 150"
+                      className="mt-1 w-full px-2.5 py-1.5 rounded-lg bg-[#131627] border border-[#c8b07b]/30 text-xs font-semibold text-slate-200 focus:outline-none focus:border-[#c8b07b]"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[10px] text-slate-400">My Target Price ({currency === 'THB' ? '฿' : '$'})</span>
+                    <input
+                      type="number"
+                      step="any"
+                      min={0}
+                      value={sellInput}
+                      onChange={(e) => handleUpdateSell(e.target.value)}
+                      placeholder="e.g. 300"
+                      className="mt-1 w-full px-2.5 py-1.5 rounded-lg bg-[#131627] border border-[#c8b07b]/30 text-xs font-semibold text-slate-200 focus:outline-none focus:border-[#c8b07b]"
+                    />
+                  </label>
+                </div>
+              </div>
             </div>
 
             {/* Condition + Note */}
