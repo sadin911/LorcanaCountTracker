@@ -63,6 +63,14 @@ export function DeckEditor({ deck }: Props) {
   const [previewCard, setPreviewCard] = useState<LorcanaCard | null>(null);
   const [mobileTab, setMobileTab] = useState<'deck' | 'catalog'>('deck');
   const [showStatsDrawer, setShowStatsDrawer] = useState(false);
+  const [deckViewMode, setDeckViewMode] = useState<'list' | 'grid'>(() => {
+    return (localStorage.getItem('lorcana_deck_cards_view_mode') as 'list' | 'grid') || 'list';
+  });
+
+  const handleSetDeckViewMode = (mode: 'list' | 'grid') => {
+    setDeckViewMode(mode);
+    localStorage.setItem('lorcana_deck_cards_view_mode', mode);
+  };
 
   // Catalog Filters
   const [search, setSearch] = useState('');
@@ -475,7 +483,7 @@ export function DeckEditor({ deck }: Props) {
           }`}
         >
           <div className="bg-[#131627]/90 border border-[#c8b07b]/20 rounded-3xl p-4 sm:p-5 shadow-xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <span className="text-lg">🃏</span>
                 <h2 className="text-sm sm:text-base font-black text-[#dfc792]">
@@ -483,19 +491,63 @@ export function DeckEditor({ deck }: Props) {
                 </h2>
               </div>
 
-              {stats.totalCards > 0 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm('Are you sure you want to clear all cards from this deck?')) {
-                      clearDeckCards(deck.id);
-                    }
-                  }}
-                  className="text-[11px] text-rose-400 hover:text-rose-300 font-bold hover:underline"
-                >
-                  Clear Deck
-                </button>
-              )}
+              <div className="flex items-center gap-2">
+                {/* View Mode Toggle: List vs Grid */}
+                <div className="flex items-center bg-slate-900/90 border border-slate-800 rounded-xl p-0.5 shadow-inner">
+                  <button
+                    type="button"
+                    onClick={() => handleSetDeckViewMode('list')}
+                    className={`px-2 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      deckViewMode === 'list'
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                    title="List View"
+                  >
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="8" y1="6" x2="21" y2="6" />
+                      <line x1="8" y1="12" x2="21" y2="12" />
+                      <line x1="8" y1="18" x2="21" y2="18" />
+                      <circle cx="4" cy="6" r="1" fill="currentColor" />
+                      <circle cx="4" cy="12" r="1" fill="currentColor" />
+                      <circle cx="4" cy="18" r="1" fill="currentColor" />
+                    </svg>
+                    <span className="hidden sm:inline">List</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSetDeckViewMode('grid')}
+                    className={`px-2 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      deckViewMode === 'grid'
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                    title="Grid View"
+                  >
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                    </svg>
+                    <span className="hidden sm:inline">Grid</span>
+                  </button>
+                </div>
+
+                {stats.totalCards > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm('Are you sure you want to clear all cards from this deck?')) {
+                        clearDeckCards(deck.id);
+                      }
+                    }}
+                    className="text-[11px] text-rose-400 hover:text-rose-300 font-bold hover:underline"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Empty state */}
@@ -523,78 +575,173 @@ export function DeckEditor({ deck }: Props) {
                         <span className="text-slate-400 font-normal">({groupCount})</span>
                       </div>
 
-                      <div className="space-y-1.5">
-                        {group.cards.map(({ card, count }) => {
-                          const thumb = resolveCardImageUrl(card.setCode, card.collectorNumber, false);
-                          const fullName = cardDisplayName(card);
+                      {deckViewMode === 'list' ? (
+                        /* List Mode */
+                        <div className="space-y-1.5">
+                          {group.cards.map(({ card, count }) => {
+                            const thumb = resolveCardImageUrl(card.setCode, card.collectorNumber, false);
+                            const fullName = cardDisplayName(card);
 
-                          return (
-                            <div
-                              key={card.id}
-                              className="p-2 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-[#c8b07b]/40 flex items-center justify-between gap-2 transition-all group"
-                            >
+                            return (
                               <div
-                                onClick={() => setPreviewCard(card)}
-                                className="flex items-center gap-2 min-w-0 cursor-pointer flex-1"
+                                key={card.id}
+                                className="p-2 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-[#c8b07b]/40 flex items-center justify-between gap-2 transition-all group"
                               >
-                                <img
-                                  src={thumb}
-                                  alt={fullName}
-                                  onError={(e) => handleCardImageError(e, card.setCode, card.collectorNumber)}
-                                  className="w-8 h-11 object-cover rounded-lg border border-slate-700 shrink-0 group-hover:scale-105 transition-transform"
-                                  loading="lazy"
-                                />
-                                <div className="min-w-0">
-                                  <div className="flex items-center gap-1">
-                                    {card.cost !== null && (
-                                      <span className="px-1.5 py-0.2 rounded bg-slate-800 text-[9px] font-bold text-amber-300 border border-slate-700">
-                                        {card.cost}
-                                      </span>
-                                    )}
+                                <div
+                                  onClick={() => setPreviewCard(card)}
+                                  className="flex items-center gap-2 min-w-0 cursor-pointer flex-1"
+                                >
+                                  <img
+                                    src={thumb}
+                                    alt={fullName}
+                                    onError={(e) => handleCardImageError(e, card.setCode, card.collectorNumber)}
+                                    className="w-8 h-11 object-cover rounded-lg border border-slate-700 shrink-0 group-hover:scale-105 transition-transform"
+                                    loading="lazy"
+                                  />
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-1">
+                                      {card.cost !== null && (
+                                        <span className="px-1.5 py-0.2 rounded bg-slate-800 text-[9px] font-bold text-amber-300 border border-slate-700">
+                                          {card.cost}
+                                        </span>
+                                      )}
+                                      {card.inks?.map((ink) => (
+                                        <InkPill key={ink} ink={ink} />
+                                      ))}
+                                      {card.inkwell && (
+                                        <LorcanaInkwellIcon inkable={true} className="w-3 h-3 text-amber-400" />
+                                      )}
+                                    </div>
+                                    <h4 className="text-xs font-black text-slate-100 truncate group-hover:text-[#dfc792] transition-colors">
+                                      {fullName}
+                                    </h4>
+                                  </div>
+                                </div>
+
+                                {/* Stepper Controls */}
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  <button
+                                    type="button"
+                                    onClick={() => removeCardFromDeck(deck.id, card.id)}
+                                    className="w-7 h-7 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-black flex items-center justify-center active:scale-90 transition-transform"
+                                    title="Decrease count"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="w-6 text-center text-xs font-black text-[#dfc792]">
+                                    {count}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => addCardToDeck(deck.id, card.id, 1)}
+                                    disabled={count >= 4}
+                                    className={`w-7 h-7 rounded-xl text-xs font-black flex items-center justify-center active:scale-90 transition-transform ${
+                                      count >= 4
+                                        ? 'bg-slate-850 text-slate-600 cursor-not-allowed'
+                                        : 'bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40'
+                                    }`}
+                                    title={count >= 4 ? 'Max 4 copies reached' : 'Add 1 copy'}
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        /* Grid Mode */
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                          {group.cards.map(({ card, count }) => {
+                            const thumb = resolveCardImageUrl(card.setCode, card.collectorNumber, false);
+                            const fullName = cardDisplayName(card);
+
+                            return (
+                              <div
+                                key={card.id}
+                                className="bg-slate-900/95 border border-slate-800 hover:border-[#c8b07b]/60 rounded-2xl p-2 shadow-md flex flex-col justify-between group transition-all relative overflow-hidden"
+                              >
+                                {/* Thumbnail & Click for Preview */}
+                                <div
+                                  onClick={() => setPreviewCard(card)}
+                                  className="relative rounded-xl overflow-hidden aspect-[5/7] bg-slate-950 cursor-pointer mb-1.5 shadow-inner"
+                                >
+                                  <img
+                                    src={thumb}
+                                    alt={fullName}
+                                    onError={(e) => handleCardImageError(e, card.setCode, card.collectorNumber)}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                    loading="lazy"
+                                  />
+
+                                  {/* Badges on Top */}
+                                  <div className="absolute top-1 left-1 flex items-center gap-0.5 pointer-events-none">
                                     {card.inks?.map((ink) => (
                                       <InkPill key={ink} ink={ink} />
                                     ))}
-                                    {card.inkwell && (
-                                      <LorcanaInkwellIcon inkable={true} className="w-3 h-3 text-amber-400" />
-                                    )}
                                   </div>
-                                  <h4 className="text-xs font-black text-slate-100 truncate group-hover:text-[#dfc792] transition-colors">
+
+                                  {card.cost !== null && (
+                                    <div className="absolute top-1 right-1 px-1.5 py-0.5 rounded-md bg-slate-950/85 border border-slate-700 text-amber-300 text-[10px] font-black pointer-events-none">
+                                      {card.cost}
+                                    </div>
+                                  )}
+
+                                  {/* Count Badge overlay on image */}
+                                  <div className="absolute bottom-1 right-1 px-2 py-0.5 rounded-lg bg-amber-400 text-slate-950 text-[11px] font-black shadow-lg border border-amber-300">
+                                    {count}x
+                                  </div>
+                                </div>
+
+                                {/* Card Info */}
+                                <div className="space-y-0.5 mb-1.5">
+                                  <h4
+                                    onClick={() => setPreviewCard(card)}
+                                    className="text-xs font-black text-slate-100 group-hover:text-[#dfc792] truncate cursor-pointer transition-colors"
+                                    title={fullName}
+                                  >
                                     {fullName}
                                   </h4>
+                                  <div className="flex items-center justify-between text-[10px] text-slate-400">
+                                    <span className="truncate">{card.types[0] || 'Card'}</span>
+                                    {card.inkwell && (
+                                      <LorcanaInkwellIcon inkable={true} className="w-2.5 h-2.5 text-amber-400 shrink-0" />
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Stepper Controls */}
+                                <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-slate-800/80">
+                                  <button
+                                    type="button"
+                                    onClick={() => removeCardFromDeck(deck.id, card.id)}
+                                    className="w-7 h-7 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-black flex items-center justify-center active:scale-90 transition-transform"
+                                    title="Decrease count"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="text-xs font-black text-[#dfc792]">
+                                    {count}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => addCardToDeck(deck.id, card.id, 1)}
+                                    disabled={count >= 4}
+                                    className={`w-7 h-7 rounded-xl text-xs font-black flex items-center justify-center active:scale-90 transition-transform ${
+                                      count >= 4
+                                        ? 'bg-slate-850 text-slate-600 cursor-not-allowed'
+                                        : 'bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40'
+                                    }`}
+                                    title={count >= 4 ? 'Max 4 copies reached' : 'Add 1 copy'}
+                                  >
+                                    +
+                                  </button>
                                 </div>
                               </div>
-
-                              {/* Stepper Controls */}
-                              <div className="flex items-center gap-1.5 shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={() => removeCardFromDeck(deck.id, card.id)}
-                                  className="w-7 h-7 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-black flex items-center justify-center active:scale-90 transition-transform"
-                                  title="Decrease count"
-                                >
-                                  -
-                                </button>
-                                <span className="w-6 text-center text-xs font-black text-[#dfc792]">
-                                  {count}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => addCardToDeck(deck.id, card.id, 1)}
-                                  disabled={count >= 4}
-                                  className={`w-7 h-7 rounded-xl text-xs font-black flex items-center justify-center active:scale-90 transition-transform ${
-                                    count >= 4
-                                      ? 'bg-slate-850 text-slate-600 cursor-not-allowed'
-                                      : 'bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40'
-                                  }`}
-                                  title={count >= 4 ? 'Max 4 copies reached' : 'Add 1 copy'}
-                                >
-                                  +
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   );
                 })}

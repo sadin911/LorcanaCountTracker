@@ -145,3 +145,5 @@
 [2026-08-28 10:01] Major | Antigravity | Command | git push origin main --tags - triggered GitHub Pages deploy
 [2026-08-28 10:19] Major | Antigravity | Edit | 100% English translation across all UI components, stores, utils & E2E tests
 [2026-08-28 10:19] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 20/20 passed
+[2026-08-28 10:33] Major | Antigravity | Edit | src/components/deck/DeckEditor.tsx - added List/Grid view toggle & visual card grid mode for Cards in Deck
+[2026-08-28 10:33] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 20/20 passed

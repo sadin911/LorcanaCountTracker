@@ -50,6 +50,23 @@ test('Deck Builder allows creating, viewing stats, and calculating missing cards
   // Close modal
   await page.locator('button:has-text("✕")').first().click();
 
+  // Test Grid and List view toggle
+  const deckTab = page.locator('button:has-text("Cards in Deck")');
+  if (await deckTab.isVisible()) {
+    await deckTab.click();
+  }
+  const gridBtn = page.locator('button[title="Grid View"]').first();
+  await expect(gridBtn).toBeVisible();
+  await gridBtn.click();
+
+  // Verify grid item count badge (e.g. 1x)
+  await expect(page.getByText('1x')).toBeVisible();
+
+  // Toggle back to list view
+  const listBtn = page.locator('button[title="List View"]').first();
+  await listBtn.click();
+  await expect(listBtn).toBeVisible();
+
   // Return to deck list
   await page.locator('button:has-text("Decks")').first().click();
   await expect(page.getByText('Your Deck Vault')).toBeVisible();
