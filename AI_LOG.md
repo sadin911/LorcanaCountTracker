@@ -176,3 +176,7 @@
 [2026-08-28 11:40] Major | Antigravity | Edit | CollectionCardItem.tsx - display price badges on card grid items
 [2026-08-28 11:40] Major | Antigravity | Edit | CollectionFilterBar.tsx, CollectionTracker.tsx, types - sort by Market Price
 [2026-08-28 11:40] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 30/30 passed
+[2026-08-28 11:46] Major | Antigravity | Release | v0.4.0 - Card Pricing, Valuation & Multi-Currency System
+[2026-08-28 11:52] Major | Antigravity | Write | src/types/pricing.ts, fetch-prices - added PSA 10 graded price support
+[2026-08-28 11:52] Major | Antigravity | Edit | CardCollectionModal.tsx, AdminPriceManager.tsx - PSA 10 market & slab tools
+[2026-08-28 11:52] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 30/30 passed

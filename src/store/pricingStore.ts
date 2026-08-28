@@ -48,13 +48,21 @@ interface PricingState {
   loadUserPrices: (uid?: string | null) => Promise<void>;
   setUserPrice: (
     cardId: string,
-    priceData: { costPrice?: number | null; sellPrice?: number | null; currency?: Currency; notes?: string },
+    priceData: {
+      costPrice?: number | null;
+      sellPrice?: number | null;
+      currency?: Currency;
+      isGraded?: boolean;
+      gradingCompany?: 'PSA' | 'BGS' | 'CGC' | 'OTHER' | 'RAW';
+      grade?: string;
+      notes?: string;
+    },
     uid?: string | null
   ) => Promise<void>;
   deleteUserPrice: (cardId: string, uid?: string | null) => Promise<void>;
   adminUpdateMarketPrice: (
     cardId: string,
-    prices: { regular?: number | null; foil?: number | null }
+    prices: { regular?: number | null; foil?: number | null; psa10?: number | null }
   ) => Promise<void>;
   adminSyncLivePrices: () => Promise<{ success: boolean; count: number; error?: string }>;
 
@@ -234,6 +242,9 @@ export const usePricingStore = create<PricingState>((set, get) => ({
       costPrice: priceData.costPrice ?? null,
       sellPrice: priceData.sellPrice ?? null,
       currency: priceData.currency || userPrices[cardId]?.currency || currency,
+      isGraded: priceData.isGraded ?? userPrices[cardId]?.isGraded ?? false,
+      gradingCompany: priceData.gradingCompany || userPrices[cardId]?.gradingCompany || 'PSA',
+      grade: priceData.grade || userPrices[cardId]?.grade || '10',
       notes: priceData.notes || '',
       updatedAt: new Date().toISOString(),
     };
@@ -287,6 +298,7 @@ export const usePricingStore = create<PricingState>((set, get) => ({
       cardId,
       regular: null,
       foil: null,
+      psa10: null,
       updatedAt: new Date().toISOString(),
     };
 
@@ -294,6 +306,7 @@ export const usePricingStore = create<PricingState>((set, get) => ({
       ...existing,
       regular: prices.regular !== undefined ? prices.regular : existing.regular,
       foil: prices.foil !== undefined ? prices.foil : existing.foil,
+      psa10: prices.psa10 !== undefined ? prices.psa10 : existing.psa10,
       updatedAt: new Date().toISOString(),
       source: 'admin_manual',
     };

@@ -19,8 +19,9 @@ export interface MarketPrice {
   cardId: string;
   regular: number | null; // USD base
   foil: number | null; // USD base
+  psa10?: number | null; // PSA 10 Gem Mint Market Price (USD base)
   updatedAt: string; // ISO string
-  source?: 'tcgplayer' | 'lorcast' | 'cardmarket' | 'admin_manual';
+  source?: 'tcgplayer' | 'lorcast' | 'cardmarket' | 'pricecharting' | 'admin_manual';
 }
 
 export interface UserCardPrice {
@@ -28,6 +29,9 @@ export interface UserCardPrice {
   costPrice: number | null; // Purchase/Cost price per copy
   sellPrice: number | null; // User's target selling/valuation price per copy
   currency: Currency;
+  isGraded?: boolean;
+  gradingCompany?: 'PSA' | 'BGS' | 'CGC' | 'OTHER' | 'RAW';
+  grade?: string; // e.g. '10', '9.5', '9'
   notes?: string;
   updatedAt: string;
 }
