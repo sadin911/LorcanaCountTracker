@@ -28,7 +28,8 @@ import {
   LorcanaWillpowerIcon,
 } from '../icons/LorcanaIcons';
 import { useAuthStore } from '../../store/authStore';
-import { usePricingStore } from '../../store/pricingStore';
+import { usePricingStore, CURRENCY_SYMBOLS } from '../../store/pricingStore';
+import { CurrencySelector } from '../common/CurrencySelector';
 import { analytics } from '../../utils/analytics';
 
 interface Props {
@@ -73,7 +74,6 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
   const userPrice = usePricingStore((s) => s.getCardUserPrice(card.id));
   const setUserPrice = usePricingStore((s) => s.setUserPrice);
   const currency = usePricingStore((s) => s.currency);
-  const setCurrency = usePricingStore((s) => s.setCurrency);
   const formatPrice = usePricingStore((s) => s.formatPrice);
   const calculateCardTotalValue = usePricingStore((s) => s.calculateCardTotalValue);
 
@@ -408,30 +408,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                   <span className="text-sm">💎</span>
                   <span className="text-xs font-black uppercase tracking-wider text-[#dfc792]">Market Price & Valuation</span>
                 </div>
-                <div className="flex items-center gap-1 bg-[#131627] p-0.5 rounded-lg border border-[#c8b07b]/20">
-                  <button
-                    type="button"
-                    onClick={() => setCurrency('THB')}
-                    className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${
-                      currency === 'THB'
-                        ? 'bg-[#c8b07b] text-[#131627] shadow'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    THB (฿)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCurrency('USD')}
-                    className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${
-                      currency === 'USD'
-                        ? 'bg-[#c8b07b] text-[#131627] shadow'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    USD ($)
-                  </button>
-                </div>
+                <CurrencySelector variant="tabs" />
               </div>
 
               {/* Market Reference Row */}
@@ -471,7 +448,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <label className="block">
-                    <span className="text-[10px] text-slate-400">My Purchase Cost ({currency === 'THB' ? '฿' : '$'})</span>
+                    <span className="text-[10px] text-slate-400">My Purchase Cost ({CURRENCY_SYMBOLS[currency] || '$'})</span>
                     <input
                       type="number"
                       step="any"
@@ -483,7 +460,7 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                     />
                   </label>
                   <label className="block">
-                    <span className="text-[10px] text-slate-400">My Target Price ({currency === 'THB' ? '฿' : '$'})</span>
+                    <span className="text-[10px] text-slate-400">My Target Price ({CURRENCY_SYMBOLS[currency] || '$'})</span>
                     <input
                       type="number"
                       step="any"

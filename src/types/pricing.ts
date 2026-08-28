@@ -1,4 +1,19 @@
-export type Currency = 'USD' | 'THB';
+export type Currency = 'THB' | 'USD' | 'EUR' | 'GBP' | 'JPY';
+
+export interface CurrencyInfo {
+  code: Currency;
+  symbol: string;
+  label: string;
+  defaultRate: number; // Against 1.0 USD
+}
+
+export const SUPPORTED_CURRENCIES: CurrencyInfo[] = [
+  { code: 'THB', symbol: '฿', label: 'THB (฿)', defaultRate: 35.0 },
+  { code: 'USD', symbol: '$', label: 'USD ($)', defaultRate: 1.0 },
+  { code: 'EUR', symbol: '€', label: 'EUR (€)', defaultRate: 0.92 },
+  { code: 'GBP', symbol: '£', label: 'GBP (£)', defaultRate: 0.78 },
+  { code: 'JPY', symbol: '¥', label: 'JPY (¥)', defaultRate: 155.0 },
+];
 
 export interface MarketPrice {
   cardId: string;
@@ -19,11 +34,8 @@ export interface UserCardPrice {
 
 export interface CardPricingSummary {
   marketValueUSD: number;
-  marketValueTHB: number;
-  userCostTHB: number;
-  userCostUSD: number;
-  userValuationTHB: number;
-  userValuationUSD: number;
-  profitOrLossTHB: number;
-  profitOrLossUSD: number;
+  marketValueConverted: number;
+  userCostConverted: number;
+  userValuationConverted: number;
+  currency: Currency;
 }

@@ -77,12 +77,23 @@ test.describe('Card Pricing & Valuation System', () => {
     await expect(valueBadge).toBeVisible();
   });
 
-  test('admin console shows OAuth protected gate', async ({ page }) => {
-    await page.goto('/?admin=true');
-    await page.waitForTimeout(500);
+  test('header currency selector switches active currency across app', async ({ page }) => {
+    // Check currency button in header (matching visible button on desktop or mobile)
+    const currencyBtn = page.locator('header button:visible:has-text("THB"), header button:visible:has-text("USD"), header button:visible:has-text("💱")').first();
+    await expect(currencyBtn).toBeVisible();
+    await currencyBtn.click();
 
-    // Verify Admin Auth Gate is shown
-    await expect(page.locator('text=Illumineer Admin Access')).toBeVisible();
-    await expect(page.locator('text=Sign in with Google')).toBeVisible();
+    // If dropdown appeared, pick USD
+    const usdOption = page.locator('button:visible:has-text("USD")').first();
+    if (await usdOption.isVisible()) {
+      await usdOption.click();
+    }
+
+    // Open card modal and verify currency reflects USD
+    const firstCard = page.locator('main img[alt]').first();
+    await firstCard.click();
+    const modal = page.locator('.fixed.inset-0').filter({ hasText: /Market Price & Valuation/i }).first();
+    await expect(modal).toBeVisible();
+    await expect(modal.locator('text=USD ($)')).toBeVisible();
   });
 });

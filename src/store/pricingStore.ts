@@ -3,7 +3,6 @@ import { db } from '../utils/firebase';
 import {
   doc,
   setDoc,
-  getDoc,
   collection,
   getDocs,
   writeBatch,
@@ -13,13 +12,29 @@ import fallbackMarketData from '../data/market_prices.json';
 
 const USER_PRICES_STORAGE_KEY = 'lorcana_user_custom_prices';
 const CURRENCY_STORAGE_KEY = 'lorcana_preferred_currency';
-const USD_RATE_STORAGE_KEY = 'lorcana_usd_thb_rate';
+const EXCHANGE_RATES_STORAGE_KEY = 'lorcana_exchange_rates';
+
+export const DEFAULT_EXCHANGE_RATES: Record<Currency, number> = {
+  USD: 1.0,
+  THB: 35.0,
+  EUR: 0.92,
+  GBP: 0.78,
+  JPY: 155.0,
+};
+
+export const CURRENCY_SYMBOLS: Record<Currency, string> = {
+  THB: '฿',
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+  JPY: '¥',
+};
 
 interface PricingState {
   marketPrices: Record<string, MarketPrice>;
   userPrices: Record<string, UserCardPrice>;
   currency: Currency;
-  usdToThbRate: number; // default e.g. 35.0
+  exchangeRates: Record<Currency, number>;
   loading: boolean;
   marketLoaded: boolean;
   userPricesLoaded: boolean;
@@ -27,13 +42,13 @@ interface PricingState {
 
   // Actions
   setCurrency: (currency: Currency) => void;
-  setUsdToThbRate: (rate: number) => void;
+  setExchangeRate: (currency: Currency, rate: number) => void;
   initPricing: (uid?: string | null) => Promise<void>;
   loadMarketPrices: () => Promise<void>;
   loadUserPrices: (uid?: string | null) => Promise<void>;
   setUserPrice: (
     cardId: string,
-    priceData: { costPrice?: number | null; sellPrice?: number | null; notes?: string },
+    priceData: { costPrice?: number | null; sellPrice?: number | null; currency?: Currency; notes?: string },
     uid?: string | null
   ) => Promise<void>;
   deleteUserPrice: (cardId: string, uid?: string | null) => Promise<void>;
@@ -43,8 +58,9 @@ interface PricingState {
   ) => Promise<void>;
   adminSyncLivePrices: () => Promise<{ success: boolean; count: number; error?: string }>;
 
-  // Calculations
+  // Calculations & Formatting
   formatPrice: (usdAmount: number | null | undefined, targetCurrency?: Currency) => string;
+  formatRawCurrency: (amount: number | null | undefined, currency: Currency) => string;
   getCardMarketPrice: (cardId: string) => MarketPrice | undefined;
   getCardUserPrice: (cardId: string) => UserCardPrice | undefined;
   calculateCardTotalValue: (
@@ -53,9 +69,10 @@ interface PricingState {
     foilCount?: number
   ) => {
     marketUSD: number;
-    marketTHB: number;
-    userCost: number;
-    userValuation: number;
+    marketConverted: number;
+    userCostConverted: number;
+    userValuationConverted: number;
+    currency: Currency;
   };
 }
 
@@ -78,12 +95,21 @@ function saveLocalUserPrices(prices: Record<string, UserCardPrice>) {
   }
 }
 
+function loadLocalExchangeRates(): Record<Currency, number> {
+  if (typeof window === 'undefined') return DEFAULT_EXCHANGE_RATES;
+  try {
+    const raw = localStorage.getItem(EXCHANGE_RATES_STORAGE_KEY);
+    return raw ? { ...DEFAULT_EXCHANGE_RATES, ...JSON.parse(raw) } : DEFAULT_EXCHANGE_RATES;
+  } catch {
+    return DEFAULT_EXCHANGE_RATES;
+  }
+}
+
 export const usePricingStore = create<PricingState>((set, get) => ({
   marketPrices: (fallbackMarketData?.prices as unknown as Record<string, MarketPrice>) || {},
   userPrices: loadLocalUserPrices(),
   currency: (typeof window !== 'undefined' && (localStorage.getItem(CURRENCY_STORAGE_KEY) as Currency)) || 'THB',
-  usdToThbRate:
-    (typeof window !== 'undefined' && parseFloat(localStorage.getItem(USD_RATE_STORAGE_KEY) || '35.0')) || 35.0,
+  exchangeRates: loadLocalExchangeRates(),
   loading: false,
   marketLoaded: false,
   userPricesLoaded: false,
@@ -96,11 +122,12 @@ export const usePricingStore = create<PricingState>((set, get) => ({
     set({ currency });
   },
 
-  setUsdToThbRate: (usdToThbRate: number) => {
+  setExchangeRate: (curr: Currency, rate: number) => {
+    const nextRates = { ...get().exchangeRates, [curr]: rate };
     if (typeof window !== 'undefined') {
-      localStorage.setItem(USD_RATE_STORAGE_KEY, String(usdToThbRate));
+      localStorage.setItem(EXCHANGE_RATES_STORAGE_KEY, JSON.stringify(nextRates));
     }
-    set({ usdToThbRate });
+    set({ exchangeRates: nextRates });
   },
 
   initPricing: async (uid?: string | null) => {
@@ -144,7 +171,6 @@ export const usePricingStore = create<PricingState>((set, get) => ({
             });
           }
         } catch (firestoreErr) {
-          // Non-blocking if collection permissions are not yet configured
           console.debug('Firestore market_prices read skipped/failed:', firestoreErr);
         }
       }
@@ -169,21 +195,27 @@ export const usePricingStore = create<PricingState>((set, get) => ({
       try {
         const snap = await getDocs(collection(db, 'users', uid, 'custom_prices'));
         if (!snap.empty) {
-          snap.forEach((d) => {
-            const data = d.data() as UserCardPrice;
-            if (data && data.cardId) {
+          snap.forEach((docSnap) => {
+            const data = docSnap.data() as UserCardPrice;
+            if (data?.cardId) {
               cloudPrices[data.cardId] = data;
             }
           });
         }
       } catch {
-        // Fallback to vault doc /binders/lorcana_user_prices
-        const fallbackDoc = await getDoc(doc(db, 'users', uid, 'binders', 'lorcana_user_prices'));
-        if (fallbackDoc.exists()) {
-          const data = fallbackDoc.data();
-          if (data?.prices) {
-            cloudPrices = data.prices as Record<string, UserCardPrice>;
-          }
+        // Fallback to binder doc
+        try {
+          const vaultSnap = await getDocs(collection(db, 'users', uid, 'binders'));
+          vaultSnap.forEach((docSnap) => {
+            if (docSnap.id === 'lorcana_user_prices') {
+              const vaultData = docSnap.data() as { prices?: Record<string, UserCardPrice> };
+              if (vaultData?.prices) {
+                cloudPrices = vaultData.prices;
+              }
+            }
+          });
+        } catch (vaultErr) {
+          console.debug('User price cloud fallback read error:', vaultErr);
         }
       }
 
@@ -191,7 +223,7 @@ export const usePricingStore = create<PricingState>((set, get) => ({
       saveLocalUserPrices(merged);
       set({ userPrices: merged });
     } catch (err) {
-      console.warn('Failed to load user prices from cloud:', err);
+      console.error('Failed to load user custom prices:', err);
     }
   },
 
@@ -201,7 +233,7 @@ export const usePricingStore = create<PricingState>((set, get) => ({
       cardId,
       costPrice: priceData.costPrice ?? null,
       sellPrice: priceData.sellPrice ?? null,
-      currency: (priceData as unknown as { currency?: Currency }).currency || currency,
+      currency: priceData.currency || userPrices[cardId]?.currency || currency,
       notes: priceData.notes || '',
       updatedAt: new Date().toISOString(),
     };
@@ -298,52 +330,40 @@ export const usePricingStore = create<PricingState>((set, get) => ({
         const list = Array.isArray(setCards) ? setCards : setCards.results ?? [];
 
         for (const card of list) {
-          const num = String(card.collector_number);
-          const cardId = `${card.set.code}-${num}`;
-          const parseP = (v: unknown) => {
-            if (v === null || v === undefined || v === '') return null;
-            const n = typeof v === 'number' ? v : parseFloat(String(v).replace(/[^0-9.]/g, ''));
-            return isNaN(n) ? null : Math.round(n * 100) / 100;
-          };
+          if (!card.set?.code || !card.collector_number) continue;
+          const cardId = `${card.set.code}-${card.collector_number}`;
+          const prices = card.prices || {};
 
-          const regular = parseP(card.prices?.usd);
-          const foil = parseP(card.prices?.usd_foil);
+          const regular = prices.usd ? parseFloat(prices.usd) : null;
+          const foil = prices.usd_foil ? parseFloat(prices.usd_foil) : null;
 
           if (regular !== null || foil !== null) {
+            newPrices[cardId] = {
+              cardId,
+              regular: isNaN(regular as number) ? null : regular,
+              foil: isNaN(foil as number) ? null : foil,
+              updatedAt: new Date().toISOString(),
+              source: 'lorcast',
+            };
             count++;
           }
-
-          newPrices[cardId] = {
-            cardId,
-            regular,
-            foil,
-            updatedAt: new Date().toISOString(),
-            source: 'lorcast',
-          };
         }
       }
 
-      set((state) => ({
-        marketPrices: { ...state.marketPrices, ...newPrices },
-        loading: false,
-      }));
+      set({ marketPrices: newPrices, marketLoaded: true, loading: false });
 
-      // If DB is connected, push batch to Firestore
+      // Batch save into Firestore if available
       if (db) {
-        try {
-          const chunks = Object.values(newPrices);
-          // Write in chunks of 450 to stay under Firestore 500 limit
-          for (let i = 0; i < chunks.length; i += 450) {
-            const batch = writeBatch(db);
-            const slice = chunks.slice(i, i + 450);
-            for (const item of slice) {
-              const docRef = doc(db, 'market_prices', item.cardId);
-              batch.set(docRef, item, { merge: true });
-            }
-            await batch.commit();
+        const entries = Object.values(newPrices);
+        const chunkSize = 450;
+        for (let i = 0; i < entries.length; i += chunkSize) {
+          const batch = writeBatch(db);
+          const chunk = entries.slice(i, i + chunkSize);
+          for (const item of chunk) {
+            const ref = doc(db, 'market_prices', item.cardId);
+            batch.set(ref, item, { merge: true });
           }
-        } catch (dbErr) {
-          console.warn('Firestore bulk market_prices update notice:', dbErr);
+          await batch.commit();
         }
       }
 
@@ -358,13 +378,19 @@ export const usePricingStore = create<PricingState>((set, get) => ({
   formatPrice: (usdAmount, targetCurrency) => {
     if (usdAmount === null || usdAmount === undefined || isNaN(usdAmount)) return '—';
     const curr = targetCurrency || get().currency;
-    const rate = get().usdToThbRate;
+    const rate = get().exchangeRates[curr] ?? 1.0;
+    const converted = usdAmount * rate;
+    const symbol = CURRENCY_SYMBOLS[curr] || '$';
+    const decimals = curr === 'JPY' ? 0 : 2;
 
-    if (curr === 'THB') {
-      const thb = usdAmount * rate;
-      return `฿${thb.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-    return `$${usdAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `${symbol}${converted.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
+  },
+
+  formatRawCurrency: (amount, currency) => {
+    if (amount === null || amount === undefined || isNaN(amount)) return '—';
+    const symbol = CURRENCY_SYMBOLS[currency] || '$';
+    const decimals = currency === 'JPY' ? 0 : 2;
+    return `${symbol}${amount.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
   },
 
   getCardMarketPrice: (cardId) => {
@@ -378,33 +404,41 @@ export const usePricingStore = create<PricingState>((set, get) => ({
   calculateCardTotalValue: (cardId, normalCount = 0, foilCount = 0) => {
     const market = get().marketPrices[cardId];
     const user = get().userPrices[cardId];
-    const rate = get().usdToThbRate;
+    const activeCurrency = get().currency;
+    const rates = get().exchangeRates;
 
     const regPrice = market?.regular ?? 0;
     const foilPrice = market?.foil ?? (market?.regular ?? 0);
 
     const totalMarketUSD = normalCount * regPrice + foilCount * foilPrice;
-    const totalMarketTHB = totalMarketUSD * rate;
+    const activeRate = rates[activeCurrency] ?? 1.0;
+    const totalMarketConverted = totalMarketUSD * activeRate;
 
     const totalCopies = normalCount + foilCount;
-    let userCost = 0;
-    let userValuation = 0;
+    let userCostConverted = 0;
+    let userValuationConverted = 0;
 
     if (user?.costPrice) {
-      const costPerCopy = user.currency === 'USD' ? user.costPrice * rate : user.costPrice;
-      userCost = totalCopies * costPerCopy;
+      const userCurr = user.currency || 'THB';
+      const userRate = rates[userCurr] ?? 1.0;
+      // Convert to USD base first, then to activeCurrency
+      const costUsd = user.costPrice / userRate;
+      userCostConverted = totalCopies * costUsd * activeRate;
     }
 
     if (user?.sellPrice) {
-      const sellPerCopy = user.currency === 'USD' ? user.sellPrice * rate : user.sellPrice;
-      userValuation = totalCopies * sellPerCopy;
+      const userCurr = user.currency || 'THB';
+      const userRate = rates[userCurr] ?? 1.0;
+      const sellUsd = user.sellPrice / userRate;
+      userValuationConverted = totalCopies * sellUsd * activeRate;
     }
 
     return {
       marketUSD: totalMarketUSD,
-      marketTHB: totalMarketTHB,
-      userCost,
-      userValuation,
+      marketConverted: totalMarketConverted,
+      userCostConverted,
+      userValuationConverted,
+      currency: activeCurrency,
     };
   },
 }));

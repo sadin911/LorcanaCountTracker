@@ -9,8 +9,9 @@ export function AdminPriceManager() {
   const loading = usePricingStore((s) => s.loading);
   const adminUpdateMarketPrice = usePricingStore((s) => s.adminUpdateMarketPrice);
   const adminSyncLivePrices = usePricingStore((s) => s.adminSyncLivePrices);
-  const usdToThbRate = usePricingStore((s) => s.usdToThbRate);
-  const setUsdToThbRate = usePricingStore((s) => s.setUsdToThbRate);
+  const exchangeRates = usePricingStore((s) => s.exchangeRates);
+  const setExchangeRate = usePricingStore((s) => s.setExchangeRate);
+  const usdToThbRate = exchangeRates.THB ?? 35.0;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSet, setSelectedSet] = useState('ALL');
@@ -99,7 +100,7 @@ export function AdminPriceManager() {
               type="number"
               step="0.1"
               value={usdToThbRate}
-              onChange={(e) => setUsdToThbRate(parseFloat(e.target.value) || 35.0)}
+              onChange={(e) => setExchangeRate('THB', parseFloat(e.target.value) || 35.0)}
               className="w-14 bg-transparent text-amber-300 font-mono font-bold focus:outline-none text-right"
             />
             <span className="text-slate-400 font-bold">THB</span>

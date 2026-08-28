@@ -170,4 +170,6 @@
 [2026-08-28 11:28] Major | Antigravity | Edit | CardCollectionModal.tsx - Market Reference & User Custom Price valuation UI
 [2026-08-28 11:28] Major | Antigravity | Edit | DeckEditor.tsx - live deck market value calculation & currency switcher
 [2026-08-28 11:31] Major | Antigravity | Write | e2e/pricing.spec.ts - pricing system E2E tests
-[2026-08-28 11:31] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 28/28 passed
+[2026-08-28 11:36] Major | Antigravity | Write | src/components/common/CurrencySelector.tsx - multi-currency dropdown/tabs/compact
+[2026-08-28 11:36] Major | Antigravity | Edit | pricingStore.ts, CardCollectionModal.tsx, CollectionHeader.tsx - THB/USD/EUR/GBP/JPY
+[2026-08-28 11:36] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 28/28 passed

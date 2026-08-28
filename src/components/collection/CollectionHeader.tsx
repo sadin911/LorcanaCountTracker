@@ -9,6 +9,7 @@ import { CollectionBackupModal } from './CollectionBackupModal';
 import { ProfileManagerModal } from './ProfileManagerModal';
 import { PWAInstallModal } from '../common/PWAInstallModal';
 import { OTAUpdateButton } from '../common/OTAUpdateButton';
+import { CurrencySelector } from '../common/CurrencySelector';
 
 function getSyncBadge(status: string, hasUser: boolean) {
   const currentStatus = hasUser ? status : 'idle';
@@ -206,20 +207,23 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
             </div>
           </div>
 
-          {/* Row 2: Sync Badge & Active Binder Name */}
+          {/* Row 2: Sync Badge, Currency & Active Binder Name */}
           <div className="flex items-center justify-between gap-2 px-1">
-            <span
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-semibold ${badge.className}`}
-              title={`App Version: v${APP_VERSION} • Status: ${badge.text}`}
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
-              <span>{badge.text}</span>
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-semibold ${badge.className}`}
+                title={`App Version: v${APP_VERSION} • Status: ${badge.text}`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
+                <span>{badge.text}</span>
+              </span>
+              <CurrencySelector variant="compact" />
+            </div>
 
             <button
               type="button"
               onClick={() => setShowProfiles(true)}
-              className="text-[11px] text-[#dfc792] hover:text-[#f3e5c8] font-bold truncate max-w-[170px] flex items-center gap-1 bg-[#1b2038]/60 px-2 py-0.5 rounded-lg border border-[#c8b07b]/20"
+              className="text-[11px] text-[#dfc792] hover:text-[#f3e5c8] font-bold truncate max-w-[150px] flex items-center gap-1 bg-[#1b2038]/60 px-2 py-0.5 rounded-lg border border-[#c8b07b]/20"
             >
               <span>{activeProfile?.icon ?? '📘'}</span>
               <span className="truncate">{activeProfile?.name ?? 'Binder'}</span>
@@ -252,6 +256,9 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
 
           {/* Right Action Tools */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Currency Selector */}
+            <CurrencySelector variant="dropdown" />
+
             {/* Quick Switch to Deck Builder */}
             {onSwitchToDeck && (
               <button

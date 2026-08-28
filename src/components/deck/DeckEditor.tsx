@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useDeferredValue } from 'react';
 import { useDeckStore } from '../../store/deckStore';
 import { useCollectionStore } from '../../store/collectionStore';
 import { usePricingStore } from '../../store/pricingStore';
+import { CurrencySelector } from '../common/CurrencySelector';
 import { calculateDeckStats, calculateMissingCards } from '../../utils/deckCalculator';
 import { resolveCardImageUrl, handleCardImageError } from '../../utils/cardImage';
 import { MissingCardsModal } from './MissingCardsModal';
@@ -56,7 +57,6 @@ export function DeckEditor({ deck }: Props) {
   );
 
   const currency = usePricingStore((s) => s.currency);
-  const setCurrency = usePricingStore((s) => s.setCurrency);
   const formatPrice = usePricingStore((s) => s.formatPrice);
   const marketPrices = usePricingStore((s) => s.marketPrices);
 
@@ -359,16 +359,9 @@ export function DeckEditor({ deck }: Props) {
 
             {/* Deck Market Value */}
             <div className="px-3.5 py-2 rounded-2xl bg-gradient-to-br from-[#1b2038] to-[#14182b] border border-[#c8b07b]/30 flex flex-col items-center shadow-md">
-              <div className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider text-[#dfc792]">
+              <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-[#dfc792]">
                 <span>💎 Value</span>
-                <button
-                  type="button"
-                  onClick={() => setCurrency(currency === 'THB' ? 'USD' : 'THB')}
-                  title="Toggle Currency (THB / USD)"
-                  className="text-[9px] px-1 py-0.2 bg-[#c8b07b]/20 hover:bg-[#c8b07b]/40 rounded text-amber-200"
-                >
-                  {currency}
-                </button>
+                <CurrencySelector variant="compact" />
               </div>
               <span className="text-lg font-black text-slate-100">
                 {deckValueUsd > 0 ? formatPrice(deckValueUsd, currency) : '—'}
