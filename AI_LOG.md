@@ -185,5 +185,6 @@
 [2026-08-28 12:10] Major | Antigravity | Edit | src/types/pricing.ts, pricingStore.ts - added Last Sold & Sales transactions
 [2026-08-28 12:10] Major | Antigravity | Edit | CardCollectionModal.tsx - 1-Click market links (eBay, TCG) & sales feed
 [2026-08-28 12:10] Major | Antigravity | Edit | AdminPriceManager.tsx - Last Sold column & transaction recorder
-[2026-08-28 12:10] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 30/30 passed
+[2026-08-28 12:13] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.5.0
+[2026-08-28 12:14] Major | Antigravity | Release | v0.5.0 - Recent Sales Tracking, Last Sold Stats & 1-Click Market Links
 
