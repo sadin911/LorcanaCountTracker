@@ -180,3 +180,7 @@
 [2026-08-28 11:52] Major | Antigravity | Write | src/types/pricing.ts, fetch-prices - added PSA 10 graded price support
 [2026-08-28 11:52] Major | Antigravity | Edit | CardCollectionModal.tsx, AdminPriceManager.tsx - PSA 10 market & slab tools
 [2026-08-28 11:52] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 30/30 passed
+[2026-08-28 12:10] Major | Antigravity | Edit | src/types/pricing.ts, pricingStore.ts - added Last Sold & Sales transactions
+[2026-08-28 12:10] Major | Antigravity | Edit | CardCollectionModal.tsx - 1-Click market links (eBay, TCG) & sales feed
+[2026-08-28 12:10] Major | Antigravity | Edit | AdminPriceManager.tsx - Last Sold column & transaction recorder
+[2026-08-28 12:10] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 30/30 passed

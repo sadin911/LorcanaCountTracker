@@ -16,10 +16,17 @@ test.describe('Card Pricing & Valuation System', () => {
     const modal = page.locator('.fixed.inset-0').filter({ hasText: /Market Price & Valuation/i }).first();
     await expect(modal).toBeVisible();
 
-    // Verify Market Reference row (Regular, Foil & PSA 10)
+    // Verify Market Reference row (Regular, Foil, PSA 10, Last Sold)
     await expect(modal.getByText('Regular', { exact: true })).toBeVisible();
     await expect(modal.getByText('✨ Foil', { exact: true })).toBeVisible();
     await expect(modal.getByText('🏆 PSA 10', { exact: true })).toBeVisible();
+    await expect(modal.getByText('📉 Last Sold', { exact: true })).toBeVisible();
+
+    // Verify Direct Market Verification Links
+    await expect(modal.locator('a:has-text("eBay Sold")')).toBeVisible();
+    await expect(modal.locator('a:has-text("TCGplayer")')).toBeVisible();
+    await expect(modal.locator('a:has-text("PriceChart")')).toBeVisible();
+    await expect(modal.locator('a:has-text("Cardmarket")')).toBeVisible();
 
     // Currency Switcher buttons
     const thbBtn = modal.locator('button:has-text("THB")');

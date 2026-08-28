@@ -76,12 +76,45 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
   const currency = usePricingStore((s) => s.currency);
   const formatPrice = usePricingStore((s) => s.formatPrice);
   const calculateCardTotalValue = usePricingStore((s) => s.calculateCardTotalValue);
+  const logCardSaleTransaction = usePricingStore((s) => s.logCardSaleTransaction);
 
   const [costInput, setCostInput] = useState<string>('');
   const [sellInput, setSellInput] = useState<string>('');
   const [isGraded, setIsGraded] = useState<boolean>(false);
   const [gradingCompany, setGradingCompany] = useState<'PSA' | 'BGS' | 'CGC' | 'OTHER' | 'RAW'>('PSA');
   const [grade, setGrade] = useState<string>('10');
+
+  // Recent Sales & Quick Log state
+  const [showSalesFeed, setShowSalesFeed] = useState<boolean>(false);
+  const [showLogSaleForm, setShowLogSaleForm] = useState<boolean>(false);
+  const [newSalePrice, setNewSalePrice] = useState<string>('');
+  const [newSaleDate, setNewSaleDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
+  const [newSaleCondition, setNewSaleCondition] = useState<'NM' | 'LP' | 'MP' | 'HP' | 'Foil' | 'PSA 10' | 'PSA 9' | 'BGS 9.5' | 'Raw'>('NM');
+  const [newSaleSource, setNewSaleSource] = useState<'TCGplayer' | 'eBay' | 'Cardmarket' | 'Local Market' | 'Other'>('TCGplayer');
+  const [newSaleNotes, setNewSaleNotes] = useState<string>('');
+  const [isSavingSale, setIsSavingSale] = useState<boolean>(false);
+
+  const handleQuickLogSale = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const priceNum = parseFloat(newSalePrice);
+    if (isNaN(priceNum) || priceNum <= 0) return;
+    setIsSavingSale(true);
+    try {
+      await logCardSaleTransaction(card.id, {
+        date: newSaleDate || new Date().toISOString().split('T')[0],
+        price: priceNum,
+        condition: newSaleCondition,
+        source: newSaleSource,
+        notes: newSaleNotes.trim() || undefined,
+      });
+      setNewSalePrice('');
+      setNewSaleNotes('');
+      setShowLogSaleForm(false);
+      setShowSalesFeed(true);
+    } finally {
+      setIsSavingSale(false);
+    }
+  };
 
   useEffect(() => {
     setCostInput(userPrice?.costPrice !== null && userPrice?.costPrice !== undefined ? String(userPrice.costPrice) : '');
@@ -442,8 +475,8 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 <CurrencySelector variant="tabs" />
               </div>
 
-              {/* Market Reference Row (Regular, Foil, PSA 10) */}
-              <div className="grid grid-cols-3 gap-2 text-xs">
+              {/* Market Reference Row (Regular, Foil, PSA 10, Last Sold) */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                 <div className="p-2 rounded-xl bg-[#131627]/80 border border-[#c8b07b]/15">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block truncate">Regular</span>
                   <span className="text-xs sm:text-sm font-extrabold text-slate-100 mt-0.5 block truncate">
@@ -468,7 +501,197 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                       : '—'}
                   </span>
                 </div>
+                <div className="p-2 rounded-xl bg-[#131627]/80 border border-emerald-500/20">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block truncate">📉 Last Sold</span>
+                  <span className="text-xs sm:text-sm font-extrabold text-emerald-300 mt-0.5 block truncate">
+                    {marketPrice?.lastSold !== null && marketPrice?.lastSold !== undefined
+                      ? formatPrice(marketPrice.lastSold, currency)
+                      : '—'}
+                  </span>
+                  {marketPrice?.lastSoldDate && (
+                    <span className="text-[9px] text-slate-400 block truncate">{marketPrice.lastSoldDate}</span>
+                  )}
+                </div>
               </div>
+
+              {/* Direct 1-Click Verification Links */}
+              <div className="pt-2 border-t border-[#c8b07b]/15 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1">
+                    <span>🔗</span> Verify Real Market Sales
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowSalesFeed(!showSalesFeed)}
+                    className="text-[10px] font-bold text-[#dfc792] hover:underline flex items-center gap-1"
+                  >
+                    <span>📈 Sales History ({marketPrice?.recentSales?.length ?? 0})</span>
+                    <span>{showSalesFeed ? '▲' : '▼'}</span>
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px]">
+                  <a
+                    href={`https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(`disney lorcana ${card.name} ${card.version || ''} ${card.collectorNumber}/${card.setCode}`)}&LH_Sold=1&LH_Complete=1&_sop=12`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-2 py-1.5 rounded-lg bg-[#131627] hover:bg-[#1f243f] border border-amber-500/30 text-amber-300 font-bold text-center flex items-center justify-center gap-1 transition-all hover:scale-[1.02]"
+                    title="View real completed/sold listings on eBay"
+                  >
+                    <span>🏷️</span> eBay Sold
+                  </a>
+                  <a
+                    href={`https://www.tcgplayer.com/search/disney-lorcana/product?q=${encodeURIComponent(`${card.name} ${card.version || ''}`)}&productLineName=disney-lorcana`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-2 py-1.5 rounded-lg bg-[#131627] hover:bg-[#1f243f] border border-sky-500/30 text-sky-300 font-bold text-center flex items-center justify-center gap-1 transition-all hover:scale-[1.02]"
+                    title="View active market & sales on TCGplayer"
+                  >
+                    <span>🛒</span> TCGplayer
+                  </a>
+                  <a
+                    href={`https://www.pricecharting.com/search-products?type=prices&q=${encodeURIComponent(`lorcana ${card.name} ${card.version || ''}`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-2 py-1.5 rounded-lg bg-[#131627] hover:bg-[#1f243f] border border-emerald-500/30 text-emerald-300 font-bold text-center flex items-center justify-center gap-1 transition-all hover:scale-[1.02]"
+                    title="Check price history on PriceCharting"
+                  >
+                    <span>📊</span> PriceChart
+                  </a>
+                  <a
+                    href={`https://www.cardmarket.com/en/Lorcana/Products/Search?searchString=${encodeURIComponent(card.name)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-2 py-1.5 rounded-lg bg-[#131627] hover:bg-[#1f243f] border border-purple-500/30 text-purple-300 font-bold text-center flex items-center justify-center gap-1 transition-all hover:scale-[1.02]"
+                    title="Check European card market prices"
+                  >
+                    <span>🇪🇺</span> Cardmarket
+                  </a>
+                </div>
+              </div>
+
+              {/* Collapsible Sales Transaction History Feed */}
+              {showSalesFeed && (
+                <div className="p-3 rounded-xl bg-[#131627]/90 border border-slate-700/70 space-y-2.5 animate-fade-in text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-200 flex items-center gap-1.5">
+                      <span>📉</span> Recent Completed Transactions
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowLogSaleForm(!showLogSaleForm)}
+                      className="px-2 py-0.5 rounded-md bg-[#1b2038] hover:bg-[#252c4d] border border-[#c8b07b]/40 text-[#dfc792] text-[10px] font-bold transition-all"
+                    >
+                      {showLogSaleForm ? '✕ Cancel' : '+ Log Sale'}
+                    </button>
+                  </div>
+
+                  {/* Inline Form to Log Sale */}
+                  {showLogSaleForm && (
+                    <form onSubmit={handleQuickLogSale} className="p-2.5 rounded-lg bg-[#1b2038] border border-[#c8b07b]/30 space-y-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                        <label className="block">
+                          <span className="text-[9px] text-slate-400">Sold Price (USD $)</span>
+                          <input
+                            type="number"
+                            step="any"
+                            min={0.01}
+                            required
+                            value={newSalePrice}
+                            onChange={(e) => setNewSalePrice(e.target.value)}
+                            placeholder="e.g. 25.50"
+                            className="mt-0.5 w-full px-2 py-1 rounded bg-[#131627] border border-slate-700 text-xs font-mono text-slate-100 focus:outline-none"
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-[9px] text-slate-400">Date</span>
+                          <input
+                            type="date"
+                            required
+                            value={newSaleDate}
+                            onChange={(e) => setNewSaleDate(e.target.value)}
+                            className="mt-0.5 w-full px-2 py-1 rounded bg-[#131627] border border-slate-700 text-xs font-mono text-slate-100 focus:outline-none"
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-[9px] text-slate-400">Condition</span>
+                          <select
+                            value={newSaleCondition}
+                            onChange={(e) => setNewSaleCondition(e.target.value as any)}
+                            className="mt-0.5 w-full px-1.5 py-1 rounded bg-[#131627] border border-slate-700 text-xs text-slate-100 focus:outline-none"
+                          >
+                            <option value="NM">Near Mint</option>
+                            <option value="Foil">Foil</option>
+                            <option value="PSA 10">PSA 10</option>
+                            <option value="PSA 9">PSA 9</option>
+                            <option value="BGS 9.5">BGS 9.5</option>
+                            <option value="LP">Lightly Played</option>
+                            <option value="Raw">Raw</option>
+                          </select>
+                        </label>
+                        <label className="block">
+                          <span className="text-[9px] text-slate-400">Source</span>
+                          <select
+                            value={newSaleSource}
+                            onChange={(e) => setNewSaleSource(e.target.value as any)}
+                            className="mt-0.5 w-full px-1.5 py-1 rounded bg-[#131627] border border-slate-700 text-xs text-slate-100 focus:outline-none"
+                          >
+                            <option value="TCGplayer">TCGplayer</option>
+                            <option value="eBay">eBay Sold</option>
+                            <option value="Cardmarket">Cardmarket</option>
+                            <option value="Local Market">Local (TH)</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </label>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="text"
+                          value={newSaleNotes}
+                          onChange={(e) => setNewSaleNotes(e.target.value)}
+                          placeholder="Optional notes (e.g. FB group transaction, mint condition)"
+                          className="flex-1 px-2 py-1 rounded bg-[#131627] border border-slate-700 text-xs text-slate-200 focus:outline-none"
+                        />
+                        <button
+                          type="submit"
+                          disabled={isSavingSale}
+                          className="px-3 py-1 rounded bg-[#c8b07b] hover:bg-[#dfc792] text-[#131627] text-xs font-bold transition-all disabled:opacity-50"
+                        >
+                          {isSavingSale ? 'Saving...' : 'Add Sale'}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* Transactions Table */}
+                  {marketPrice?.recentSales && marketPrice.recentSales.length > 0 ? (
+                    <div className="max-h-40 overflow-y-auto divide-y divide-slate-800 rounded-lg bg-[#0d0f1b] border border-slate-800">
+                      {marketPrice.recentSales.map((sale) => (
+                        <div key={sale.id} className="p-2 flex items-center justify-between gap-2 hover:bg-slate-900/60 transition-colors">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-400">
+                              {sale.date}
+                            </span>
+                            <span className="px-1.5 py-0.5 rounded bg-amber-950/60 border border-amber-500/30 text-[10px] font-bold text-amber-300">
+                              {sale.condition}
+                            </span>
+                            <span className="text-[10px] text-slate-400 truncate">
+                              via <span className="text-slate-300 font-semibold">{sale.source}</span>
+                              {sale.notes ? ` · ${sale.notes}` : ''}
+                            </span>
+                          </div>
+                          <div className="font-mono font-bold text-emerald-400 text-xs shrink-0">
+                            {formatPrice(sale.price, currency)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-slate-400 italic text-center py-2">
+                      No recorded sales yet. Use the links above to view live market transactions.
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* User Custom Prices (Purchase Cost / Valuation / Graded) */}
               <div className="pt-2 border-t border-[#c8b07b]/15 space-y-2">
