@@ -4,17 +4,25 @@ import { useCollectionStore } from '../../store/collectionStore';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 import type { CollectionStats } from '../../types/collection';
 import { isFirebaseConfigured } from '../../utils/firebase';
+import { APP_VERSION } from '../../constants/version';
 import { CollectionBackupModal } from './CollectionBackupModal';
 import { ProfileManagerModal } from './ProfileManagerModal';
 import { PWAInstallModal } from '../common/PWAInstallModal';
 import { OTAUpdateButton } from '../common/OTAUpdateButton';
 
-const SYNC_LABEL: Record<string, { text: string; className: string; dot: string }> = {
-  idle: { text: 'Guest', className: 'bg-slate-800/80 text-slate-400 border-slate-700/60', dot: 'bg-slate-500' },
-  syncing: { text: 'Syncing…', className: 'bg-sky-950/80 text-sky-300 border-sky-600/50', dot: 'bg-sky-400 animate-pulse' },
-  synced: { text: 'Cloud Active', className: 'bg-emerald-950/80 text-emerald-300 border-emerald-600/50', dot: 'bg-emerald-400' },
-  error: { text: 'Sync Error', className: 'bg-rose-950/80 text-rose-300 border-rose-600/50', dot: 'bg-rose-400' },
-};
+function getSyncBadge(status: string, hasUser: boolean) {
+  const currentStatus = hasUser ? status : 'idle';
+  switch (currentStatus) {
+    case 'syncing':
+      return { text: `Syncing… (v${APP_VERSION})`, className: 'bg-sky-950/80 text-sky-300 border-sky-600/50', dot: 'bg-sky-400 animate-pulse' };
+    case 'synced':
+      return { text: `Cloud Active (v${APP_VERSION})`, className: 'bg-emerald-950/80 text-emerald-300 border-emerald-600/50', dot: 'bg-emerald-400' };
+    case 'error':
+      return { text: `Sync Error (v${APP_VERSION})`, className: 'bg-rose-950/80 text-rose-300 border-rose-600/50', dot: 'bg-rose-400' };
+    default:
+      return { text: `v${APP_VERSION}`, className: 'bg-slate-800/80 text-slate-400 border-slate-700/60', dot: 'bg-slate-500' };
+  }
+}
 
 interface CollectionHeaderProps {
   stats: CollectionStats;
@@ -52,7 +60,7 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
   const activeProfileId = useCollectionStore((s) => s.activeProfileId);
   const activeProfile = profiles[activeProfileId];
 
-  const badge = SYNC_LABEL[user ? syncStatus : 'idle'] ?? SYNC_LABEL.idle;
+  const badge = getSyncBadge(syncStatus, !!user);
 
   const logoUrl = `${import.meta.env.BASE_URL}logo-br-2x-Sweb4xgr.png`;
 
@@ -69,39 +77,191 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
       <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#c8b07b] to-transparent" />
 
       <div className="px-3 sm:px-6 py-2 sm:py-2.5 space-y-2 max-w-7xl mx-auto">
-        <div className="flex items-center justify-between gap-2.5">
+        {/* MOBILE LAYOUT (2 Rows: Top Identity & Actions, Bottom Sync & Binder Info) */}
+        <div className="flex flex-col gap-2 sm:hidden">
+          {/* Row 1: Logo, Title, Actions */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <img
+                src={logoUrl}
+                alt="Disney Lorcana TCG"
+                className="h-7 w-auto object-contain drop-shadow-[0_2px_10px_rgba(200,176,123,0.35)] shrink-0 select-none"
+              />
+              <span className="text-[10px] uppercase font-extrabold tracking-widest text-[#dfc792] px-2 py-0.5 rounded-lg bg-[#c8b07b]/15 border border-[#c8b07b]/30 shadow-sm shrink-0">
+                Tracker
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <OTAUpdateButton variant="badge" />
+
+              {/* Install PWA Button (Mobile) */}
+              {!isInstalled && (
+                <button
+                  type="button"
+                  onClick={handleInstallClick}
+                  title="Install Lorcana Tracker App"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm min-h-[36px] font-bold shrink-0"
+                >
+                  <span className="text-sm">📲</span>
+                  <span className="hidden xs:inline">Install</span>
+                </button>
+              )}
+
+              {/* Profile Picker Button */}
+              <button
+                type="button"
+                onClick={() => setShowProfiles(true)}
+                title={`Active Binder: ${activeProfile?.name ?? 'Binder'}`}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs transition-all shadow-sm group text-slate-200 hover:text-[#dfc792] min-h-[36px]"
+              >
+                <span className="text-sm">{activeProfile?.icon ?? '📘'}</span>
+                <span className="text-amber-400/80 text-[10px]">▾</span>
+              </button>
+
+              {/* Auth Button */}
+              {!isFirebaseConfigured ? (
+                <span className="px-2 py-1 rounded-xl bg-[#1b2038]/60 border border-[#c8b07b]/20 text-[10px] text-slate-400 font-medium">
+                  Offline
+                </span>
+              ) : user ? (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowUserMenu((v) => !v)}
+                    className="flex items-center gap-1 p-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 transition-all min-h-[36px]"
+                  >
+                    {user.photoURL ? (
+                      <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full ring-1 ring-[#c8b07b]" />
+                    ) : (
+                      <span className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#dfc792] to-[#c8b07b] text-[#131627] text-xs font-extrabold flex items-center justify-center shadow">
+                        {(user.displayName ?? user.email ?? '?').charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                    <span className="text-slate-400 text-[10px]">▾</span>
+                  </button>
+
+                  {showUserMenu && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
+                      <div className="absolute right-0 mt-2 z-50 w-60 rounded-2xl border border-[#c8b07b]/30 bg-[#1b2038]/95 backdrop-blur-xl shadow-2xl p-3 animate-fade-in space-y-2">
+                        <div className="border-b border-slate-700/60 pb-2">
+                          <p className="text-xs font-bold text-slate-100 truncate">{user.displayName || 'Illumite'}</p>
+                          <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
+                          <div className="flex items-center justify-between text-[10px] mt-1.5">
+                            <span className="text-slate-400">App Version:</span>
+                            <span className="font-mono font-bold text-[#dfc792]">v{APP_VERSION}</span>
+                          </div>
+                          <div className="flex items-center justify-between text-[10px] mt-1">
+                            <span className="text-slate-400">Status:</span>
+                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${badge.className}`}>
+                              {badge.text}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="pt-1">
+                          <OTAUpdateButton variant="menu" />
+                        </div>
+
+                        {!isInstalled && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowUserMenu(false);
+                              handleInstallClick();
+                            }}
+                            className="w-full py-2 px-2.5 rounded-xl bg-[#1b2038] hover:bg-[#252c4d] border border-[#c8b07b]/40 text-xs font-semibold text-[#dfc792] transition-colors flex items-center justify-center gap-1.5"
+                          >
+                            <span>📲</span>
+                            <span>Install App</span>
+                          </button>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            void signOut();
+                          }}
+                          className="w-full py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 text-xs font-semibold text-rose-300 transition-colors"
+                        >
+                          Sign out
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  disabled={authLoading}
+                  onClick={() => void signIn()}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] hover:brightness-110 active:scale-95 text-[#131627] text-xs font-extrabold transition-all shadow-md shadow-[#c8b07b]/20 disabled:opacity-50 min-h-[36px]"
+                >
+                  <span>☁️</span>
+                  <span>Sign In</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Row 2: Sync Badge & Active Binder Name */}
+          <div className="flex items-center justify-between gap-2 px-1">
+            <span
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-semibold ${badge.className}`}
+              title={`App Version: v${APP_VERSION} • Status: ${badge.text}`}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
+              <span>{badge.text}</span>
+            </span>
+
+            <button
+              type="button"
+              onClick={() => setShowProfiles(true)}
+              className="text-[11px] text-[#dfc792] hover:text-[#f3e5c8] font-bold truncate max-w-[170px] flex items-center gap-1 bg-[#1b2038]/60 px-2 py-0.5 rounded-lg border border-[#c8b07b]/20"
+            >
+              <span>{activeProfile?.icon ?? '📘'}</span>
+              <span className="truncate">{activeProfile?.name ?? 'Binder'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* DESKTOP / TABLET LAYOUT (Single Row) */}
+        <div className="hidden sm:flex items-center justify-between gap-2.5">
           {/* Logo & Identity */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="flex items-center gap-3 min-w-0">
             <img
               src={logoUrl}
               alt="Disney Lorcana TCG"
-              className="h-7 sm:h-9 w-auto object-contain drop-shadow-[0_2px_10px_rgba(200,176,123,0.35)] shrink-0 select-none"
+              className="h-9 w-auto object-contain drop-shadow-[0_2px_10px_rgba(200,176,123,0.35)] shrink-0 select-none"
             />
             <div className="flex items-center gap-1.5 shrink-0">
-              <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-widest text-[#dfc792] px-2 py-0.5 rounded-lg bg-[#c8b07b]/15 border border-[#c8b07b]/30 shadow-sm">
+              <span className="text-xs uppercase font-extrabold tracking-widest text-[#dfc792] px-2 py-0.5 rounded-lg bg-[#c8b07b]/15 border border-[#c8b07b]/30 shadow-sm">
                 Tracker
               </span>
               <span
-                className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${badge.className}`}
+                className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${badge.className}`}
+                title={`App Version: v${APP_VERSION} • Status: ${badge.text}`}
               >
                 <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
-                {badge.text}
+                <span>{badge.text}</span>
               </span>
             </div>
           </div>
 
           {/* Right Action Tools */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             {/* Quick Switch to Deck Builder */}
             {onSwitchToDeck && (
               <button
                 type="button"
                 onClick={onSwitchToDeck}
                 title="Open Deck Builder"
-                className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl bg-gradient-to-r from-[#1b2038] to-[#252c4d] hover:from-[#252c4d] hover:to-[#313962] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm min-h-[40px] sm:min-h-[36px] font-bold group"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#1b2038] to-[#252c4d] hover:from-[#252c4d] hover:to-[#313962] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm min-h-[36px] font-bold group"
               >
-                <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">🃏</span>
-                <span className="hidden sm:inline">Decks</span>
+                <span className="text-sm group-hover:scale-110 transition-transform">🃏</span>
+                <span>Decks</span>
               </button>
             )}
 
@@ -109,10 +269,11 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
             <button
               type="button"
               onClick={() => setShowProfiles(true)}
-              className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs transition-all shadow-sm group hover:text-[#dfc792] min-h-[40px] sm:min-h-[36px]"
+              title={`Active Binder: ${activeProfile?.name ?? 'Binder'}`}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs transition-all shadow-sm group hover:text-[#dfc792] min-h-[36px]"
             >
-              <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">{activeProfile?.icon ?? '📘'}</span>
-              <span className="hidden sm:inline max-w-[130px] truncate font-bold text-slate-200">
+              <span className="text-sm group-hover:scale-110 transition-transform">{activeProfile?.icon ?? '📘'}</span>
+              <span className="max-w-[140px] truncate font-bold text-slate-200">
                 {activeProfile?.name ?? 'Binder'}
               </span>
               <span className="text-amber-400/80 text-[10px]">▾</span>
@@ -123,25 +284,25 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
               type="button"
               onClick={() => setShowBackup(true)}
               title="Backup & restore collection"
-              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm flex items-center gap-1.5 min-h-[40px] sm:min-h-[36px]"
+              className="flex p-2 px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm items-center gap-1.5 min-h-[36px]"
             >
-              <span className="text-base sm:text-sm">💾</span>
-              <span className="hidden md:inline font-bold">Backup</span>
+              <span className="text-sm">💾</span>
+              <span className="font-bold">Backup</span>
             </button>
 
             {/* OTA Update Button */}
             <OTAUpdateButton variant="badge" />
 
-            {/* Install PWA (Hidden when running standalone) */}
+            {/* Install PWA */}
             {!isInstalled && (
               <button
                 type="button"
                 onClick={handleInstallClick}
                 title="Install Lorcana Tracker App"
-                className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm flex items-center gap-1.5 min-h-[40px] sm:min-h-[36px] group"
+                className="flex p-2 px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm items-center gap-1.5 min-h-[36px] group"
               >
-                <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">📲</span>
-                <span className="hidden md:inline font-bold">Install</span>
+                <span className="text-sm group-hover:scale-110 transition-transform">📲</span>
+                <span className="font-bold">Install</span>
               </button>
             )}
 
@@ -149,7 +310,7 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
             {!isFirebaseConfigured ? (
               <span
                 title="Set VITE_FIREBASE_* in .env.local to enable cloud sync"
-                className="px-2.5 py-1.5 rounded-xl bg-[#1b2038]/60 border border-[#c8b07b]/20 text-[10px] text-slate-400 font-medium flex items-center min-h-[40px] sm:min-h-[36px]"
+                className="px-2 py-1 rounded-xl bg-[#1b2038]/60 border border-[#c8b07b]/20 text-[10px] text-slate-400 font-medium flex items-center min-h-[36px]"
               >
                 Offline
               </span>
@@ -158,12 +319,12 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
                 <button
                   type="button"
                   onClick={() => setShowUserMenu((v) => !v)}
-                  className="flex items-center gap-1.5 p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 transition-all min-h-[40px] sm:min-h-[36px]"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 transition-all min-h-[36px]"
                 >
                   {user.photoURL ? (
-                    <img src={user.photoURL} alt="" className="w-7 h-7 sm:w-6 sm:h-6 rounded-full ring-1 ring-[#c8b07b]" />
+                    <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full ring-1 ring-[#c8b07b]" />
                   ) : (
-                    <span className="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-gradient-to-tr from-[#dfc792] to-[#c8b07b] text-[#131627] text-xs font-extrabold flex items-center justify-center shadow">
+                    <span className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#dfc792] to-[#c8b07b] text-[#131627] text-xs font-extrabold flex items-center justify-center shadow">
                       {(user.displayName ?? user.email ?? '?').charAt(0).toUpperCase()}
                     </span>
                   )}
@@ -177,9 +338,15 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
                       <div className="border-b border-slate-700/60 pb-2">
                         <p className="text-xs font-bold text-slate-100 truncate">{user.displayName || 'Illumite'}</p>
                         <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
-                        <div className="flex items-center gap-1.5 mt-1.5">
-                          <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                          <p className="text-[10px] font-medium text-emerald-400">Cloud Sync Active</p>
+                        <div className="flex items-center justify-between text-[10px] mt-1.5">
+                          <span className="text-slate-400">App Version:</span>
+                          <span className="font-mono font-bold text-[#dfc792]">v{APP_VERSION}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] mt-1">
+                          <span className="text-slate-400">Status:</span>
+                          <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${badge.className}`}>
+                            {badge.text}
+                          </span>
                         </div>
                       </div>
                       
@@ -206,10 +373,10 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
                 type="button"
                 disabled={authLoading}
                 onClick={() => void signIn()}
-                className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] hover:brightness-110 active:scale-95 text-[#131627] text-xs font-extrabold transition-all shadow-md shadow-[#c8b07b]/20 disabled:opacity-50 min-h-[40px] sm:min-h-[36px]"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#dfc792] via-[#c8b07b] to-[#b39552] hover:brightness-110 active:scale-95 text-[#131627] text-xs font-extrabold transition-all shadow-md shadow-[#c8b07b]/20 disabled:opacity-50 min-h-[36px]"
               >
                 <span>☁️</span>
-                <span className="hidden sm:inline">Sign In</span>
+                <span>Sign In</span>
               </button>
             )}
           </div>

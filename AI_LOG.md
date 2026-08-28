@@ -148,3 +148,19 @@
 [2026-08-28 10:33] Major | Antigravity | Edit | src/components/deck/DeckEditor.tsx - added List/Grid view toggle & visual card grid mode for Cards in Deck
 [2026-08-28 10:33] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 20/20 passed
 [2026-08-28 10:38] Major | Antigravity | Branch | created feature/card-pricing for card pricing metadata design
+[2026-08-28 10:53] Major | Antigravity | Fix | fixed mobile header overlapping on small screens & integrated deckStore cloud sync in auth listener
+[2026-08-28 10:53] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
+[2026-08-28 11:01] Major | Antigravity | Edit | src/constants/version.ts, CollectionHeader.tsx, DeckHeader.tsx - display app version in sync badges
+[2026-08-28 11:01] Major | Antigravity | Edit | firestore.rules - added security rule for /users/{uid}/decks/{deckId}
+[2026-08-28 11:01] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
+[2026-08-28 11:08] Major | Antigravity | Edit | CollectionHeader.tsx, DeckHeader.tsx - 2-row clean mobile header layout
+[2026-08-28 11:08] Major | Antigravity | Fix | src/store/deckStore.ts - sanitize undefined fields & added fallback sync to binders doc
+[2026-08-28 11:08] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
+[2026-08-28 11:12] Major | Antigravity | Fix | deckStore.ts - fix reserved firestore doc id (__lorcana_decks__ -> lorcana_decks_vault)
+[2026-08-28 11:12] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
+[2026-08-28 11:15] Major | Antigravity | Fix | CollectionHeader.tsx, DeckHeader.tsx - restored Install PWA button on mobile & deck builder
+[2026-08-28 11:15] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
+[2026-08-28 11:19] Major | Antigravity | Write | AGENTS.md, CLAUDE.md, .agents/rules - enforce version bump & git tagging
+[2026-08-28 11:19] Major | Antigravity | Release | v0.3.1 - restored Install PWA & cross-agent deploy tagging rule
+[2026-08-28 11:22] Major | Antigravity | Merge | merged main (v0.3.1) into feature/card-pricing
+

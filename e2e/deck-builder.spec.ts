@@ -5,7 +5,7 @@ test('Deck Builder allows creating, viewing stats, and calculating missing cards
   await openApp(page);
 
   // Switch to Deck Builder via BottomNav
-  const deckNavBtn = page.locator('button:has-text("Decks")').first();
+  const deckNavBtn = page.locator('nav button:has-text("Decks"), button:has-text("Decks"):visible').first();
   await expect(deckNavBtn).toBeVisible();
   await deckNavBtn.click();
 
@@ -48,7 +48,8 @@ test('Deck Builder allows creating, viewing stats, and calculating missing cards
   await expect(page.getByText('Copy Shopping List')).toBeVisible();
 
   // Close modal
-  await page.locator('button:has-text("✕")').first().click();
+  await page.keyboard.press('Escape');
+  await expect(page.getByText('Missing Cards Check')).not.toBeVisible();
 
   // Test Grid and List view toggle
   const deckTab = page.locator('button:has-text("Cards in Deck")');
@@ -68,6 +69,6 @@ test('Deck Builder allows creating, viewing stats, and calculating missing cards
   await expect(listBtn).toBeVisible();
 
   // Return to deck list
-  await page.locator('button:has-text("Decks")').first().click();
+  await page.locator('header button:has-text("Decks"):visible, nav button:has-text("Decks"):visible, button:has-text("‹"):visible').first().click();
   await expect(page.getByText('Your Deck Vault')).toBeVisible();
 });
