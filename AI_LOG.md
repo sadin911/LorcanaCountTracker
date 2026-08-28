@@ -173,3 +173,6 @@
 [2026-08-28 11:36] Major | Antigravity | Write | src/components/common/CurrencySelector.tsx - multi-currency dropdown/tabs/compact
 [2026-08-28 11:36] Major | Antigravity | Edit | pricingStore.ts, CardCollectionModal.tsx, CollectionHeader.tsx - THB/USD/EUR/GBP/JPY
 [2026-08-28 11:36] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 28/28 passed
+[2026-08-28 11:40] Major | Antigravity | Edit | CollectionCardItem.tsx - display price badges on card grid items
+[2026-08-28 11:40] Major | Antigravity | Edit | CollectionFilterBar.tsx, CollectionTracker.tsx, types - sort by Market Price
+[2026-08-28 11:40] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 30/30 passed

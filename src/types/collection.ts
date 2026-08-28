@@ -31,7 +31,7 @@ export interface CollectionProfile {
 
 export type CollectionStatusFilter = 'all' | 'owned' | 'missing' | 'wishlist' | 'duplicates';
 
-export type CollectionSortBy = 'number' | 'name' | 'cost' | 'lore' | 'strength' | 'quantity';
+export type CollectionSortBy = 'number' | 'name' | 'cost' | 'lore' | 'strength' | 'quantity' | 'price';
 
 export type SortOrder = 'asc' | 'desc';
 

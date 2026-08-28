@@ -2,6 +2,7 @@ import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { ALL_CARDS, ALL_CLASSIFICATIONS, ALL_STORIES, SET_ORDER, SETS_NEWEST_FIRST } from '../../data/catalogue';
 import { useAuthStore } from '../../store/authStore';
 import { useCollectionStore } from '../../store/collectionStore';
+import { usePricingStore } from '../../store/pricingStore';
 import { usePullToRefresh } from '../../hooks/usePullToRefresh';
 import type { CollectionStats, SetProgress } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
@@ -28,6 +29,7 @@ export function CollectionTracker({ onSwitchToDeck }: CollectionTrackerProps = {
   const setFilters = useCollectionStore((s) => s.setFilters);
   const resetFilters = useCollectionStore((s) => s.resetFilters);
   const loadUserFromCloud = useCollectionStore((s) => s.loadUserFromCloud);
+  const marketPrices = usePricingStore((s) => s.marketPrices);
 
   const handleRefresh = async () => {
     if (user) {
@@ -231,6 +233,14 @@ export function CollectionTracker({ onSwitchToDeck }: CollectionTrackerProps = {
     result.sort((a, b) => {
       let cmp = 0;
       switch (sortBy) {
+        case 'price': {
+          const pA = marketPrices[a.id];
+          const pB = marketPrices[b.id];
+          const priceA = pA?.regular ?? pA?.foil ?? 0;
+          const priceB = pB?.regular ?? pB?.foil ?? 0;
+          cmp = priceA - priceB;
+          break;
+        }
         case 'name':
           cmp = a.name.localeCompare(b.name) || (a.version ?? '').localeCompare(b.version ?? '');
           break;
@@ -259,7 +269,7 @@ export function CollectionTracker({ onSwitchToDeck }: CollectionTrackerProps = {
     });
 
     return result;
-  }, [filters, ownedCards, cardMatcher]);
+  }, [filters, ownedCards, cardMatcher, marketPrices]);
 
   // Pagination resets when the query changes, but NOT when a card count changes.
   const filterKey = [

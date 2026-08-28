@@ -18,6 +18,7 @@ const INK_COSTS = ['ALL', '1', '2', '3', '4', '5', '6', '7', '8', '9+'];
 
 const SORT_OPTIONS: { id: CollectionSortBy; label: string }[] = [
   { id: 'number', label: 'Card Number' },
+  { id: 'price', label: 'Market Price' },
   { id: 'name', label: 'Name' },
   { id: 'cost', label: 'Ink Cost' },
   { id: 'lore', label: 'Lore Value' },

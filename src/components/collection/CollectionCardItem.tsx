@@ -5,6 +5,7 @@ import { cardDisplayName, rarityLabel } from '../../types/card';
 import type { FinishCount } from '../../types/collection';
 import { totalCopies } from '../../types/collection';
 import { useFoilTilt } from '../../hooks/useFoilTilt';
+import { usePricingStore } from '../../store/pricingStore';
 import { handleCardImageError, resolveCardImageUrl } from '../../utils/cardImage';
 import { LorcanaInkIcon, LorcanaRarityIcon } from '../icons/LorcanaIcons';
 import { analytics } from '../../utils/analytics';
@@ -32,6 +33,17 @@ export const CollectionCardItem = memo(function CollectionCardItem({
   const owned = count > 0;
   const vivid = owned || showFullColor;
   const primaryInk = card.inks[0];
+
+  const marketPrice = usePricingStore((s) => s.marketPrices[card.id]);
+  const currency = usePricingStore((s) => s.currency);
+  const formatPrice = usePricingStore((s) => s.formatPrice);
+
+  const hasOnlyFoilOwned = (variants.foil ?? 0) > 0 && !(variants.normal ?? 0);
+  const regularUSD = marketPrice?.regular ?? null;
+  const foilUSD = marketPrice?.foil ?? null;
+  const bestUSD = hasOnlyFoilOwned ? (foilUSD ?? regularUSD) : (regularUSD ?? foilUSD);
+  const isFoilPrice = hasOnlyFoilOwned || (regularUSD === null && foilUSD !== null);
+  const priceDisplay = bestUSD !== null ? formatPrice(bestUSD, currency) : null;
   /* Only on a card that is actually rendered in colour — a sheen riding a
      desaturated placeholder reads as a glitch, not as foil. */
   const showSheen = isPremiumRarity(card.rarity) && !!vivid;
@@ -126,6 +138,17 @@ export const CollectionCardItem = memo(function CollectionCardItem({
         >
           +
         </button>
+
+        {/* Bottom Left: Market Price Badge */}
+        {priceDisplay && (
+          <div
+            className="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-lg bg-[#0d0f1b]/90 backdrop-blur-md border border-[#c8b07b]/35 text-[#dfc792] text-[10px] font-mono font-bold shadow-md shadow-black/80 flex items-center gap-1 group-hover:border-[#c8b07b] group-hover:text-amber-300 transition-colors pointer-events-none"
+            title={`Market Price: ${regularUSD !== null ? `Regular: ${formatPrice(regularUSD, currency)}` : ''} ${foilUSD !== null ? `• Foil: ${formatPrice(foilUSD, currency)}` : ''}`}
+          >
+            {isFoilPrice && <span className="text-[9px] text-amber-400">✨</span>}
+            <span>{priceDisplay}</span>
+          </div>
+        )}
       </div>
 
       <div className="p-2 space-y-1 bg-[#1b2038]/80 backdrop-blur-md border-t border-[#c8b07b]/15">

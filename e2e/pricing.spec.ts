@@ -96,4 +96,27 @@ test.describe('Card Pricing & Valuation System', () => {
     await expect(modal).toBeVisible();
     await expect(modal.locator('text=USD ($)')).toBeVisible();
   });
+
+  test('displays price badges on card grid and allows sorting by market price', async ({ page }) => {
+    // Check for price badge on card grid items
+    const priceBadges = page.locator('[data-testid="card-tile"] .font-mono:has-text("฿"), [data-testid="card-tile"] .font-mono:has-text("$")');
+    await expect(priceBadges.first()).toBeVisible();
+
+    // Select Sort By: Market Price
+    const sortSelect = page.locator('select[aria-label="Sort cards by"]:visible');
+    if (await sortSelect.isVisible()) {
+      await sortSelect.selectOption('price');
+    }
+
+    // Verify sort option price is selected
+    await expect(sortSelect).toHaveValue('price');
+
+    // Toggle sort order button
+    const sortOrderBtn = page.locator('button[title*="Sort Order"]:visible').first();
+    if (await sortOrderBtn.isVisible()) {
+      await sortOrderBtn.click();
+      await page.waitForTimeout(200);
+      await sortOrderBtn.click();
+    }
+  });
 });
