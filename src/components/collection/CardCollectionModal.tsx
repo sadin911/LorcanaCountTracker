@@ -79,10 +79,16 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
 
   const [costInput, setCostInput] = useState<string>('');
   const [sellInput, setSellInput] = useState<string>('');
+  const [isGraded, setIsGraded] = useState<boolean>(false);
+  const [gradingCompany, setGradingCompany] = useState<'PSA' | 'BGS' | 'CGC' | 'OTHER' | 'RAW'>('PSA');
+  const [grade, setGrade] = useState<string>('10');
 
   useEffect(() => {
     setCostInput(userPrice?.costPrice !== null && userPrice?.costPrice !== undefined ? String(userPrice.costPrice) : '');
     setSellInput(userPrice?.sellPrice !== null && userPrice?.sellPrice !== undefined ? String(userPrice.sellPrice) : '');
+    setIsGraded(!!userPrice?.isGraded);
+    setGradingCompany(userPrice?.gradingCompany || 'PSA');
+    setGrade(userPrice?.grade || '10');
   }, [userPrice, card.id]);
 
   const handleUpdateCost = (val: string) => {
@@ -94,6 +100,9 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
       {
         costPrice: isNaN(Number(cost)) ? null : cost,
         sellPrice: isNaN(Number(sell)) ? null : sell,
+        isGraded,
+        gradingCompany,
+        grade,
       },
       user?.uid
     );
@@ -108,6 +117,28 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
       {
         costPrice: isNaN(Number(cost)) ? null : cost,
         sellPrice: isNaN(Number(sell)) ? null : sell,
+        isGraded,
+        gradingCompany,
+        grade,
+      },
+      user?.uid
+    );
+  };
+
+  const handleUpdateGrading = (newIsGraded: boolean, newCompany: 'PSA' | 'BGS' | 'CGC' | 'OTHER' | 'RAW', newGrade: string) => {
+    setIsGraded(newIsGraded);
+    setGradingCompany(newCompany);
+    setGrade(newGrade);
+    const cost = costInput.trim() === '' ? null : parseFloat(costInput);
+    const sell = sellInput.trim() === '' ? null : parseFloat(sellInput);
+    void setUserPrice(
+      card.id,
+      {
+        costPrice: isNaN(Number(cost)) ? null : cost,
+        sellPrice: isNaN(Number(sell)) ? null : sell,
+        isGraded: newIsGraded,
+        gradingCompany: newCompany,
+        grade: newGrade,
       },
       user?.uid
     );
@@ -411,27 +442,35 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                 <CurrencySelector variant="tabs" />
               </div>
 
-              {/* Market Reference Row */}
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              {/* Market Reference Row (Regular, Foil, PSA 10) */}
+              <div className="grid grid-cols-3 gap-2 text-xs">
                 <div className="p-2 rounded-xl bg-[#131627]/80 border border-[#c8b07b]/15">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Regular Market</span>
-                  <span className="text-sm font-extrabold text-slate-100 mt-0.5 block">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block truncate">Regular</span>
+                  <span className="text-xs sm:text-sm font-extrabold text-slate-100 mt-0.5 block truncate">
                     {marketPrice?.regular !== null && marketPrice?.regular !== undefined
                       ? formatPrice(marketPrice.regular, currency)
                       : '—'}
                   </span>
                 </div>
                 <div className="p-2 rounded-xl bg-[#131627]/80 border border-[#c8b07b]/15">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#dfc792] block">✨ Foil Market</span>
-                  <span className="text-sm font-extrabold text-[#dfc792] mt-0.5 block">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#dfc792] block truncate">✨ Foil</span>
+                  <span className="text-xs sm:text-sm font-extrabold text-[#dfc792] mt-0.5 block truncate">
                     {marketPrice?.foil !== null && marketPrice?.foil !== undefined
                       ? formatPrice(marketPrice.foil, currency)
                       : '—'}
                   </span>
                 </div>
+                <div className="p-2 rounded-xl bg-gradient-to-b from-[#1b2038] to-[#131627] border border-amber-400/30">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 block truncate">🏆 PSA 10</span>
+                  <span className="text-xs sm:text-sm font-black text-amber-300 mt-0.5 block truncate">
+                    {marketPrice?.psa10 !== null && marketPrice?.psa10 !== undefined
+                      ? formatPrice(marketPrice.psa10, currency)
+                      : '—'}
+                  </span>
+                </div>
               </div>
 
-              {/* User Custom Prices (Purchase Cost / Valuation) */}
+              {/* User Custom Prices (Purchase Cost / Valuation / Graded) */}
               <div className="pt-2 border-t border-[#c8b07b]/15 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">My Custom Pricing</span>
@@ -471,6 +510,51 @@ export function CardCollectionModal({ card: initialCard, onClose }: Props) {
                       className="mt-1 w-full px-2.5 py-1.5 rounded-lg bg-[#131627] border border-[#c8b07b]/30 text-xs font-semibold text-slate-200 focus:outline-none focus:border-[#c8b07b]"
                     />
                   </label>
+                </div>
+
+                {/* Graded Slab Details */}
+                <div className="pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                  <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={isGraded}
+                      onChange={(e) => handleUpdateGrading(e.target.checked, gradingCompany, grade)}
+                      className="rounded border-[#c8b07b]/40 text-[#c8b07b] focus:ring-0 bg-[#131627]"
+                    />
+                    <span className="text-[11px] font-bold text-amber-300">🏆 Graded Slab</span>
+                  </label>
+
+                  {isGraded && (
+                    <div className="flex items-center gap-1.5">
+                      <select
+                        value={gradingCompany}
+                        onChange={(e) =>
+                          handleUpdateGrading(
+                            isGraded,
+                            e.target.value as 'PSA' | 'BGS' | 'CGC' | 'OTHER' | 'RAW',
+                            grade
+                          )
+                        }
+                        className="px-2 py-1 rounded-lg bg-[#131627] border border-[#c8b07b]/30 text-[10px] font-bold text-slate-200 focus:outline-none"
+                      >
+                        <option value="PSA">PSA</option>
+                        <option value="BGS">BGS</option>
+                        <option value="CGC">CGC</option>
+                        <option value="OTHER">Other</option>
+                      </select>
+                      <select
+                        value={grade}
+                        onChange={(e) => handleUpdateGrading(isGraded, gradingCompany, e.target.value)}
+                        className="px-2 py-1 rounded-lg bg-[#131627] border border-[#c8b07b]/30 text-[10px] font-bold text-amber-300 focus:outline-none"
+                      >
+                        <option value="10">Gem Mint 10</option>
+                        <option value="9.5">Mint+ 9.5</option>
+                        <option value="9">Mint 9</option>
+                        <option value="8.5">NM-MT+ 8.5</option>
+                        <option value="8">NM-MT 8</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -19,6 +19,7 @@ export function AdminPriceManager() {
   const [editingCardId, setEditingCardId] = useState<string | null>(null);
   const [editRegular, setEditRegular] = useState<string>('');
   const [editFoil, setEditFoil] = useState<string>('');
+  const [editPsa10, setEditPsa10] = useState<string>('');
   const [syncStatusMsg, setSyncStatusMsg] = useState<string | null>(null);
   const [savingCardId, setSavingCardId] = useState<string | null>(null);
 
@@ -44,6 +45,7 @@ export function AdminPriceManager() {
     setEditingCardId(cardId);
     setEditRegular(p?.regular !== null && p?.regular !== undefined ? String(p.regular) : '');
     setEditFoil(p?.foil !== null && p?.foil !== undefined ? String(p.foil) : '');
+    setEditPsa10(p?.psa10 !== null && p?.psa10 !== undefined ? String(p.psa10) : '');
   };
 
   const handleSaveEdit = async (cardId: string) => {
@@ -51,9 +53,11 @@ export function AdminPriceManager() {
     try {
       const reg = editRegular.trim() === '' ? null : parseFloat(editRegular);
       const foil = editFoil.trim() === '' ? null : parseFloat(editFoil);
+      const psa = editPsa10.trim() === '' ? null : parseFloat(editPsa10);
       await adminUpdateMarketPrice(cardId, {
         regular: isNaN(Number(reg)) ? null : reg,
         foil: isNaN(Number(foil)) ? null : foil,
+        psa10: isNaN(Number(psa)) ? null : psa,
       });
       setEditingCardId(null);
     } catch (err) {
@@ -198,9 +202,10 @@ export function AdminPriceManager() {
                 <th className="py-3 px-4">Card</th>
                 <th className="py-3 px-3">Set / No.</th>
                 <th className="py-3 px-3">Rarity</th>
-                <th className="py-3 px-3 text-right">Regular ($ USD)</th>
-                <th className="py-3 px-3 text-right">Foil ($ USD)</th>
-                <th className="py-3 px-3 text-right">Est. THB (Reg / Foil)</th>
+                <th className="py-3 px-3 text-right">Regular ($)</th>
+                <th className="py-3 px-3 text-right">Foil ($)</th>
+                <th className="py-3 px-3 text-right">🏆 PSA 10 ($)</th>
+                <th className="py-3 px-3 text-right">Est. THB (Reg / Foil / PSA)</th>
                 <th className="py-3 px-4 text-center">Action</th>
               </tr>
             </thead>
@@ -211,8 +216,10 @@ export function AdminPriceManager() {
                 const rarityClass = RARITY_STYLES[card.rarity] || 'text-slate-400';
                 const regUSD = p?.regular ?? null;
                 const foilUSD = p?.foil ?? null;
+                const psaUSD = p?.psa10 ?? null;
                 const regTHB = regUSD !== null ? regUSD * usdToThbRate : null;
                 const foilTHB = foilUSD !== null ? foilUSD * usdToThbRate : null;
+                const psaTHB = psaUSD !== null ? psaUSD * usdToThbRate : null;
 
                 return (
                   <tr key={card.id} className="hover:bg-[#1b2038]/40 transition-colors">
@@ -257,7 +264,7 @@ export function AdminPriceManager() {
                           value={editRegular}
                           onChange={(e) => setEditRegular(e.target.value)}
                           placeholder="0.00"
-                          className="w-20 px-2 py-1 rounded bg-[#0d0f1b] border border-[#c8b07b] text-right font-mono text-xs text-slate-100"
+                          className="w-16 px-1.5 py-1 rounded bg-[#0d0f1b] border border-[#c8b07b] text-right font-mono text-xs text-slate-100"
                         />
                       ) : (
                         <span className="font-mono text-slate-200">
@@ -275,7 +282,7 @@ export function AdminPriceManager() {
                           value={editFoil}
                           onChange={(e) => setEditFoil(e.target.value)}
                           placeholder="0.00"
-                          className="w-20 px-2 py-1 rounded bg-[#0d0f1b] border border-[#c8b07b] text-right font-mono text-xs text-amber-300"
+                          className="w-16 px-1.5 py-1 rounded bg-[#0d0f1b] border border-[#c8b07b] text-right font-mono text-xs text-amber-300"
                         />
                       ) : (
                         <span className="font-mono text-amber-300 font-semibold">
@@ -284,12 +291,34 @@ export function AdminPriceManager() {
                       )}
                     </td>
 
+                    {/* PSA 10 Price */}
+                    <td className="py-2.5 px-3 text-right">
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={editPsa10}
+                          onChange={(e) => setEditPsa10(e.target.value)}
+                          placeholder="0.00"
+                          className="w-16 px-1.5 py-1 rounded bg-[#0d0f1b] border border-amber-400 text-right font-mono text-xs text-yellow-300"
+                        />
+                      ) : (
+                        <span className="font-mono text-yellow-300 font-bold">
+                          {psaUSD !== null ? `$${psaUSD.toFixed(2)}` : '—'}
+                        </span>
+                      )}
+                    </td>
+
                     {/* Est. THB */}
-                    <td className="py-2.5 px-3 text-right font-mono text-[11px] text-slate-400">
+                    <td className="py-2.5 px-3 text-right font-mono text-[10px] text-slate-400">
                       <span>{regTHB !== null ? `฿${Math.round(regTHB).toLocaleString()}` : '—'}</span>
                       <span className="text-slate-600"> / </span>
-                      <span className="text-amber-400/90 font-semibold">
+                      <span className="text-amber-400/90">
                         {foilTHB !== null ? `฿${Math.round(foilTHB).toLocaleString()}` : '—'}
+                      </span>
+                      <span className="text-slate-600"> / </span>
+                      <span className="text-yellow-300 font-bold">
+                        {psaTHB !== null ? `฿${Math.round(psaTHB).toLocaleString()}` : '—'}
                       </span>
                     </td>
 

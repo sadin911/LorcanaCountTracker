@@ -35,6 +35,16 @@ async function main() {
   console.log(`   Found ${rawSets.length} sets`);
 
   const pricesMap = {};
+  // Load existing prices if available to preserve manual PSA10 / overrides
+  let existingPrices = {};
+  try {
+    const existingFile = path.resolve('public/data/market_prices.json');
+    if (fs.existsSync(existingFile)) {
+      const data = JSON.parse(fs.readFileSync(existingFile, 'utf8'));
+      existingPrices = data.prices || {};
+    }
+  } catch {}
+
   let pricedCount = 0;
   let totalCards = 0;
 
@@ -48,8 +58,25 @@ async function main() {
       const cardId = `${card.set.code}-${num}`;
       const regular = parsePrice(card.prices?.usd);
       const foil = parsePrice(card.prices?.usd_foil);
+      const existing = existingPrices[cardId];
 
-      if (regular !== null || foil !== null) {
+      // Calculate or preserve PSA 10 market price
+      let psa10 = existing?.psa10 ?? null;
+      if (psa10 === null || psa10 === undefined) {
+        const rarity = card.rarity || '';
+        const basePrice = foil ?? regular ?? 0;
+        if (rarity === 'Enchanted' && basePrice > 0) {
+          psa10 = Math.round(basePrice * 3.5 * 100) / 100;
+        } else if (rarity === 'Promo' && basePrice > 10) {
+          psa10 = Math.round(basePrice * 3.0 * 100) / 100;
+        } else if (rarity === 'Legendary' && (foil ?? 0) >= 10) {
+          psa10 = Math.round((foil ?? 0) * 2.8 * 100) / 100;
+        } else if (basePrice >= 25) {
+          psa10 = Math.round(basePrice * 2.5 * 100) / 100;
+        }
+      }
+
+      if (regular !== null || foil !== null || psa10 !== null) {
         pricedCount++;
       }
 
@@ -57,8 +84,9 @@ async function main() {
         cardId,
         regular,
         foil,
+        psa10,
         updatedAt: new Date().toISOString(),
-        source: 'lorcast',
+        source: existing?.source === 'admin_manual' ? 'admin_manual' : 'lorcast',
       };
     }
     console.log(`   [Set ${s.code}] ${list.length} cards processed`);

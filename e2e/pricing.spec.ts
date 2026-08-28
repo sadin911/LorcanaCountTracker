@@ -16,9 +16,10 @@ test.describe('Card Pricing & Valuation System', () => {
     const modal = page.locator('.fixed.inset-0').filter({ hasText: /Market Price & Valuation/i }).first();
     await expect(modal).toBeVisible();
 
-    // Verify Market Reference row (Regular & Foil)
-    await expect(modal.locator('text=Regular Market')).toBeVisible();
-    await expect(modal.locator('text=✨ Foil Market')).toBeVisible();
+    // Verify Market Reference row (Regular, Foil & PSA 10)
+    await expect(modal.getByText('Regular', { exact: true })).toBeVisible();
+    await expect(modal.getByText('✨ Foil', { exact: true })).toBeVisible();
+    await expect(modal.getByText('🏆 PSA 10', { exact: true })).toBeVisible();
 
     // Currency Switcher buttons
     const thbBtn = modal.locator('button:has-text("THB")');
