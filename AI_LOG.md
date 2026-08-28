@@ -182,4 +182,8 @@
 [2026-08-28 11:52] Major | Antigravity | Edit | CardCollectionModal.tsx, AdminPriceManager.tsx - PSA 10 market & slab tools
 [2026-08-28 11:55] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.4.1
 [2026-08-28 11:56] Major | Antigravity | Release | v0.4.1 - PSA 10 Graded Market Prices & Graded Slab Management
+[2026-08-28 12:10] Major | Antigravity | Edit | src/types/pricing.ts, pricingStore.ts - added Last Sold & Sales transactions
+[2026-08-28 12:10] Major | Antigravity | Edit | CardCollectionModal.tsx - 1-Click market links (eBay, TCG) & sales feed
+[2026-08-28 12:10] Major | Antigravity | Edit | AdminPriceManager.tsx - Last Sold column & transaction recorder
+[2026-08-28 12:10] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 30/30 passed
 

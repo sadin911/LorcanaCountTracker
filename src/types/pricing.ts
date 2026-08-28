@@ -15,11 +15,23 @@ export const SUPPORTED_CURRENCIES: CurrencyInfo[] = [
   { code: 'JPY', symbol: '¥', label: 'JPY (¥)', defaultRate: 155.0 },
 ];
 
+export interface CardSaleTransaction {
+  id: string;
+  date: string; // ISO date string e.g. "2026-08-27"
+  price: number; // in USD base
+  condition: 'NM' | 'LP' | 'MP' | 'HP' | 'Foil' | 'PSA 10' | 'PSA 9' | 'BGS 9.5' | 'Raw';
+  source: 'TCGplayer' | 'eBay' | 'Cardmarket' | 'Local Market' | 'Other';
+  notes?: string;
+}
+
 export interface MarketPrice {
   cardId: string;
   regular: number | null; // USD base
   foil: number | null; // USD base
   psa10?: number | null; // PSA 10 Gem Mint Market Price (USD base)
+  lastSold?: number | null; // Last completed transaction price (USD base)
+  lastSoldDate?: string | null; // Date of last completed sale (ISO string)
+  recentSales?: CardSaleTransaction[]; // List of recent transactions
   updatedAt: string; // ISO string
   source?: 'tcgplayer' | 'lorcast' | 'cardmarket' | 'pricecharting' | 'admin_manual';
 }

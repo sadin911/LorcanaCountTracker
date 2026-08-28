@@ -7,7 +7,7 @@ import {
   getDocs,
   writeBatch,
 } from 'firebase/firestore';
-import type { MarketPrice, UserCardPrice, Currency } from '../types/pricing';
+import type { MarketPrice, UserCardPrice, Currency, CardSaleTransaction } from '../types/pricing';
 import fallbackMarketData from '../data/market_prices.json';
 
 const USER_PRICES_STORAGE_KEY = 'lorcana_user_custom_prices';
@@ -62,7 +62,17 @@ interface PricingState {
   deleteUserPrice: (cardId: string, uid?: string | null) => Promise<void>;
   adminUpdateMarketPrice: (
     cardId: string,
-    prices: { regular?: number | null; foil?: number | null; psa10?: number | null }
+    prices: {
+      regular?: number | null;
+      foil?: number | null;
+      psa10?: number | null;
+      lastSold?: number | null;
+      lastSoldDate?: string | null;
+    }
+  ) => Promise<void>;
+  logCardSaleTransaction: (
+    cardId: string,
+    sale: Omit<CardSaleTransaction, 'id'>
   ) => Promise<void>;
   adminSyncLivePrices: () => Promise<{ success: boolean; count: number; error?: string }>;
 
@@ -299,6 +309,9 @@ export const usePricingStore = create<PricingState>((set, get) => ({
       regular: null,
       foil: null,
       psa10: null,
+      lastSold: null,
+      lastSoldDate: null,
+      recentSales: [],
       updatedAt: new Date().toISOString(),
     };
 
@@ -307,6 +320,8 @@ export const usePricingStore = create<PricingState>((set, get) => ({
       regular: prices.regular !== undefined ? prices.regular : existing.regular,
       foil: prices.foil !== undefined ? prices.foil : existing.foil,
       psa10: prices.psa10 !== undefined ? prices.psa10 : existing.psa10,
+      lastSold: prices.lastSold !== undefined ? prices.lastSold : existing.lastSold,
+      lastSoldDate: prices.lastSoldDate !== undefined ? prices.lastSoldDate : existing.lastSoldDate,
       updatedAt: new Date().toISOString(),
       source: 'admin_manual',
     };
@@ -317,9 +332,59 @@ export const usePricingStore = create<PricingState>((set, get) => ({
     if (db) {
       try {
         const ref = doc(db, 'market_prices', cardId);
-        await setDoc(ref, updated, { merge: true });
+        // Strip undefined fields for Firestore
+        const cleanPayload = JSON.parse(JSON.stringify(updated));
+        await setDoc(ref, cleanPayload, { merge: true });
       } catch (err) {
         console.error('Admin market price Firestore save failed:', err);
+        throw err;
+      }
+    }
+  },
+
+  logCardSaleTransaction: async (cardId, sale) => {
+    const { marketPrices } = get();
+    const existing = marketPrices[cardId] || {
+      cardId,
+      regular: null,
+      foil: null,
+      psa10: null,
+      lastSold: null,
+      lastSoldDate: null,
+      recentSales: [],
+      updatedAt: new Date().toISOString(),
+    };
+
+    const newTransaction: CardSaleTransaction = {
+      id: `sale_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      date: sale.date || new Date().toISOString().split('T')[0],
+      price: sale.price,
+      condition: sale.condition,
+      source: sale.source,
+      notes: sale.notes || '',
+    };
+
+    const existingSales = Array.isArray(existing.recentSales) ? existing.recentSales : [];
+    const updatedSales = [newTransaction, ...existingSales].slice(0, 20); // Keep last 20
+
+    const updated: MarketPrice = {
+      ...existing,
+      lastSold: sale.price,
+      lastSoldDate: newTransaction.date,
+      recentSales: updatedSales,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const next = { ...marketPrices, [cardId]: updated };
+    set({ marketPrices: next });
+
+    if (db) {
+      try {
+        const ref = doc(db, 'market_prices', cardId);
+        const cleanPayload = JSON.parse(JSON.stringify(updated));
+        await setDoc(ref, cleanPayload, { merge: true });
+      } catch (err) {
+        console.error('Firestore logCardSaleTransaction error:', err);
         throw err;
       }
     }

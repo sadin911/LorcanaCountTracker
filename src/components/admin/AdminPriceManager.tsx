@@ -13,6 +13,8 @@ export function AdminPriceManager() {
   const setExchangeRate = usePricingStore((s) => s.setExchangeRate);
   const usdToThbRate = exchangeRates.THB ?? 35.0;
 
+  const logCardSaleTransaction = usePricingStore((s) => s.logCardSaleTransaction);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSet, setSelectedSet] = useState('ALL');
   const [selectedRarity, setSelectedRarity] = useState('ALL');
@@ -20,25 +22,18 @@ export function AdminPriceManager() {
   const [editRegular, setEditRegular] = useState<string>('');
   const [editFoil, setEditFoil] = useState<string>('');
   const [editPsa10, setEditPsa10] = useState<string>('');
+  const [editLastSold, setEditLastSold] = useState<string>('');
   const [syncStatusMsg, setSyncStatusMsg] = useState<string | null>(null);
   const [savingCardId, setSavingCardId] = useState<string | null>(null);
 
-  // Filter cards
-  const filteredCards = useMemo(() => {
-    return ALL_CARDS.filter((card) => {
-      if (selectedSet !== 'ALL' && card.setCode !== selectedSet) return false;
-      if (selectedRarity !== 'ALL' && card.rarity !== selectedRarity) return false;
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
-        const matchesName = card.name.toLowerCase().includes(q);
-        const matchesVersion = (card.version || '').toLowerCase().includes(q);
-        const matchesId = card.id.toLowerCase().includes(q);
-        const matchesNumber = String(card.collectorNumber).includes(q);
-        if (!matchesName && !matchesVersion && !matchesId && !matchesNumber) return false;
-      }
-      return true;
-    }).slice(0, 100); // Limit to top 100 for fast UI rendering
-  }, [searchQuery, selectedSet, selectedRarity]);
+  // Sales log modal state
+  const [activeLogCardId, setActiveLogCardId] = useState<string | null>(null);
+  const [adminSalePrice, setAdminSalePrice] = useState<string>('');
+  const [adminSaleDate, setAdminSaleDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
+  const [adminSaleCondition, setAdminSaleCondition] = useState<'NM' | 'LP' | 'MP' | 'HP' | 'Foil' | 'PSA 10' | 'PSA 9' | 'BGS 9.5' | 'Raw'>('NM');
+  const [adminSaleSource, setAdminSaleSource] = useState<'TCGplayer' | 'eBay' | 'Cardmarket' | 'Local Market' | 'Other'>('Local Market');
+  const [adminSaleNotes, setAdminSaleNotes] = useState<string>('');
+  const [isLoggingSale, setIsLoggingSale] = useState<boolean>(false);
 
   const handleStartEdit = (cardId: string) => {
     const p = marketPrices[cardId];
@@ -46,6 +41,7 @@ export function AdminPriceManager() {
     setEditRegular(p?.regular !== null && p?.regular !== undefined ? String(p.regular) : '');
     setEditFoil(p?.foil !== null && p?.foil !== undefined ? String(p.foil) : '');
     setEditPsa10(p?.psa10 !== null && p?.psa10 !== undefined ? String(p.psa10) : '');
+    setEditLastSold(p?.lastSold !== null && p?.lastSold !== undefined ? String(p.lastSold) : '');
   };
 
   const handleSaveEdit = async (cardId: string) => {
@@ -54,16 +50,40 @@ export function AdminPriceManager() {
       const reg = editRegular.trim() === '' ? null : parseFloat(editRegular);
       const foil = editFoil.trim() === '' ? null : parseFloat(editFoil);
       const psa = editPsa10.trim() === '' ? null : parseFloat(editPsa10);
+      const last = editLastSold.trim() === '' ? null : parseFloat(editLastSold);
       await adminUpdateMarketPrice(cardId, {
         regular: isNaN(Number(reg)) ? null : reg,
         foil: isNaN(Number(foil)) ? null : foil,
         psa10: isNaN(Number(psa)) ? null : psa,
+        lastSold: isNaN(Number(last)) ? null : last,
       });
       setEditingCardId(null);
     } catch (err) {
       alert(`Save failed: ${(err as Error).message}`);
     } finally {
       setSavingCardId(null);
+    }
+  };
+
+  const handleAdminLogSale = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeLogCardId) return;
+    const priceNum = parseFloat(adminSalePrice);
+    if (isNaN(priceNum) || priceNum <= 0) return;
+    setIsLoggingSale(true);
+    try {
+      await logCardSaleTransaction(activeLogCardId, {
+        date: adminSaleDate || new Date().toISOString().split('T')[0],
+        price: priceNum,
+        condition: adminSaleCondition,
+        source: adminSaleSource,
+        notes: adminSaleNotes.trim() || undefined,
+      });
+      setAdminSalePrice('');
+      setAdminSaleNotes('');
+      setActiveLogCardId(null);
+    } finally {
+      setIsLoggingSale(false);
     }
   };
 
@@ -79,8 +99,25 @@ export function AdminPriceManager() {
     }
   };
 
+  // Filter cards
+  const filteredCards = useMemo(() => {
+    return ALL_CARDS.filter((card) => {
+      if (selectedSet !== 'ALL' && card.setCode !== selectedSet) return false;
+      if (selectedRarity !== 'ALL' && card.rarity !== selectedRarity) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const matchesName = card.name.toLowerCase().includes(q);
+        const matchesVersion = (card.version || '').toLowerCase().includes(q);
+        const matchesId = card.id.toLowerCase().includes(q);
+        const matchesNumber = String(card.collectorNumber).includes(q);
+        if (!matchesName && !matchesVersion && !matchesId && !matchesNumber) return false;
+      }
+      return true;
+    }).slice(0, 100);
+  }, [searchQuery, selectedSet, selectedRarity]);
+
   const totalPricedCount = useMemo(() => {
-    return Object.values(marketPrices).filter((p) => p.regular !== null || p.foil !== null).length;
+    return Object.values(marketPrices).filter((p) => p.regular !== null || p.foil !== null || p.psa10 !== null || p.lastSold !== null).length;
   }, [marketPrices]);
 
   return (
@@ -93,7 +130,7 @@ export function AdminPriceManager() {
             <span>Card Market Pricing Manager</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            Centralized Lorcana market valuations (USD & THB exchange rate conversion)
+            Centralized Lorcana valuations, PSA 10 estimates & completed transaction logging
           </p>
         </div>
 
@@ -147,7 +184,7 @@ export function AdminPriceManager() {
         </div>
         <div className="p-3.5 rounded-xl bg-[#131627]/80 border border-slate-800">
           <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Data Source</div>
-          <div className="text-lg font-black text-sky-300 mt-1 font-mono">Lorcast / TCG</div>
+          <div className="text-lg font-black text-sky-300 mt-1 font-mono">Lorcast / TCG / eBay</div>
         </div>
       </div>
 
@@ -205,7 +242,7 @@ export function AdminPriceManager() {
                 <th className="py-3 px-3 text-right">Regular ($)</th>
                 <th className="py-3 px-3 text-right">Foil ($)</th>
                 <th className="py-3 px-3 text-right">🏆 PSA 10 ($)</th>
-                <th className="py-3 px-3 text-right">Est. THB (Reg / Foil / PSA)</th>
+                <th className="py-3 px-3 text-right">📉 Last Sold ($)</th>
                 <th className="py-3 px-4 text-center">Action</th>
               </tr>
             </thead>
@@ -217,9 +254,7 @@ export function AdminPriceManager() {
                 const regUSD = p?.regular ?? null;
                 const foilUSD = p?.foil ?? null;
                 const psaUSD = p?.psa10 ?? null;
-                const regTHB = regUSD !== null ? regUSD * usdToThbRate : null;
-                const foilTHB = foilUSD !== null ? foilUSD * usdToThbRate : null;
-                const psaTHB = psaUSD !== null ? psaUSD * usdToThbRate : null;
+                const lastUSD = p?.lastSold ?? null;
 
                 return (
                   <tr key={card.id} className="hover:bg-[#1b2038]/40 transition-colors">
@@ -309,48 +344,65 @@ export function AdminPriceManager() {
                       )}
                     </td>
 
-                    {/* Est. THB */}
-                    <td className="py-2.5 px-3 text-right font-mono text-[10px] text-slate-400">
-                      <span>{regTHB !== null ? `฿${Math.round(regTHB).toLocaleString()}` : '—'}</span>
-                      <span className="text-slate-600"> / </span>
-                      <span className="text-amber-400/90">
-                        {foilTHB !== null ? `฿${Math.round(foilTHB).toLocaleString()}` : '—'}
-                      </span>
-                      <span className="text-slate-600"> / </span>
-                      <span className="text-yellow-300 font-bold">
-                        {psaTHB !== null ? `฿${Math.round(psaTHB).toLocaleString()}` : '—'}
-                      </span>
+                    {/* Last Sold Price */}
+                    <td className="py-2.5 px-3 text-right">
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={editLastSold}
+                          onChange={(e) => setEditLastSold(e.target.value)}
+                          placeholder="0.00"
+                          className="w-16 px-1.5 py-1 rounded bg-[#0d0f1b] border border-emerald-500 text-right font-mono text-xs text-emerald-300"
+                        />
+                      ) : (
+                        <span className="font-mono text-emerald-400 font-semibold">
+                          {lastUSD !== null ? `$${lastUSD.toFixed(2)}` : '—'}
+                        </span>
+                      )}
                     </td>
 
                     {/* Action */}
                     <td className="py-2.5 px-4 text-center">
-                      {isEditing ? (
-                        <div className="flex items-center justify-center gap-1.5">
-                          <button
-                            type="button"
-                            disabled={savingCardId === card.id}
-                            onClick={() => handleSaveEdit(card.id)}
-                            className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold shadow active:scale-95 transition-all"
-                          >
-                            {savingCardId === card.id ? '...' : 'Save'}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setEditingCardId(null)}
-                            className="px-2 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-[11px]"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => handleStartEdit(card.id)}
-                          className="px-2.5 py-1 rounded-lg bg-[#1b2038] hover:bg-[#252c4d] border border-[#c8b07b]/30 hover:border-[#c8b07b] text-xs text-[#dfc792] transition-all"
-                        >
-                          Edit
-                        </button>
-                      )}
+                      <div className="flex items-center justify-center gap-1.5">
+                        {isEditing ? (
+                          <>
+                            <button
+                              type="button"
+                              disabled={savingCardId === card.id}
+                              onClick={() => handleSaveEdit(card.id)}
+                              className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold shadow active:scale-95 transition-all"
+                            >
+                              {savingCardId === card.id ? '...' : 'Save'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditingCardId(null)}
+                              className="px-2 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-[11px]"
+                            >
+                              ✕
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => handleStartEdit(card.id)}
+                              className="px-2.5 py-1 rounded-lg bg-[#1b2038] hover:bg-[#252c4d] border border-[#c8b07b]/30 hover:border-[#c8b07b] text-xs text-[#dfc792] transition-all"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setActiveLogCardId(card.id)}
+                              className="px-2 py-1 rounded-lg bg-[#1b2038] hover:bg-emerald-950/60 border border-emerald-500/30 text-[11px] text-emerald-400 font-bold transition-all"
+                              title="Log a transaction / View sales"
+                            >
+                              📈 Sales ({p?.recentSales?.length ?? 0})
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -363,6 +415,148 @@ export function AdminPriceManager() {
           <div className="p-8 text-center text-slate-500 text-xs">No cards matching filter.</div>
         )}
       </div>
+
+      {/* Admin Log Sale Transaction Modal */}
+      {activeLogCardId && (() => {
+        const activeCard = ALL_CARDS.find((c) => c.id === activeLogCardId);
+        const p = marketPrices[activeLogCardId];
+        return (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="w-full max-w-lg rounded-2xl bg-[#131627] border border-[#c8b07b]/40 p-5 space-y-4 shadow-2xl animate-fade-in">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div>
+                  <h3 className="font-extrabold text-slate-100 text-sm flex items-center gap-2">
+                    <span>📈</span>
+                    <span>Completed Sales & Transactions</span>
+                  </h3>
+                  <p className="text-xs text-[#dfc792] font-semibold mt-0.5">
+                    {activeCard?.name} {activeCard?.version ? `(${activeCard.version})` : ''} · {activeCard?.setCode}#{activeCard?.collectorNumber}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveLogCardId(null)}
+                  className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs flex items-center justify-center"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Log Sale Form */}
+              <form onSubmit={handleAdminLogSale} className="p-3 rounded-xl bg-[#1b2038] border border-[#c8b07b]/25 space-y-2.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 block">
+                  + Record New Transaction
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <label className="block">
+                    <span className="text-[9px] text-slate-400">Sold Price ($)</span>
+                    <input
+                      type="number"
+                      step="any"
+                      min={0.01}
+                      required
+                      value={adminSalePrice}
+                      onChange={(e) => setAdminSalePrice(e.target.value)}
+                      placeholder="e.g. 45.00"
+                      className="mt-0.5 w-full px-2 py-1.5 rounded bg-[#131627] border border-slate-700 text-xs font-mono text-slate-100 focus:outline-none"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[9px] text-slate-400">Date</span>
+                    <input
+                      type="date"
+                      required
+                      value={adminSaleDate}
+                      onChange={(e) => setAdminSaleDate(e.target.value)}
+                      className="mt-0.5 w-full px-2 py-1.5 rounded bg-[#131627] border border-slate-700 text-xs font-mono text-slate-100 focus:outline-none"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[9px] text-slate-400">Condition</span>
+                    <select
+                      value={adminSaleCondition}
+                      onChange={(e) => setAdminSaleCondition(e.target.value as any)}
+                      className="mt-0.5 w-full px-1.5 py-1.5 rounded bg-[#131627] border border-slate-700 text-xs text-slate-100 focus:outline-none"
+                    >
+                      <option value="NM">Near Mint</option>
+                      <option value="Foil">Foil</option>
+                      <option value="PSA 10">PSA 10</option>
+                      <option value="PSA 9">PSA 9</option>
+                      <option value="BGS 9.5">BGS 9.5</option>
+                      <option value="LP">Lightly Played</option>
+                      <option value="Raw">Raw</option>
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="text-[9px] text-slate-400">Source</span>
+                    <select
+                      value={adminSaleSource}
+                      onChange={(e) => setAdminSaleSource(e.target.value as any)}
+                      className="mt-0.5 w-full px-1.5 py-1.5 rounded bg-[#131627] border border-slate-700 text-xs text-slate-100 focus:outline-none"
+                    >
+                      <option value="Local Market">Local Market (TH)</option>
+                      <option value="eBay">eBay Sold</option>
+                      <option value="TCGplayer">TCGplayer</option>
+                      <option value="Cardmarket">Cardmarket</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={adminSaleNotes}
+                    onChange={(e) => setAdminSaleNotes(e.target.value)}
+                    placeholder="Notes (e.g. Card shop trade, graded gem mint)"
+                    className="flex-1 px-2.5 py-1.5 rounded bg-[#131627] border border-slate-700 text-xs text-slate-200 focus:outline-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isLoggingSale}
+                    className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-[#dfc792] to-[#c8b07b] text-[#131627] text-xs font-extrabold hover:brightness-110 transition-all disabled:opacity-50"
+                  >
+                    {isLoggingSale ? 'Saving...' : 'Add Record'}
+                  </button>
+                </div>
+              </form>
+
+              {/* Transactions History Feed */}
+              <div className="space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Recorded History ({p?.recentSales?.length ?? 0})
+                </span>
+                {p?.recentSales && p.recentSales.length > 0 ? (
+                  <div className="max-h-48 overflow-y-auto divide-y divide-slate-800 rounded-xl bg-[#0d0f1b] border border-slate-800">
+                    {p.recentSales.map((sale) => (
+                      <div key={sale.id} className="p-2.5 flex items-center justify-between gap-2 hover:bg-slate-900/60">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-400">
+                            {sale.date}
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded bg-amber-950/60 border border-amber-500/30 text-[10px] font-bold text-amber-300">
+                            {sale.condition}
+                          </span>
+                          <span className="text-[11px] text-slate-400 truncate">
+                            via <span className="text-slate-200 font-semibold">{sale.source}</span>
+                            {sale.notes ? ` · ${sale.notes}` : ''}
+                          </span>
+                        </div>
+                        <div className="font-mono font-bold text-emerald-400 text-xs shrink-0">
+                          ${sale.price.toFixed(2)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-slate-500 text-xs italic">
+                    No transactions recorded yet.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
