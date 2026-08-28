@@ -159,3 +159,5 @@
 [2026-08-28 11:12] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
 [2026-08-28 11:15] Major | Antigravity | Fix | CollectionHeader.tsx, DeckHeader.tsx - restored Install PWA button on mobile & deck builder
 [2026-08-28 11:15] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
+[2026-08-28 11:19] Major | Antigravity | Write | AGENTS.md, CLAUDE.md, .agents/rules - enforce version bump & git tagging
+[2026-08-28 11:19] Major | Antigravity | Release | v0.3.1 - restored Install PWA & cross-agent deploy tagging rule
