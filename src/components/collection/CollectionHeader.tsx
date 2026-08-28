@@ -7,6 +7,7 @@ import { isFirebaseConfigured } from '../../utils/firebase';
 import { CollectionBackupModal } from './CollectionBackupModal';
 import { ProfileManagerModal } from './ProfileManagerModal';
 import { PWAInstallModal } from '../common/PWAInstallModal';
+import { OTAUpdateButton } from '../common/OTAUpdateButton';
 
 const SYNC_LABEL: Record<string, { text: string; className: string; dot: string }> = {
   idle: { text: 'Guest', className: 'bg-slate-800/80 text-slate-400 border-slate-700/60', dot: 'bg-slate-500' },
@@ -15,7 +16,12 @@ const SYNC_LABEL: Record<string, { text: string; className: string; dot: string 
   error: { text: 'Sync Error', className: 'bg-rose-950/80 text-rose-300 border-rose-600/50', dot: 'bg-rose-400' },
 };
 
-export function CollectionHeader({ stats }: { stats: CollectionStats }) {
+interface CollectionHeaderProps {
+  stats: CollectionStats;
+  onSwitchToDeck?: () => void;
+}
+
+export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProps) {
   const [showProfiles, setShowProfiles] = useState(false);
   const [showBackup, setShowBackup] = useState(false);
   const [showInstallModal, setShowInstallModal] = useState(false);
@@ -86,6 +92,19 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
 
           {/* Right Action Tools */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Quick Switch to Deck Builder */}
+            {onSwitchToDeck && (
+              <button
+                type="button"
+                onClick={onSwitchToDeck}
+                title="เปิดระบบจัดเด็คการ์ด (Deck Builder)"
+                className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl bg-gradient-to-r from-[#1b2038] to-[#252c4d] hover:from-[#252c4d] hover:to-[#313962] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm min-h-[40px] sm:min-h-[36px] font-bold group"
+              >
+                <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">🃏</span>
+                <span className="hidden sm:inline">จัดเด็ค</span>
+              </button>
+            )}
+
             {/* Profile Picker */}
             <button
               type="button"
@@ -109,6 +128,9 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
               <span className="text-base sm:text-sm">💾</span>
               <span className="hidden md:inline font-bold">Backup</span>
             </button>
+
+            {/* OTA Update Button */}
+            <OTAUpdateButton variant="badge" />
 
             {/* Install PWA (Hidden when running standalone) */}
             {!isInstalled && (
@@ -160,6 +182,11 @@ export function CollectionHeader({ stats }: { stats: CollectionStats }) {
                           <p className="text-[10px] font-medium text-emerald-400">Cloud Sync Active</p>
                         </div>
                       </div>
+                      
+                      <div className="pt-1">
+                        <OTAUpdateButton variant="menu" />
+                      </div>
+
                       <button
                         type="button"
                         onClick={() => {

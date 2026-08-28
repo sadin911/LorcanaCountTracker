@@ -131,3 +131,14 @@
 [2026-08-27 17:34] Major | Antigravity | Edit | src/store/collectionStore.ts - set default showFullColor to true (Vivid full-color cards by default)
 [2026-08-27 18:22] Major | Antigravity | Fix | public/sw.js, CollectionCardItem.tsx - Cache-First for R2 images, memoize card grid, remove scroll flicker
 [2026-08-27 18:22] Major | Antigravity | Release | v0.2.5 - persistent card image caching and scroll performance optimization
+[2026-08-28 09:46] Major | Antigravity | Write | implementation_plan.md - Lorcana Deck Builder plan
+[2026-08-28 09:50] Major | Antigravity | Write | src/types/deck.ts, src/utils/deckCalculator.ts, src/store/deckStore.ts
+[2026-08-28 09:51] Major | Antigravity | Write | src/components/deck/*, src/components/layout/BottomNav.tsx
+[2026-08-28 09:52] Major | Antigravity | Edit | src/App.tsx, src/components/collection/CollectionHeader.tsx - Deck mode navigation
+[2026-08-28 09:52] Major | Antigravity | Write | e2e/deck-builder.spec.ts - Playwright e2e test suite for Deck Builder
+[2026-08-28 09:52] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 20/20 passed
+[2026-08-28 10:00] Major | Antigravity | Edit | src/utils/cardImage.ts - robust R2 CDN fallback & cascading error handler
+[2026-08-28 10:00] Major | Antigravity | Write | src/hooks/useOTAUpdate.ts, src/components/common/OTAUpdateBanner.tsx, OTAUpdateButton.tsx
+[2026-08-28 10:00] Major | Antigravity | Edit | vite.config.ts, src/App.tsx, CollectionHeader.tsx, DeckHeader.tsx - PWA OTA Suite
+[2026-08-28 10:00] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 20/20 passed
+

@@ -9,22 +9,11 @@
  * Dev serves them from public/; production serves them from Cloudflare R2.
  */
 
-const RAW_CDN_BASE = (import.meta.env.VITE_R2_CDN_BASE || '').replace(/\/+$/, '');
+export const DEFAULT_R2_CDN = 'https://pub-106d2a10ead74810a7ea0e381ff1f0e1.r2.dev';
+
+const RAW_CDN_BASE = (import.meta.env.VITE_R2_CDN_BASE || DEFAULT_R2_CDN).replace(/\/+$/, '');
 
 const BASE_URL = import.meta.env.BASE_URL || '/';
-
-/*
- * A production build with no CDN base falls back to public/card-images/, which
- * is gitignored and therefore absent from the deployed artifact — every card
- * would 404 with nothing in the console to explain it. Say so loudly, the same
- * way firebase.ts does for a missing Firebase config.
- */
-if (import.meta.env.PROD && !RAW_CDN_BASE) {
-  console.error(
-    '[cardImage] VITE_R2_CDN_BASE is not set. Card images are served from the R2 bucket in ' +
-      'production and are not bundled, so every card image will 404. Set it as a build-time env var.'
-  );
-}
 
 export const DEFAULT_CARD_PLACEHOLDER = `${BASE_URL.replace(/\/+$/, '')}/card-placeholder.svg`;
 
@@ -41,13 +30,11 @@ export function cardImageKey(setCode: string, collectorNumber: string, large = f
 export function resolveCardImageUrl(setCode?: string | null, collectorNumber?: string | null, large = false): string {
   if (!setCode || !collectorNumber) return DEFAULT_CARD_PLACEHOLDER;
   const key = cardImageKey(setCode, collectorNumber, large);
-  // Fall back to local files whenever no CDN is configured, so a fresh clone
-  // works with `npm run data:images` alone.
   return RAW_CDN_BASE ? `${RAW_CDN_BASE}/${key}` : localUrl(key);
 }
 
 /**
- * Fallback chain on <img> error: large -> thumbnail -> placeholder.
+ * Fallback chain on <img> error: large -> thumbnail -> R2 CDN -> placeholder.
  * `large` is Lorcast's maximum resolution, so there is nothing above it.
  */
 export function handleCardImageError(
@@ -60,6 +47,7 @@ export function handleCardImageError(
   // Stop the loop once we're already showing the placeholder.
   if (target.src.includes('card-placeholder.svg')) return;
 
+  // 1. If large failed, cascade to thumbnail
   if (setCode && collectorNumber && target.src.includes('card-images-lg/')) {
     const thumb = resolveCardImageUrl(setCode, collectorNumber, false);
     if (target.src !== thumb) {
@@ -68,5 +56,16 @@ export function handleCardImageError(
     }
   }
 
+  // 2. If thumbnail failed on local or custom domain, cascade to default R2 CDN
+  if (setCode && collectorNumber && !target.src.includes(DEFAULT_R2_CDN)) {
+    const r2Thumb = `${DEFAULT_R2_CDN}/card-images/${setCode}/${collectorNumber}.webp`;
+    if (target.src !== r2Thumb) {
+      target.src = r2Thumb;
+      return;
+    }
+  }
+
+  // 3. Final fallback: Card placeholder SVG
   target.src = DEFAULT_CARD_PLACEHOLDER;
 }
+

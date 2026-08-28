@@ -14,7 +14,11 @@ import { CollectionFilterBar } from './CollectionFilterBar';
 import { CollectionGridView } from './CollectionGridView';
 import { CollectionHeader } from './CollectionHeader';
 
-export function CollectionTracker() {
+interface CollectionTrackerProps {
+  onSwitchToDeck?: () => void;
+}
+
+export function CollectionTracker({ onSwitchToDeck }: CollectionTrackerProps = {}) {
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   const user = useAuthStore((s) => s.user);
@@ -280,11 +284,11 @@ export function CollectionTracker() {
   return (
     <div className="min-h-screen">
       <PullToRefreshIndicator {...pullState} />
-      <CollectionHeader stats={overallStats} />
+      <CollectionHeader stats={overallStats} onSwitchToDeck={onSwitchToDeck} />
 
       <main
-        className="px-3 sm:px-4 py-3 space-y-3"
-        style={{ paddingBottom: 'calc(2.5rem + env(safe-area-inset-bottom, 0px))' }}
+        className="px-3 sm:px-4 py-3 space-y-3 pb-20 sm:pb-24"
+        style={{ paddingBottom: 'calc(4.5rem + env(safe-area-inset-bottom, 0px))' }}
       >
         <h1 className="sr-only">Disney Lorcana Card Collection Tracker - Track Inks, Foils, Cards, and Sets</h1>
         <CollectionFilterBar
