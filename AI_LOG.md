@@ -187,4 +187,5 @@
 [2026-08-28 12:10] Major | Antigravity | Edit | AdminPriceManager.tsx - Last Sold column & transaction recorder
 [2026-08-28 12:13] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.5.0
 [2026-08-28 12:14] Major | Antigravity | Release | v0.5.0 - Recent Sales Tracking, Last Sold Stats & 1-Click Market Links
+[2026-08-28 12:56] Major | Antigravity | Write | CLAUDE.md - full agent operating guide & workflows for Claude
 
