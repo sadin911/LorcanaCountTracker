@@ -4,17 +4,25 @@ import { useCollectionStore } from '../../store/collectionStore';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 import type { CollectionStats } from '../../types/collection';
 import { isFirebaseConfigured } from '../../utils/firebase';
+import { APP_VERSION } from '../../constants/version';
 import { CollectionBackupModal } from './CollectionBackupModal';
 import { ProfileManagerModal } from './ProfileManagerModal';
 import { PWAInstallModal } from '../common/PWAInstallModal';
 import { OTAUpdateButton } from '../common/OTAUpdateButton';
 
-const SYNC_LABEL: Record<string, { text: string; className: string; dot: string }> = {
-  idle: { text: 'Guest', className: 'bg-slate-800/80 text-slate-400 border-slate-700/60', dot: 'bg-slate-500' },
-  syncing: { text: 'Syncing…', className: 'bg-sky-950/80 text-sky-300 border-sky-600/50', dot: 'bg-sky-400 animate-pulse' },
-  synced: { text: 'Cloud Active', className: 'bg-emerald-950/80 text-emerald-300 border-emerald-600/50', dot: 'bg-emerald-400' },
-  error: { text: 'Sync Error', className: 'bg-rose-950/80 text-rose-300 border-rose-600/50', dot: 'bg-rose-400' },
-};
+function getSyncBadge(status: string, hasUser: boolean) {
+  const currentStatus = hasUser ? status : 'idle';
+  switch (currentStatus) {
+    case 'syncing':
+      return { text: `Syncing… (v${APP_VERSION})`, className: 'bg-sky-950/80 text-sky-300 border-sky-600/50', dot: 'bg-sky-400 animate-pulse' };
+    case 'synced':
+      return { text: `Cloud Active (v${APP_VERSION})`, className: 'bg-emerald-950/80 text-emerald-300 border-emerald-600/50', dot: 'bg-emerald-400' };
+    case 'error':
+      return { text: `Sync Error (v${APP_VERSION})`, className: 'bg-rose-950/80 text-rose-300 border-rose-600/50', dot: 'bg-rose-400' };
+    default:
+      return { text: `v${APP_VERSION}`, className: 'bg-slate-800/80 text-slate-400 border-slate-700/60', dot: 'bg-slate-500' };
+  }
+}
 
 interface CollectionHeaderProps {
   stats: CollectionStats;
@@ -52,7 +60,7 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
   const activeProfileId = useCollectionStore((s) => s.activeProfileId);
   const activeProfile = profiles[activeProfileId];
 
-  const badge = SYNC_LABEL[user ? syncStatus : 'idle'] ?? SYNC_LABEL.idle;
+  const badge = getSyncBadge(syncStatus, !!user);
 
   const logoUrl = `${import.meta.env.BASE_URL}logo-br-2x-Sweb4xgr.png`;
 
@@ -82,10 +90,11 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
                 Tracker
               </span>
               <span
-                className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${badge.className}`}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[9px] sm:text-[10px] font-semibold ${badge.className}`}
+                title={`App Version: v${APP_VERSION} • Status: ${badge.text}`}
               >
                 <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
-                {badge.text}
+                <span>{badge.text}</span>
               </span>
             </div>
           </div>

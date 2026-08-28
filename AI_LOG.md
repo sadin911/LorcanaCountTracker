@@ -149,3 +149,6 @@
 [2026-08-28 10:33] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 20/20 passed
 [2026-08-28 10:53] Major | Antigravity | Fix | fixed mobile header overlapping on small screens & integrated deckStore cloud sync in auth listener
 [2026-08-28 10:53] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
+[2026-08-28 11:01] Major | Antigravity | Edit | src/constants/version.ts, CollectionHeader.tsx, DeckHeader.tsx - display app version in sync badges
+[2026-08-28 11:01] Major | Antigravity | Edit | firestore.rules - added security rule for /users/{uid}/decks/{deckId}
+[2026-08-28 11:01] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
