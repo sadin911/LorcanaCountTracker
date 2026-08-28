@@ -69,7 +69,7 @@ export function DeckHeader({
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/40 hover:border-[#c8b07b] text-slate-200 hover:text-[#dfc792] transition-all font-bold text-xs sm:text-sm active:scale-95 shadow-sm"
               >
                 <span>‹</span>
-                <span>คลังเด็ค</span>
+                <span>Decks</span>
               </button>
             ) : (
               <div className="flex items-center gap-2 sm:gap-3 shrink-0">
@@ -94,7 +94,7 @@ export function DeckHeader({
 
             {isEditing && deckName && (
               <div className="hidden md:flex items-center gap-2 min-w-0 border-l border-slate-700 pl-3">
-                <span className="text-xs text-[#c8b07b]/70 font-semibold uppercase tracking-wider">กำลังจัดเด็ค:</span>
+                <span className="text-xs text-[#c8b07b]/70 font-semibold uppercase tracking-wider">Editing Deck:</span>
                 <span className="text-sm font-black text-[#dfc792] truncate max-w-xs">{deckName}</span>
               </div>
             )}
@@ -110,7 +110,7 @@ export function DeckHeader({
                 className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1b2038]/80 hover:bg-[#1b2038] border border-slate-700 hover:border-[#c8b07b]/60 active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm"
               >
                 <span>📖</span>
-                <span className="font-semibold">สมุดสะสม</span>
+                <span className="font-semibold">Collection</span>
               </button>
             )}
 
@@ -118,7 +118,7 @@ export function DeckHeader({
             <button
               type="button"
               onClick={() => setShowProfiles(true)}
-              title="เลือกสมุดสะสมเพื่อใช้เทียบการ์ดที่ขาด"
+              title="Select binder to compare missing cards"
               className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs transition-all shadow-sm group hover:text-[#dfc792] min-h-[40px] sm:min-h-[36px]"
             >
               <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">
@@ -177,7 +177,7 @@ export function DeckHeader({
                         <div className="text-[10px] text-slate-400 truncate">{user.email}</div>
                       </div>
                       <div className="flex items-center justify-between px-2 py-1 text-[11px] text-slate-300">
-                        <span>สถานะ Cloud:</span>
+                        <span>Cloud Status:</span>
                         <span className={`px-2 py-0.5 rounded-md border text-[10px] font-bold ${badge.className}`}>
                           {badge.text}
                         </span>
@@ -194,7 +194,7 @@ export function DeckHeader({
                         className="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-rose-950/40 text-rose-300 hover:text-rose-200 border border-transparent hover:border-rose-800/40 text-xs font-semibold transition-all flex items-center gap-2"
                       >
                         <span>🚪</span>
-                        <span>ออกจากระบบ</span>
+                        <span>Sign Out</span>
                       </button>
                     </div>
                   )}
@@ -207,7 +207,7 @@ export function DeckHeader({
                   className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-1.5 min-h-[40px] sm:min-h-[36px]"
                 >
                   <span>☁️</span>
-                  <span>{authLoading ? 'กำลังเข้าสู่ระบบ…' : 'Sync Cloud'}</span>
+                  <span>{authLoading ? 'Signing in…' : 'Sync Cloud'}</span>
                 </button>
               )
             ) : null}

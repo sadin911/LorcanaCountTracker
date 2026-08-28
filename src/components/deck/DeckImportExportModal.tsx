@@ -83,7 +83,7 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
   const handleImport = () => {
     setStatusMsg(null);
     if (!importText.trim()) {
-      setStatusMsg({ type: 'error', text: 'กรุณาวางโค้ดหรือรายการการ์ดของเด็คก่อน' });
+      setStatusMsg({ type: 'error', text: 'Please enter or paste a deck list or JSON string first' });
       return;
     }
 
@@ -129,10 +129,10 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
             <span className="text-2xl">📦</span>
             <div>
               <h3 className="text-lg sm:text-xl font-black text-[#dfc792]">
-                นำเข้าและส่งออกเด็ค (Import / Export)
+                Import / Export Deck
               </h3>
               <p className="text-xs text-slate-400">
-                รองรับมาตรฐาน Dreamborn.ink, Pixelborn text list และ JSON
+                Supports Dreamborn.ink text format, Pixelborn text lists, and JSON
               </p>
             </div>
           </div>
@@ -159,7 +159,7 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <span>📤 ส่งออกเด็ค (Export)</span>
+            <span>📤 Export Deck</span>
           </button>
 
           <button
@@ -174,7 +174,7 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <span>📥 นำเข้าเด็ค (Import)</span>
+            <span>📥 Import Deck</span>
           </button>
         </div>
 
@@ -196,7 +196,7 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
               </div>
               {statusMsg.details && statusMsg.details.length > 0 && (
                 <div className="text-[11px] opacity-80 pl-5 list-disc">
-                  <span>บรรทัดที่ไม่สามารถจับคู่ได้:</span>
+                  <span>Unmatched lines:</span>
                   <ul className="list-disc pl-4 mt-1 max-h-24 overflow-y-auto font-mono">
                     {statusMsg.details.map((line, idx) => (
                       <li key={idx}>{line}</li>
@@ -212,7 +212,7 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
               {/* Select Deck to Export */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <div className="flex-1">
-                  <label className="text-xs text-slate-400 font-semibold mb-1 block">เลือกเด็คที่ต้องการส่งออก:</label>
+                  <label className="text-xs text-slate-400 font-semibold mb-1 block">Select Deck to Export:</label>
                   <select
                     value={selectedExportDeckId}
                     onChange={(e) => setSelectedExportDeckId(e.target.value)}
@@ -220,14 +220,14 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
                   >
                     {Object.values(decks).map((d) => (
                       <option key={d.id} value={d.id}>
-                        {d.name} ({Object.values(d.cards).reduce((acc, c) => acc + c.count, 0)} ใบ)
+                        {d.name} ({Object.values(d.cards).reduce((acc, c) => acc + c.count, 0)} cards)
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-400 font-semibold mb-1 block">รูปแบบไฟล์ (Format):</label>
+                  <label className="text-xs text-slate-400 font-semibold mb-1 block">Format:</label>
                   <div className="flex rounded-xl bg-slate-900 p-1 border border-slate-700/60">
                     <button
                       type="button"
@@ -273,7 +273,7 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
                   className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition-all flex items-center gap-1.5 active:scale-95 shadow-md"
                 >
                   <span>💾</span>
-                  <span>ดาวน์โหลดไฟล์ (Download)</span>
+                  <span>Download File</span>
                 </button>
 
                 <button
@@ -282,7 +282,7 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
                   className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center gap-1.5 active:scale-95"
                 >
                   <span>{copied ? '✅' : '📋'}</span>
-                  <span>{copied ? 'คัดลอกเรียบร้อย!' : 'คัดลอกลง Clipboard'}</span>
+                  <span>{copied ? 'Copied!' : 'Copy to Clipboard'}</span>
                 </button>
               </div>
             </div>
@@ -291,18 +291,18 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
               {/* Import Options */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <div className="flex-1">
-                  <label className="text-xs text-slate-400 font-semibold mb-1 block">ชื่อเด็ค (ไม่บังคับ):</label>
+                  <label className="text-xs text-slate-400 font-semibold mb-1 block">Deck Name (Optional):</label>
                   <input
                     type="text"
                     value={importDeckName}
                     onChange={(e) => setImportDeckName(e.target.value)}
-                    placeholder="เช่น Amber/Steel Aggro..."
+                    placeholder="e.g. Amber/Steel Aggro..."
                     className="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-[#c8b07b] text-xs text-slate-200 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-400 font-semibold mb-1 block">รูปแบบข้อมูลนำเข้า:</label>
+                  <label className="text-xs text-slate-400 font-semibold mb-1 block">Import Format:</label>
                   <div className="flex rounded-xl bg-slate-900 p-1 border border-slate-700/60">
                     <button
                       type="button"
@@ -333,7 +333,7 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
               {/* Paste Textarea */}
               <div className="space-y-1">
                 <label className="text-xs text-slate-400 font-semibold">
-                  วางข้อความเด็คที่นี่ (ตัวอย่าง: <code className="text-[#dfc792]">4 Elsa - Spirit of Winter</code> หรือ JSON):
+                  Paste deck list here (e.g. <code className="text-[#dfc792]">4 Elsa - Spirit of Winter</code> or JSON):
                 </label>
                 <textarea
                   value={importText}
@@ -356,7 +356,7 @@ export function DeckImportExportModal({ onClose, activeDeckId, onDeckImported }:
                   className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 active:scale-95"
                 >
                   <span>📥</span>
-                  <span>ยืนยันการนำเข้าเด็ค (Import Deck)</span>
+                  <span>Confirm Import Deck</span>
                 </button>
               </div>
             </div>

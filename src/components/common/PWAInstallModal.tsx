@@ -92,12 +92,12 @@ export function PWAInstallModal({
               <li>
                 Scroll down and select{' '}
                 <strong className="text-amber-200 font-semibold">
-                  "Add to Home Screen" (เพิ่มไปยังหน้าจอโฮม)
+                  "Add to Home Screen"
                 </strong>
                 .
               </li>
               <li>
-                Tap <strong className="text-white">"Add" (เพิ่ม)</strong> in the top right corner.
+                Tap <strong className="text-white">"Add"</strong> in the top right corner.
               </li>
             </ol>
           </div>

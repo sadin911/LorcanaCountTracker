@@ -18,7 +18,7 @@ export default defineConfig({
         id: '/',
         name: 'Disney Lorcana Card Collection Tracker',
         short_name: 'Lorcana Tracker',
-        description: 'สมุดสะสมการ์ด จัดเด็ค และระบบนับแต้ม Disney Lorcana TCG',
+        description: 'Disney Lorcana TCG Card Collection Tracker, Deck Builder, and Inventory Manager',
         theme_color: '#131627',
         background_color: '#131627',
         display: 'standalone',

@@ -105,10 +105,10 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                 <span>Disney Lorcana Deck Manager</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-white">
-                คลังเด็คการ์ดของคุณ ({deckList.length} เด็ค)
+                Your Deck Vault ({deckList.length} {deckList.length === 1 ? 'Deck' : 'Decks'})
               </h2>
               <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
-                สร้าง จัดการ และตรวจสอบความพร้อมของการ์ดในเด็คเทียบกับสมุดสะสมของคุณได้ทันที
+                Create, manage, and instantly check deck completion against your card collection.
               </p>
             </div>
 
@@ -120,7 +120,7 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                 className="flex-1 sm:flex-none px-4 py-3 rounded-2xl bg-[#1b2038] hover:bg-[#252c4d] text-slate-200 border border-[#c8b07b]/30 font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95"
               >
                 <span>📥</span>
-                <span>นำเข้าเด็ค</span>
+                <span>Import Deck</span>
               </button>
 
               <button
@@ -129,7 +129,7 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                 className="flex-1 sm:flex-none px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-400 hover:to-amber-600 text-slate-950 font-black text-xs sm:text-sm shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95"
               >
                 <span>➕</span>
-                <span>สร้างเด็คใหม่</span>
+                <span>Create New Deck</span>
               </button>
             </div>
           </div>
@@ -138,9 +138,9 @@ export function DeckManager({ onSwitchToCollection }: Props) {
           {deckList.length === 0 ? (
             <div className="text-center py-20 bg-[#131627]/60 rounded-3xl border border-slate-800 space-y-3">
               <span className="text-5xl block">🃏</span>
-              <h3 className="text-lg font-black text-slate-200">ยังไม่มีเด็คในคลังของคุณ</h3>
+              <h3 className="text-lg font-black text-slate-200">No decks in your vault yet</h3>
               <p className="text-xs text-slate-400 max-w-md mx-auto">
-                เริ่มต้นสร้างเด็คใหม่หรือนำเข้าเด็คจากการแข่งขัน / Dreamborn เพื่อเริ่มจัดเด็คและตรวจสอบการ์ดที่ขาดได้ทันที
+                Start by creating a new deck or importing one from Dreamborn to check missing cards immediately.
               </p>
               <div className="pt-2">
                 <button
@@ -148,7 +148,7 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                   onClick={() => setShowNewDeckModal(true)}
                   className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all"
                 >
-                  ➕ สร้างเด็คแรกของคุณ
+                  ➕ Create Your First Deck
                 </button>
               </div>
             </div>
@@ -174,7 +174,7 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                         <div
                           onClick={() => setSelectedCoverDeckId(deck.id)}
                           className="w-20 h-28 rounded-2xl overflow-hidden bg-slate-950 border border-[#c8b07b]/30 shadow-md cursor-pointer shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center relative group/cover"
-                          title="คลิกเพื่อเปลี่ยนรูปหน้าปกเด็ค"
+                          title="Click to change deck cover card"
                         >
                           {coverImg ? (
                             <img
@@ -190,7 +190,7 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                             <span className="text-3xl">🃏</span>
                           )}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/cover:opacity-100 flex items-center justify-center transition-opacity text-[10px] text-[#dfc792] font-black text-center p-1">
-                            เปลี่ยนปก
+                            Change Cover
                           </div>
                         </div>
 
@@ -202,7 +202,7 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                             {deck.name}
                           </h3>
                           <p className="text-xs text-slate-400 line-clamp-2">
-                            {deck.description || 'ไม่มีคำอธิบาย'}
+                            {deck.description || 'No description'}
                           </p>
 
                           {/* Ink Colors Badge */}
@@ -223,7 +223,7 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                       {/* Middle Stats: Card counts & Inkable ratio */}
                       <div className="mt-4 pt-3 border-t border-slate-800/80 grid grid-cols-3 gap-2 text-center">
                         <div className="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
-                          <span className="text-[10px] text-slate-400 block font-semibold">จำนวนการ์ด</span>
+                          <span className="text-[10px] text-slate-400 block font-semibold">Cards</span>
                           <span
                             className={`text-xs sm:text-sm font-black ${
                               totalCards === 60 ? 'text-emerald-400' : 'text-amber-300'
@@ -244,7 +244,7 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                         </div>
 
                         <div className="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
-                          <span className="text-[10px] text-slate-400 block font-semibold">ความพร้อม</span>
+                          <span className="text-[10px] text-slate-400 block font-semibold">Completion</span>
                           <span
                             className={`text-xs sm:text-sm font-black ${
                               missingReport.completionPercentage === 100
@@ -266,12 +266,12 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                           <span>{missingReport.totalCardsMissing === 0 ? '🎉' : '📋'}</span>
                           <span className="font-semibold text-slate-300 group-hover/miss:text-slate-100">
                             {missingReport.totalCardsMissing === 0
-                              ? 'มีการ์ดครบทั้งหมดแล้ว (100%)'
-                              : `ยังขาดการ์ดอีก ${missingReport.totalCardsMissing} ใบ`}
+                              ? 'Deck Complete (100%)'
+                              : `${missingReport.totalCardsMissing} cards missing`}
                           </span>
                         </div>
                         <span className="text-amber-400 text-xs font-bold group-hover/miss:translate-x-0.5 transition-transform">
-                          ดูรายการ ›
+                          View List ›
                         </span>
                       </div>
                     </div>
@@ -283,7 +283,7 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                         <button
                           type="button"
                           onClick={() => duplicateDeck(deck.id)}
-                          title="ทำสำเนาเด็คนี้"
+                          title="Duplicate this deck"
                           className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 text-xs font-bold active:scale-95 transition-all"
                         >
                           📑
@@ -293,11 +293,11 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                         <button
                           type="button"
                           onClick={() => {
-                            if (confirm(`คุณต้องการลบเด็ค "${deck.name}" ใช่หรือไม่?`)) {
+                            if (confirm(`Are you sure you want to delete deck "${deck.name}"?`)) {
                               deleteDeck(deck.id);
                             }
                           }}
-                          title="ลบเด็คนี้"
+                          title="Delete this deck"
                           className="p-2 rounded-xl bg-slate-800/80 hover:bg-rose-950/60 text-slate-400 hover:text-rose-300 border border-slate-700/60 hover:border-rose-700/40 text-xs font-bold active:scale-95 transition-all"
                         >
                           🗑️
@@ -311,7 +311,7 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                         className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 transition-all flex items-center gap-1.5 active:scale-95"
                       >
                         <span>✏️</span>
-                        <span>แก้ไขเด็ค (Edit)</span>
+                        <span>Edit Deck</span>
                       </button>
                     </div>
                   </div>
@@ -332,7 +332,7 @@ export function DeckManager({ onSwitchToCollection }: Props) {
             <div className="flex items-center justify-between border-b border-[#c8b07b]/20 pb-3">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">➕</span>
-                <h3 className="text-lg font-black text-[#dfc792]">สร้างเด็คใหม่</h3>
+                <h3 className="text-lg font-black text-[#dfc792]">Create New Deck</h3>
               </div>
               <button
                 type="button"
@@ -345,24 +345,24 @@ export function DeckManager({ onSwitchToCollection }: Props) {
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-slate-400 font-semibold mb-1 block">ชื่อเด็ค (Deck Name):</label>
+                <label className="text-xs text-slate-400 font-semibold mb-1 block">Deck Name:</label>
                 <input
                   type="text"
                   value={newDeckName}
                   onChange={(e) => setNewDeckName(e.target.value)}
-                  placeholder="เช่น Ruby & Amethyst Control..."
+                  placeholder="e.g. Ruby & Amethyst Control..."
                   className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 focus:border-[#c8b07b] text-sm text-slate-100 focus:outline-none"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="text-xs text-slate-400 font-semibold mb-1 block">คำอธิบาย (Description):</label>
+                <label className="text-xs text-slate-400 font-semibold mb-1 block">Description (Optional):</label>
                 <input
                   type="text"
                   value={newDeckDesc}
                   onChange={(e) => setNewDeckDesc(e.target.value)}
-                  placeholder="เช่น เด็คแข่งงาน Championship..."
+                  placeholder="e.g. Set Championship tournament deck..."
                   className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 focus:border-[#c8b07b] text-sm text-slate-100 focus:outline-none"
                 />
               </div>
@@ -374,14 +374,14 @@ export function DeckManager({ onSwitchToCollection }: Props) {
                 onClick={() => setShowNewDeckModal(false)}
                 className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold"
               >
-                ยกเลิก
+                Cancel
               </button>
               <button
                 type="button"
                 onClick={handleCreateNewDeck}
                 className="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 active:scale-95"
               >
-                สร้างเด็ค
+                Create Deck
               </button>
             </div>
           </div>

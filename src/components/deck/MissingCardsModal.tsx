@@ -62,16 +62,17 @@ export function MissingCardsModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
+        {/* Header */}
         <div className="p-4 sm:p-6 border-b border-[#c8b07b]/20 bg-[#181d33]/90 flex items-center justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-2xl">📋</span>
               <h3 className="text-lg sm:text-xl font-black text-[#dfc792]">
-                ตรวจสอบการ์ดที่ขาด (Missing Cards)
+                Missing Cards Check
               </h3>
             </div>
             <p className="text-xs text-slate-400">
-              เด็ค: <strong className="text-slate-200">{deck.name}</strong> • เทียบกับสมุดสะสม:{' '}
+              Deck: <strong className="text-slate-200">{deck.name}</strong> • Compared with binder:{' '}
               <span className="text-[#dfc792] font-semibold">"{activeProfileName}"</span>
             </p>
           </div>
@@ -90,23 +91,23 @@ export function MissingCardsModal({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="px-3 py-1.5 rounded-2xl bg-slate-900 border border-slate-700/80">
-                <span className="text-[11px] text-slate-400 block font-semibold">ต้องการทั้งหมด</span>
+                <span className="text-[11px] text-slate-400 block font-semibold">Total Needed</span>
                 <span className="text-base sm:text-lg font-black text-white">
-                  {report.totalCardsNeeded} ใบ
+                  {report.totalCardsNeeded} cards
                 </span>
               </div>
 
               <div className="px-3 py-1.5 rounded-2xl bg-emerald-950/60 border border-emerald-600/40">
-                <span className="text-[11px] text-emerald-300 block font-semibold">มีในสมุดแล้ว</span>
+                <span className="text-[11px] text-emerald-300 block font-semibold">In Binder</span>
                 <span className="text-base sm:text-lg font-black text-emerald-400">
-                  {report.totalCardsOwned} ใบ
+                  {report.totalCardsOwned} cards
                 </span>
               </div>
 
               <div className="px-3 py-1.5 rounded-2xl bg-rose-950/60 border border-rose-600/40">
-                <span className="text-[11px] text-rose-300 block font-semibold">ยังขาดอีก</span>
+                <span className="text-[11px] text-rose-300 block font-semibold">Missing</span>
                 <span className="text-base sm:text-lg font-black text-rose-400">
-                  {report.totalCardsMissing} ใบ
+                  {report.totalCardsMissing} cards
                 </span>
               </div>
             </div>
@@ -119,13 +120,13 @@ export function MissingCardsModal({
                 className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-1.5"
               >
                 <span>{copied ? '✅' : '📋'}</span>
-                <span>{copied ? 'คัดลอกแล้ว!' : 'คัดลอก Shopping List'}</span>
+                <span>{copied ? 'Copied!' : 'Copy Shopping List'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleDownloadShoppingList}
-                title="ดาวน์โหลดไฟล์ .txt"
+                title="Download .txt file"
                 className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 font-bold text-xs transition-all active:scale-95"
               >
                 💾
@@ -136,7 +137,7 @@ export function MissingCardsModal({
           {/* Progress Bar */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-semibold">
-              <span className="text-slate-400">ความพร้อมของเด็ค</span>
+              <span className="text-slate-400">Deck Completion</span>
               <span
                 className={
                   report.completionPercentage === 100
@@ -171,7 +172,7 @@ export function MissingCardsModal({
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <span>❌ การ์ดที่ขาด</span>
+            <span>❌ Missing Cards</span>
             <span className="px-1.5 py-0.2 rounded-full bg-rose-500/20 text-rose-300 text-[10px]">
               {report.missingItems.length}
             </span>
@@ -186,7 +187,7 @@ export function MissingCardsModal({
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <span>✅ การ์ดที่มีครบแล้ว</span>
+            <span>✅ Complete Cards</span>
             <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px]">
               {report.completeItems.length}
             </span>
@@ -202,8 +203,8 @@ export function MissingCardsModal({
               </span>
               <span>
                 {activeTab === 'missing'
-                  ? 'ยอดเยี่ยม! เด็คนี้มีการ์ดครบทั้งหมดตามสมุดสะสมแล้ว'
-                  : 'ยังไม่มีการ์ดที่ครบในสมุดสะสม'}
+                  ? 'Awesome! This deck is 100% complete based on your binder.'
+                  : 'No completed cards found in your binder yet.'}
               </span>
             </div>
           ) : (
@@ -214,7 +215,7 @@ export function MissingCardsModal({
                 <div
                   key={item.cardId}
                   onClick={() => onSelectCardPreview?.(item.cardId)}
-                  className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-[#c8b07b]/50 transition-all flex items-center justify-between gap-3 group cursor-pointer hover:bg-slate-850"
+                  className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-[#c8b07b]/50 transition-all flex items-center justify-between gap-3 group cursor-pointer hover:bg-slate-855"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <img
@@ -254,15 +255,15 @@ export function MissingCardsModal({
                   <div className="flex items-center gap-2 shrink-0">
                     <div className="text-right">
                       <div className="text-xs font-bold text-slate-300">
-                        มี {item.countOwned} / ต้องการ {item.countNeeded}
+                        Owned {item.countOwned} / Need {item.countNeeded}
                       </div>
                       {item.missingCount > 0 ? (
                         <span className="inline-block px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[10px] font-black">
-                          ขาด {item.missingCount} ใบ
+                          Missing {item.missingCount}
                         </span>
                       ) : (
                         <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-black">
-                          ครบแล้ว
+                          Complete
                         </span>
                       )}
                     </div>

@@ -143,5 +143,5 @@
 [2026-08-28 10:00] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 20/20 passed
 [2026-08-28 10:01] Major | Antigravity | Release | v0.3.0 - Lorcana Deck Builder, PWA OTA updates, Cloud Sync, and card image CDN fixes
 [2026-08-28 10:01] Major | Antigravity | Command | git push origin main --tags - triggered GitHub Pages deploy
-
-
+[2026-08-28 10:19] Major | Antigravity | Edit | 100% English translation across all UI components, stores, utils & E2E tests
+[2026-08-28 10:19] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 20/20 passed

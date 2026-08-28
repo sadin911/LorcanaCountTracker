@@ -47,7 +47,7 @@ function createDefaultDeck(): Deck {
   return {
     id,
     name: 'Amber & Steel Steelsongs',
-    description: 'เด็คมาตรฐานดิสนีย์ ลอร์คานา 60 ใบ',
+    description: 'Standard 60-card Disney Lorcana deck',
     cards: {},
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -498,7 +498,7 @@ export const useDeckStore = create<DeckState>((set, get) => ({
     try {
       const parsed = JSON.parse(jsonString);
       if (!parsed || !parsed.name || typeof parsed.cards !== 'object') {
-        return { success: false, message: 'รูปแบบ JSON ของเด็คไม่ถูกต้อง' };
+        return { success: false, message: 'Invalid deck JSON format' };
       }
 
       const id = `deck-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
@@ -522,9 +522,9 @@ export const useDeckStore = create<DeckState>((set, get) => ({
       }));
 
       triggerDeckSave(get, id);
-      return { success: true, message: `นำเข้าเด็ค "${newDeck.name}" สำเร็จ!`, deckId: id };
+      return { success: true, message: `Deck "${newDeck.name}" imported successfully!`, deckId: id };
     } catch (e: any) {
-      return { success: false, message: `เกิดข้อผิดพลาดในการนำเข้า: ${e.message}` };
+      return { success: false, message: `Import error: ${e.message}` };
     }
   },
 
@@ -534,7 +534,7 @@ export const useDeckStore = create<DeckState>((set, get) => ({
       if (Object.keys(result.cards).length === 0) {
         return {
           success: false,
-          message: 'ไม่พบรายการการ์ดที่ตรงกับฐานข้อมูล Lorcana ในข้อความที่ระบุ',
+          message: 'No matching Lorcana cards found in the provided text',
           unmatchedLines: result.unmatched,
         };
       }
@@ -544,7 +544,7 @@ export const useDeckStore = create<DeckState>((set, get) => ({
       const newDeck: Deck = {
         id,
         name: name.trim() || 'Imported Deck',
-        description: `นำเข้าจากการ์ด ${result.parsedCount} ใบ (${Object.keys(result.cards).length} แบบ)`,
+        description: `Imported with ${result.parsedCount} cards (${Object.keys(result.cards).length} distinct)`,
         coverCardId: firstCardId,
         cards: result.cards,
         createdAt: Date.now(),
@@ -562,7 +562,7 @@ export const useDeckStore = create<DeckState>((set, get) => ({
       triggerDeckSave(get, id);
       return {
         success: true,
-        message: `นำเข้าเด็คสำเร็จ! พบการ์ด ${result.parsedCount} ใบ${result.unmatched.length > 0 ? ` (ไม่พบ ${result.unmatched.length} บรรทัด)` : ''}`,
+        message: `Deck imported successfully! Found ${result.parsedCount} cards${result.unmatched.length > 0 ? ` (${result.unmatched.length} unmatched lines)` : ''}`,
         deckId: id,
         unmatchedLines: result.unmatched,
         cardsAddedCount: result.parsedCount,
@@ -570,7 +570,7 @@ export const useDeckStore = create<DeckState>((set, get) => ({
     } catch (e: any) {
       return {
         success: false,
-        message: `เกิดข้อผิดพลาดในการแปลงรายการการ์ด: ${e.message}`,
+        message: `Deck parsing error: ${e.message}`,
       };
     }
   },

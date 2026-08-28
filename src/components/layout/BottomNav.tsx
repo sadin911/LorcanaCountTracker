@@ -37,7 +37,7 @@ export function BottomNav({ currentMode, onSelectMode, isAdmin }: Props) {
           <span className={`text-[10px] font-black tracking-wide mt-0.5 ${
             currentMode === 'collection' ? 'text-[#dfc792]' : 'text-slate-400'
           }`}>
-            สมุดสะสม
+            Collection
           </span>
           {currentMode === 'collection' && (
             <span className="w-1.5 h-1.5 rounded-full bg-[#c8b07b] mt-0.5 shadow-[0_0_8px_#c8b07b]" />
@@ -65,7 +65,7 @@ export function BottomNav({ currentMode, onSelectMode, isAdmin }: Props) {
           <span className={`text-[10px] font-black tracking-wide mt-0.5 ${
             currentMode === 'deck' ? 'text-[#dfc792]' : 'text-slate-400'
           }`}>
-            จัดเด็ค
+            Decks
           </span>
           {currentMode === 'deck' && (
             <span className="w-1.5 h-1.5 rounded-full bg-[#c8b07b] mt-0.5 shadow-[0_0_8px_#c8b07b]" />
@@ -87,7 +87,7 @@ export function BottomNav({ currentMode, onSelectMode, isAdmin }: Props) {
             <span className={`text-[10px] font-black tracking-wide mt-0.5 ${
               currentMode === 'admin' ? 'text-[#dfc792]' : 'text-slate-400'
             }`}>
-              ผู้ดูแล
+              Admin
             </span>
             {currentMode === 'admin' && (
               <span className="w-1.5 h-1.5 rounded-full bg-[#c8b07b] mt-0.5 shadow-[0_0_8px_#c8b07b]" />

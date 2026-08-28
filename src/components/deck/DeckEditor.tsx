@@ -162,10 +162,10 @@ export function DeckEditor({ deck }: Props) {
       icon: string;
       cards: { card: LorcanaCard; count: number }[];
     }[] = [
-      { title: 'Characters (ตัวละคร)', icon: '👤', cards: [] },
-      { title: 'Actions & Songs (แอ็กชัน/เพลง)', icon: '⚡', cards: [] },
-      { title: 'Items (ไอเทม)', icon: '🔮', cards: [] },
-      { title: 'Locations (สถานที่)', icon: '🏰', cards: [] },
+      { title: 'Characters', icon: '👤', cards: [] },
+      { title: 'Actions & Songs', icon: '⚡', cards: [] },
+      { title: 'Items', icon: '🔮', cards: [] },
+      { title: 'Locations', icon: '🏰', cards: [] },
     ];
 
     for (const [cardId, entry] of Object.entries(deck.cards)) {
@@ -215,7 +215,7 @@ export function DeckEditor({ deck }: Props) {
             <div
               onClick={() => setShowCoverModal(true)}
               className="w-16 h-22 sm:w-20 sm:h-28 rounded-2xl overflow-hidden bg-slate-950 border border-[#c8b07b]/40 shadow-lg cursor-pointer shrink-0 hover:scale-105 transition-transform flex items-center justify-center relative group"
-              title="คลิกเพื่อเปลี่ยนรูปหน้าปกเด็ค"
+              title="Click to change deck cover card"
             >
               {coverUrl ? (
                 <img
@@ -228,7 +228,7 @@ export function DeckEditor({ deck }: Props) {
                 <span className="text-2xl">🃏</span>
               )}
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-[10px] text-[#dfc792] font-black text-center p-1">
-                เปลี่ยนปก
+                Change Cover
               </div>
             </div>
 
@@ -241,7 +241,7 @@ export function DeckEditor({ deck }: Props) {
                     value={deckName}
                     onChange={(e) => setDeckName(e.target.value)}
                     className="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-[#c8b07b] text-base font-black text-white focus:outline-none"
-                    placeholder="ชื่อเด็ค..."
+                    placeholder="Deck name..."
                     autoFocus
                   />
                   <input
@@ -249,7 +249,7 @@ export function DeckEditor({ deck }: Props) {
                     value={deckDesc}
                     onChange={(e) => setDeckDesc(e.target.value)}
                     className="w-full px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-300 focus:outline-none"
-                    placeholder="คำอธิบายสั้น ๆ..."
+                    placeholder="Short description..."
                   />
                   <div className="flex items-center gap-2">
                     <button
@@ -257,14 +257,14 @@ export function DeckEditor({ deck }: Props) {
                       onClick={handleSaveDeckDetails}
                       className="px-3 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-xs shadow-md"
                     >
-                      บันทึก
+                      Save
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsEditingName(false)}
                       className="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 text-xs"
                     >
-                      ยกเลิก
+                      Cancel
                     </button>
                   </div>
                 </div>
@@ -275,14 +275,14 @@ export function DeckEditor({ deck }: Props) {
                     <button
                       type="button"
                       onClick={() => setIsEditingName(true)}
-                      title="แก้ไขชื่อเด็ค"
+                      title="Edit deck name"
                       className="text-slate-400 hover:text-[#dfc792] text-xs p-1"
                     >
                       ✏️
                     </button>
                   </div>
                   <p className="text-xs text-slate-400 truncate mt-0.5">
-                    {deck.description || 'เด็คมาตรฐานดิสนีย์ ลอร์คานา'}
+                    {deck.description || 'Standard Disney Lorcana Deck'}
                   </p>
                   {/* Ink Badges */}
                   <div className="flex items-center gap-1.5 mt-2">
@@ -292,11 +292,11 @@ export function DeckEditor({ deck }: Props) {
                         className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-900/80 border border-[#c8b07b]/30 text-[11px] font-bold text-slate-200"
                       >
                         <InkPill ink={ink} />
-                        <span>{stats.inkCounts[ink]} ใบ</span>
+                        <span>{stats.inkCounts[ink]}</span>
                       </div>
                     ))}
                     {stats.activeInks.length === 0 && (
-                      <span className="text-[11px] text-slate-500">ยังไม่มีการ์ดในเด็ค</span>
+                      <span className="text-[11px] text-slate-500">No cards in deck</span>
                     )}
                   </div>
                 </div>
@@ -316,7 +316,7 @@ export function DeckEditor({ deck }: Props) {
                   : 'bg-slate-900/90 border-slate-700 text-slate-300'
               }`}
             >
-              <span className="text-[10px] uppercase font-bold tracking-wider opacity-80">จำนวนการ์ด</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider opacity-80">Cards</span>
               <span className="text-lg font-black">{stats.totalCards} / 60</span>
             </div>
 
@@ -339,8 +339,8 @@ export function DeckEditor({ deck }: Props) {
             >
               <span className="text-base group-hover:scale-110 transition-transform">📋</span>
               <div className="text-left">
-                <span className="block text-[10px] text-slate-400 font-semibold">เทียบสมุดสะสม</span>
-                <span>{missingReport.totalCardsMissing === 0 ? 'ครบ 100%' : `ขาด ${missingReport.totalCardsMissing} ใบ`}</span>
+                <span className="block text-[10px] text-slate-400 font-semibold">Missing Cards</span>
+                <span>{missingReport.totalCardsMissing === 0 ? 'Complete 100%' : `${missingReport.totalCardsMissing} missing`}</span>
               </div>
             </button>
 
@@ -351,7 +351,7 @@ export function DeckEditor({ deck }: Props) {
               className="px-3 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 transition-all flex items-center gap-1.5"
             >
               <span>📊</span>
-              <span className="hidden sm:inline">สถิติละเอียด</span>
+              <span className="hidden sm:inline">Stats</span>
             </button>
           </div>
         </div>
@@ -361,7 +361,7 @@ export function DeckEditor({ deck }: Props) {
           <div className="mt-3 p-3 rounded-2xl bg-rose-950/60 border border-rose-500/40 text-rose-200 text-xs space-y-1">
             <div className="font-black flex items-center gap-1.5 text-rose-300">
               <span>⚠️</span>
-              <span>แจ้งเตือนกติกาเด็ค:</span>
+              <span>Deck Legality Violations:</span>
             </div>
             <ul className="list-disc pl-5 space-y-0.5 text-[11px] opacity-90">
               {stats.ruleViolations.map((v, i) => (
@@ -376,26 +376,26 @@ export function DeckEditor({ deck }: Props) {
           <div className="mt-4 pt-4 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 animate-in fade-in duration-150 text-xs">
             <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
               <span className="text-slate-400 block text-[10px]">Characters:</span>
-              <span className="text-base font-black text-slate-100">{stats.characterCount} ใบ</span>
+              <span className="text-base font-black text-slate-100">{stats.characterCount}</span>
             </div>
             <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
               <span className="text-slate-400 block text-[10px]">Actions / Songs:</span>
               <span className="text-base font-black text-slate-100">
-                {stats.actionCount + stats.songCount} ใบ
+                {stats.actionCount + stats.songCount}
               </span>
             </div>
             <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
               <span className="text-slate-400 block text-[10px]">Items / Locations:</span>
               <span className="text-base font-black text-slate-100">
-                {stats.itemCount + stats.locationCount} ใบ
+                {stats.itemCount + stats.locationCount}
               </span>
             </div>
             <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
               <span className="text-slate-400 block text-[10px]">Uninkable Cards:</span>
-              <span className="text-base font-black text-rose-400">{stats.uninkableCount} ใบ</span>
+              <span className="text-base font-black text-rose-400">{stats.uninkableCount}</span>
             </div>
             <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
-              <span className="text-slate-400 block text-[10px]">Avg Cost (ค่าร่ายเฉลี่ย):</span>
+              <span className="text-slate-400 block text-[10px]">Average Cost:</span>
               <span className="text-base font-black text-[#dfc792]">{stats.averageCost}</span>
             </div>
             <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
@@ -408,7 +408,7 @@ export function DeckEditor({ deck }: Props) {
 
             {/* Cost Curve Chart */}
             <div className="col-span-2 sm:col-span-4 md:col-span-6 p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">
-              <span className="text-[11px] font-bold text-slate-300">Cost Curve (กราฟค่าร่าย):</span>
+              <span className="text-[11px] font-bold text-slate-300">Cost Curve:</span>
               <div className="grid grid-cols-8 gap-2 items-end h-24 pt-2">
                 {stats.costCurve.map((item) => {
                   const maxCount = Math.max(...stats.costCurve.map((c) => c.count), 10);
@@ -444,7 +444,7 @@ export function DeckEditor({ deck }: Props) {
               : 'text-slate-400'
           }`}
         >
-          <span>🃏 การ์ดในเด็ค</span>
+          <span>🃏 Cards in Deck</span>
           <span className="px-1.5 py-0.2 rounded-full bg-slate-950/40 text-[10px]">
             {stats.totalCards}
           </span>
@@ -459,7 +459,7 @@ export function DeckEditor({ deck }: Props) {
               : 'text-slate-400'
           }`}
         >
-          <span>🔍 ค้นหาการ์ดเพิ่ม</span>
+          <span>🔍 Search Cards</span>
           <span className="px-1.5 py-0.2 rounded-full bg-slate-950/40 text-[10px]">
             {filteredCatalog.length}
           </span>
@@ -479,7 +479,7 @@ export function DeckEditor({ deck }: Props) {
               <div className="flex items-center gap-2">
                 <span className="text-lg">🃏</span>
                 <h2 className="text-sm sm:text-base font-black text-[#dfc792]">
-                  รายการการ์ดในเด็ค ({stats.totalCards} ใบ)
+                  Cards in Deck ({stats.totalCards} cards)
                 </h2>
               </div>
 
@@ -487,13 +487,13 @@ export function DeckEditor({ deck }: Props) {
                 <button
                   type="button"
                   onClick={() => {
-                    if (confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างการ์ดทั้งหมดในเด็คนี้?')) {
+                    if (confirm('Are you sure you want to clear all cards from this deck?')) {
                       clearDeckCards(deck.id);
                     }
                   }}
                   className="text-[11px] text-rose-400 hover:text-rose-300 font-bold hover:underline"
                 >
-                  ล้างเด็ค
+                  Clear Deck
                 </button>
               )}
             </div>
@@ -502,9 +502,9 @@ export function DeckEditor({ deck }: Props) {
             {stats.totalCards === 0 ? (
               <div className="text-center py-12 text-slate-500 text-xs space-y-3">
                 <span className="text-4xl block">✨</span>
-                <p>เด็คนี้ยังไม่มีการ์ด</p>
+                <p>No cards in this deck yet</p>
                 <p className="text-[11px] text-slate-400">
-                  เลือกการ์ดจากแคตตาล็อกฝั่งขวา เพื่อกด <strong className="text-[#dfc792]">+1</strong> หรือ <strong className="text-[#dfc792]">+4</strong> เพิ่มลงในเด็คได้ทันที
+                  Select cards from the catalog on the right and click <strong className="text-[#dfc792]">+1</strong> or <strong className="text-[#dfc792]">+4</strong> to add them.
                 </p>
               </div>
             ) : (
@@ -520,7 +520,7 @@ export function DeckEditor({ deck }: Props) {
                           <span>{group.icon}</span>
                           <span>{group.title}</span>
                         </span>
-                        <span className="text-slate-400 font-normal">({groupCount} ใบ)</span>
+                        <span className="text-slate-400 font-normal">({groupCount})</span>
                       </div>
 
                       <div className="space-y-1.5">
@@ -570,7 +570,7 @@ export function DeckEditor({ deck }: Props) {
                                   type="button"
                                   onClick={() => removeCardFromDeck(deck.id, card.id)}
                                   className="w-7 h-7 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-black flex items-center justify-center active:scale-90 transition-transform"
-                                  title="ลดจำนวน"
+                                  title="Decrease count"
                                 >
                                   -
                                 </button>
@@ -586,7 +586,7 @@ export function DeckEditor({ deck }: Props) {
                                       ? 'bg-slate-850 text-slate-600 cursor-not-allowed'
                                       : 'bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40'
                                   }`}
-                                  title={count >= 4 ? 'ครบ 4 ใบแล้ว' : 'เพิ่ม 1 ใบ'}
+                                  title={count >= 4 ? 'Max 4 copies reached' : 'Add 1 copy'}
                                 >
                                   +
                                 </button>
@@ -619,7 +619,7 @@ export function DeckEditor({ deck }: Props) {
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="ค้นหาชื่อการ์ด, ตัวละคร, ข้อความสกิล..."
+                    placeholder="Search card name, character, skill..."
                     className="w-full px-3.5 py-2 pl-9 rounded-2xl bg-slate-900 border border-slate-700 focus:border-[#c8b07b] text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
                   />
                   <span className="absolute left-3 top-2.5 text-xs text-slate-500">🔍</span>
@@ -641,7 +641,7 @@ export function DeckEditor({ deck }: Props) {
                     onChange={(e) => setSelectedSet(e.target.value)}
                     className="w-full px-3 py-2 rounded-2xl bg-slate-900 border border-slate-700 focus:border-[#c8b07b] text-xs text-slate-200 focus:outline-none"
                   >
-                    <option value="ALL">📦 ทุกชุด (All Sets)</option>
+                    <option value="ALL">📦 All Sets</option>
                     {SETS_NEWEST_FIRST.map((s) => (
                       <option key={s.code} value={s.code}>
                         {s.name} ({s.code})
@@ -689,7 +689,7 @@ export function DeckEditor({ deck }: Props) {
                   onChange={(e) => setSelectedCost(e.target.value)}
                   className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 focus:border-[#c8b07b] text-slate-300 focus:outline-none"
                 >
-                  <option value="ALL">Cost: ทั้งหมด</option>
+                  <option value="ALL">Cost: All</option>
                   <option value="1">Cost 1</option>
                   <option value="2">Cost 2</option>
                   <option value="3">Cost 3</option>
@@ -705,10 +705,10 @@ export function DeckEditor({ deck }: Props) {
                   onChange={(e) => setSelectedType(e.target.value)}
                   className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 focus:border-[#c8b07b] text-slate-300 focus:outline-none"
                 >
-                  <option value="ALL">Type: ทั้งหมด</option>
+                  <option value="ALL">Type: All</option>
                   <option value="Character">Character</option>
                   <option value="Action">Action</option>
-                  <option value="Song">Song (เพลง)</option>
+                  <option value="Song">Song</option>
                   <option value="Item">Item</option>
                   <option value="Location">Location</option>
                 </select>
@@ -719,9 +719,9 @@ export function DeckEditor({ deck }: Props) {
                   onChange={(e) => setSelectedInkwell(e.target.value as any)}
                   className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 focus:border-[#c8b07b] text-slate-300 focus:outline-none"
                 >
-                  <option value="ALL">Inkwell: ทั้งหมด</option>
-                  <option value="inkable">Inkable (ใส่หมึกได้)</option>
-                  <option value="uninkable">Uninkable (ใส่หมึกไม่ได้)</option>
+                  <option value="ALL">Inkwell: All</option>
+                  <option value="inkable">Inkable</option>
+                  <option value="uninkable">Uninkable</option>
                 </select>
 
                 {/* Rarity */}
@@ -730,7 +730,7 @@ export function DeckEditor({ deck }: Props) {
                   onChange={(e) => setSelectedRarity(e.target.value)}
                   className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 focus:border-[#c8b07b] text-slate-300 focus:outline-none"
                 >
-                  <option value="ALL">Rarity: ทั้งหมด</option>
+                  <option value="ALL">Rarity: All</option>
                   {RARITIES.map((r) => (
                     <option key={r} value={r}>
                       {rarityLabel(r)}
@@ -743,7 +743,7 @@ export function DeckEditor({ deck }: Props) {
             {/* Results count & Clear filters */}
             <div className="flex items-center justify-between text-xs text-slate-400 px-1 border-t border-slate-800 pt-2">
               <span>
-                พบการ์ด <strong className="text-[#dfc792]">{filteredCatalog.length}</strong> ใบ
+                Found <strong className="text-[#dfc792]">{filteredCatalog.length}</strong> cards
               </span>
               {(search || selectedSet !== 'ALL' || selectedInk !== 'ALL' || selectedCost !== 'ALL' || selectedType !== 'ALL' || selectedInkwell !== 'ALL' || selectedRarity !== 'ALL') && (
                 <button
@@ -759,7 +759,7 @@ export function DeckEditor({ deck }: Props) {
                   }}
                   className="text-amber-400 hover:underline font-bold"
                 >
-                  ล้างตัวกรอง
+                  Clear Filters
                 </button>
               )}
             </div>
@@ -768,7 +768,7 @@ export function DeckEditor({ deck }: Props) {
             {filteredCatalog.length === 0 ? (
               <div className="text-center py-16 text-slate-500 text-xs space-y-2">
                 <span className="text-3xl block">🔍</span>
-                <span>ไม่พบการ์ดตามเงื่อนไขที่เลือก</span>
+                <span>No cards matching selected filters</span>
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -811,7 +811,7 @@ export function DeckEditor({ deck }: Props) {
                         {/* In deck badge */}
                         {currentInDeck > 0 && (
                           <div className="absolute bottom-1 right-1 px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black shadow-lg">
-                            ในเด็ค: {currentInDeck}
+                            In Deck: {currentInDeck}
                           </div>
                         )}
                       </div>
@@ -876,7 +876,7 @@ export function DeckEditor({ deck }: Props) {
                   onClick={() => setCatalogLimit((prev) => prev + ITEMS_PER_PAGE)}
                   className="px-6 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-black text-xs border border-slate-700 active:scale-95 transition-all shadow-md"
                 >
-                  โหลดการ์ดเพิ่มเติม ({filteredCatalog.length - catalogLimit} ใบที่เหลือ)
+                  Load More ({filteredCatalog.length - catalogLimit} remaining)
                 </button>
               </div>
             )}
@@ -890,7 +890,7 @@ export function DeckEditor({ deck }: Props) {
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="fixed bottom-20 right-6 z-40 p-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black shadow-2xl active:scale-90 transition-transform"
-          title="ขึ้นบนสุด"
+          title="Back to top"
         >
           ▲
         </button>

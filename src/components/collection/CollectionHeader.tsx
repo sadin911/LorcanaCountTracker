@@ -97,11 +97,11 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
               <button
                 type="button"
                 onClick={onSwitchToDeck}
-                title="เปิดระบบจัดเด็คการ์ด (Deck Builder)"
+                title="Open Deck Builder"
                 className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl bg-gradient-to-r from-[#1b2038] to-[#252c4d] hover:from-[#252c4d] hover:to-[#313962] border border-[#c8b07b]/40 hover:border-[#c8b07b] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm min-h-[40px] sm:min-h-[36px] font-bold group"
               >
                 <span className="text-base sm:text-sm group-hover:scale-110 transition-transform">🃏</span>
-                <span className="hidden sm:inline">จัดเด็ค</span>
+                <span className="hidden sm:inline">Decks</span>
               </button>
             )}
 

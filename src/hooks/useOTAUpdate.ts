@@ -34,7 +34,7 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       immediate: true,
       onNeedRefresh() {
         globalNeedRefresh = true;
-        globalStatusMessage = 'มีเวอร์ชันใหม่พร้อมใช้งาน!';
+        globalStatusMessage = 'New version available!';
         notify();
       },
       onOfflineReady() {
@@ -97,7 +97,7 @@ export function useOTAUpdate(): OTAUpdateState {
           await reg.update();
           if (reg.waiting) {
             globalNeedRefresh = true;
-            globalStatusMessage = 'ตรวจพบอัปเดตใหม่! พร้อมติดตั้งทันที';
+            globalStatusMessage = 'New update detected! Ready to install.';
             globalIsChecking = false;
             notify();
             return;
@@ -116,11 +116,11 @@ export function useOTAUpdate(): OTAUpdateState {
         const reg = await navigator.serviceWorker?.getRegistration();
         if (reg?.waiting) {
           globalNeedRefresh = true;
-          globalStatusMessage = 'ตรวจพบอัปเดตใหม่! พร้อมติดตั้งทันที';
+          globalStatusMessage = 'New update detected! Ready to install.';
         } else {
-          globalStatusMessage = '✓ แอปของคุณเป็นเวอร์ชันล่าสุดแล้ว';
+          globalStatusMessage = '✓ App is up to date';
           setTimeout(() => {
-            if (globalStatusMessage?.includes('ล่าสุด')) {
+            if (globalStatusMessage?.includes('up to date')) {
               globalStatusMessage = null;
               notify();
             }
@@ -129,7 +129,7 @@ export function useOTAUpdate(): OTAUpdateState {
       }
     } catch (err) {
       console.warn('Error checking OTA update:', err);
-      globalStatusMessage = 'ไม่สามารถตรวจสอบการอัปเดตได้ในขณะนี้';
+      globalStatusMessage = 'Unable to check for updates at this time';
       setTimeout(() => {
         globalStatusMessage = null;
         notify();

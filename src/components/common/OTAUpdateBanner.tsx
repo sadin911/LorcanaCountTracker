@@ -25,19 +25,19 @@ export function OTAUpdateBanner() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <h4 className="text-sm font-black bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
-                  มีอัปเดตเวอร์ชันใหม่พร้อมใช้งาน!
+                  New update available!
                 </h4>
                 <button
                   type="button"
                   onClick={dismissNotification}
                   className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors text-xs cursor-pointer"
-                  title="ปิดการแจ้งเตือน"
+                  title="Dismiss notification"
                 >
                   ✕
                 </button>
               </div>
               <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                อัปเดตชุดการ์ดและฟังก์ชันใหม่แบบ OTA ได้ทันทีโดยไม่ต้องเปิด-ปิดแอปใหม่ ข้อมูลสะสมทั้งหมดยังคงอยู่ครบถ้วน
+                Update card catalogue and features instantly via OTA without losing your saved collection data.
               </p>
 
               <div className="mt-3 flex items-center gap-2">
@@ -48,14 +48,14 @@ export function OTAUpdateBanner() {
                   className="flex-1 py-2 px-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-400 hover:to-amber-600 active:scale-95 text-slate-950 text-xs font-black shadow-lg shadow-amber-500/25 flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
                 >
                   <span className={isUpdating ? 'animate-spin' : ''}>⚡</span>
-                  <span>{isUpdating ? 'กำลังรีโหลดเวอร์ชันใหม่...' : 'อัปเดตทันที (OTA Reload)'}</span>
+                  <span>{isUpdating ? 'Reloading new version...' : 'Update Now (OTA Reload)'}</span>
                 </button>
                 <button
                   type="button"
                   onClick={dismissNotification}
                   className="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-colors cursor-pointer"
                 >
-                  ไว้ก่อน
+                  Later
                 </button>
               </div>
             </div>
@@ -65,7 +65,7 @@ export function OTAUpdateBanner() {
     );
   }
 
-  // Toast status message (e.g. "✓ แอปของคุณเป็นเวอร์ชันล่าสุดแล้ว")
+  // Toast status message (e.g. "✓ Your app is up to date")
   if (statusMessage) {
     return (
       <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-3 duration-200">

@@ -65,8 +65,8 @@ export function DeckCoverPickerModal({ deck, onSelectCover, onClose }: Props) {
           <div className="flex items-center gap-3">
             <span className="text-2xl">🖼️</span>
             <div>
-              <h3 className="text-lg sm:text-xl font-black text-[#dfc792]">เลือกรูปหน้าปกเด็ค</h3>
-              <p className="text-xs text-slate-400">เด็ค: {deck.name}</p>
+              <h3 className="text-lg sm:text-xl font-black text-[#dfc792]">Choose Deck Cover Card</h3>
+              <p className="text-xs text-slate-400">Deck: {deck.name}</p>
             </div>
           </div>
           <button
@@ -90,7 +90,7 @@ export function DeckCoverPickerModal({ deck, onSelectCover, onClose }: Props) {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              การ์ดในเด็ค ({deckCardsList.length})
+              Deck Cards ({deckCardsList.length})
             </button>
             <button
               type="button"
@@ -101,7 +101,7 @@ export function DeckCoverPickerModal({ deck, onSelectCover, onClose }: Props) {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              การ์ดทั้งหมดในแคตตาล็อก
+              All Catalog Cards
             </button>
           </div>
 
@@ -110,7 +110,7 @@ export function DeckCoverPickerModal({ deck, onSelectCover, onClose }: Props) {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="ค้นหาชื่อการ์ด..."
+              placeholder="Search card name..."
               className="w-full px-3 py-1.5 pl-8 rounded-xl bg-slate-900 border border-slate-700 focus:border-[#c8b07b] text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
             />
             <span className="absolute left-2.5 top-1.5 text-xs text-slate-500">🔍</span>
@@ -131,7 +131,7 @@ export function DeckCoverPickerModal({ deck, onSelectCover, onClose }: Props) {
           {displayList.length === 0 ? (
             <div className="text-center py-12 text-slate-500 text-sm space-y-2">
               <span className="text-3xl block">🔍</span>
-              <span>ไม่พบการ์ดที่ตรงกับคำค้นหา</span>
+              <span>No matching cards found</span>
             </div>
           ) : (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 sm:gap-4">
@@ -171,7 +171,7 @@ export function DeckCoverPickerModal({ deck, onSelectCover, onClose }: Props) {
                     {isCurrent && (
                       <div className="absolute inset-0 bg-amber-500/20 border-2 border-amber-400 rounded-2xl flex items-center justify-center pointer-events-none">
                         <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black shadow-lg">
-                          ปกปัจจุบัน
+                          Current Cover
                         </span>
                       </div>
                     )}

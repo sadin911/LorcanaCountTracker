@@ -42,12 +42,12 @@ export function OTAUpdateButton({ variant = 'toolbar', className = '' }: Props) 
           </span>
           <span>
             {isUpdating
-              ? 'กำลังอัปเดตแอป...'
+              ? 'Updating app...'
               : isChecking
-              ? 'กำลังตรวจหาเวอร์ชันใหม่...'
+              ? 'Checking for updates...'
               : needRefresh
-              ? 'มีเวอร์ชันใหม่! แตะเพื่ออัปเดต'
-              : 'ตรวจหาอัปเดต (OTA Update)'}
+              ? 'Update available! Tap to reload'
+              : 'Check for Updates (OTA)'}
           </span>
         </div>
         {needRefresh ? (
@@ -69,7 +69,7 @@ export function OTAUpdateButton({ variant = 'toolbar', className = '' }: Props) 
         type="button"
         onClick={handleClick}
         disabled={isChecking || isUpdating}
-        title={needRefresh ? 'มีเวอร์ชันใหม่! แตะเพื่ออัปเดต' : 'ตรวจหาอัปเดต OTA'}
+        title={needRefresh ? 'New update available! Tap to reload' : 'Check for updates'}
         className={`px-2.5 py-1 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer ${
           needRefresh
             ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 animate-bounce ring-2 ring-amber-300'
@@ -80,7 +80,7 @@ export function OTAUpdateButton({ variant = 'toolbar', className = '' }: Props) 
           {needRefresh ? '🚀' : '⚡'}
         </span>
         <span className="hidden sm:inline">
-          {isUpdating ? 'กำลังอัปเดต...' : isChecking ? 'เช็คเวอร์ชัน...' : needRefresh ? 'อัปเดต OTA' : 'เช็คอัปเดต'}
+          {isUpdating ? 'Updating...' : isChecking ? 'Checking...' : needRefresh ? 'Update OTA' : 'Check Update'}
         </span>
       </button>
     );
@@ -97,19 +97,19 @@ export function OTAUpdateButton({ variant = 'toolbar', className = '' }: Props) 
           ? 'bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-slate-950 animate-pulse ring-2 ring-amber-400 shadow-lg shadow-amber-500/20'
           : 'bg-slate-800/90 hover:bg-slate-800 border border-amber-500/30 hover:border-amber-500/60 text-amber-300 hover:text-amber-200'
       } ${className}`}
-      title="ตรวจหาเวอร์ชันใหม่และอัปเดต Over-The-Air ทันทีโดยไม่ต้องเปิด-ปิดแอปใหม่"
+      title="Check for new versions and update Over-The-Air without restarting"
     >
       <span className={isChecking || isUpdating ? 'animate-spin' : ''}>
         {needRefresh ? '🚀' : '⚡'}
       </span>
       <span>
         {isUpdating
-          ? 'กำลังอัปเดต...'
+          ? 'Updating...'
           : isChecking
-          ? 'กำลังเช็ค...'
+          ? 'Checking...'
           : needRefresh
-          ? 'อัปเดต OTA ทันที!'
-          : 'เช็คอัปเดต OTA'}
+          ? 'Update OTA Now!'
+          : 'Check for Updates'}
       </span>
     </button>
   );

@@ -93,12 +93,12 @@ export function BoosterPackPreviewModal({
         {totalCards !== undefined && (
           <div className="w-full text-center px-4 py-3 rounded-2xl bg-[#1b2038]/95 border border-[#c8b07b]/40 shadow-2xl backdrop-blur-sm space-y-2">
             <p className="text-xs sm:text-sm text-slate-300">
-              สะสมแล้ว <span className="text-[#dfc792] font-extrabold">{uniqueOwned}</span> จากทั้งหมด{' '}
-              <span className="text-slate-100 font-extrabold">{totalCards}</span> แบบ
+              Collected <span className="text-[#dfc792] font-extrabold">{uniqueOwned}</span> of{' '}
+              <span className="text-slate-100 font-extrabold">{totalCards}</span> distinct cards
               {totalCount !== undefined && (
                 <>
                   {' '}
-                  (รวม <span className="text-[#dfc792] font-bold">{totalCount}</span> ใบ)
+                  (<span className="text-[#dfc792] font-bold">{totalCount}</span> total copies)
                 </>
               )}
             </p>
@@ -113,7 +113,7 @@ export function BoosterPackPreviewModal({
                 <span className="text-xs font-black text-[#dfc792]">{percentage}%</span>
               </div>
             )}
-            <p className="text-[10px] text-slate-400">คลิกรูปซองเพื่อซูมเข้า/ออก • กด ESC เพื่อปิด</p>
+            <p className="text-[10px] text-slate-400">Click pack to zoom in/out • Press ESC to close</p>
           </div>
         )}
       </div>
