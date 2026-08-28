@@ -188,4 +188,8 @@
 [2026-08-28 12:13] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.5.0
 [2026-08-28 12:14] Major | Antigravity | Release | v0.5.0 - Recent Sales Tracking, Last Sold Stats & 1-Click Market Links
 [2026-08-28 12:56] Major | Antigravity | Write | CLAUDE.md - full agent operating guide & workflows for Claude
+[2026-08-28 16:34] Major | Antigravity | Edit | collectionStore.ts, deckStore.ts - added cloudLoadedUid safety write guards
+[2026-08-28 16:34] Major | Antigravity | Write | collectionStore.cloudGuard.test.ts, deckStore.cloudGuard.test.ts - Vitest tests
+[2026-08-28 16:35] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.5.1
+[2026-08-28 16:36] Major | Antigravity | Release | v0.5.1 - Cloud-Write Safety Guard (cloudLoadedUid) & Vitest Regression Suite
 

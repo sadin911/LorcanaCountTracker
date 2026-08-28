@@ -29,6 +29,7 @@ Whenever merging to `main`, taking changes live, or deploying a release:
 2. **Run Quality Gate Verification**:
    - Lint & Types: `npm run lint`
    - Production Build: `npm run build`
+   - Store Regression Unit Tests: `npm test`
    - Playwright E2E Tests: `npx playwright test`
    - **Must achieve 100% pass (0 errors / 0 warnings)** before tagging.
 3. **Git Tagging & Remote Push**:
@@ -53,6 +54,7 @@ Maintain [`AI_LOG.md`](file:///Users/sadin/Project/LorcanaCountTracker/AI_LOG.md
 ---
 
 ### 3. Cloud Sync & Firestore Guardrails
+- **Cloud-Write Safety Guard (`cloudLoadedUid`)**: `syncProfileToCloud`, `syncDeckToCloud`, and `forceSyncCloud` MUST verify `cloudLoadedUid === user.uid` before writing. Never write in-memory state before cloud data has completed reading into memory on initial boot.
 - **No Double-Underscore Document IDs**: Never use Firestore IDs like `__*__` (e.g. use `lorcana_decks_vault` instead of `__lorcana_decks__`).
 - **Sanitize Undefined Values**: Firestore throws runtime errors on `undefined` fields. Always run `JSON.parse(JSON.stringify(payload))` or strip undefined keys before calling `setDoc` or `updateDoc`.
 - **Dual Fallback Persistence**: Maintain fallback in user binder document (`/binders/lorcana_user_prices` or `/binders/lorcana_decks_vault`) if subcollections have permission restrictions.
@@ -89,6 +91,9 @@ npm run dev
 
 # Run Oxlint linter
 npm run lint
+
+# Run Vitest store regression unit tests
+npm test
 
 # Compile TypeScript and build production bundle
 npm run build

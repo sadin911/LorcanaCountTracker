@@ -28,9 +28,11 @@ interface DeckState {
   clearDeckCards: (deckId: string) => void;
 
   // Cloud Sync
+  cloudLoadedUid: string | null;
   loadUserDecksFromCloud: (uid: string) => Promise<boolean>;
   syncDeckToCloud: (deckId: string) => Promise<void>;
   uploadLocalDecksToCloud: (uid: string) => Promise<void>;
+  forceSyncCloud: (uid: string) => Promise<boolean>;
   resetToGuestDecks: () => void;
 
   // Export / Import
@@ -127,6 +129,7 @@ const initial = loadInitialGuestDecks();
 export const useDeckStore = create<DeckState>((set, get) => ({
   decks: initial.decks,
   activeDeckId: initial.activeDeckId,
+  cloudLoadedUid: null,
   syncStatus: 'idle',
   lastSyncedAt: null,
 
@@ -386,6 +389,11 @@ export const useDeckStore = create<DeckState>((set, get) => ({
     const user = auth?.currentUser;
     if (!user || !db) return;
 
+    if (get().cloudLoadedUid !== user.uid) {
+      console.warn('[decks] skipped a cloud write: decks for this account have not been loaded yet');
+      return;
+    }
+
     const deck = get().decks[deckId];
     if (!deck) return;
 
@@ -483,6 +491,7 @@ export const useDeckStore = create<DeckState>((set, get) => ({
           activeDeckId: activeId,
           syncStatus: 'synced',
           lastSyncedAt: Date.now(),
+          cloudLoadedUid: uid,
         });
 
         localStorage.setItem(
@@ -495,6 +504,7 @@ export const useDeckStore = create<DeckState>((set, get) => ({
       // 4. If cloud has no decks yet, upload local
       const current = get().decks;
       if (Object.keys(current).length > 0) {
+        set({ cloudLoadedUid: uid });
         await get().uploadLocalDecksToCloud(uid);
       } else {
         const defaultDeck = createDefaultDeck();
@@ -503,6 +513,7 @@ export const useDeckStore = create<DeckState>((set, get) => ({
           activeDeckId: defaultDeck.id,
           syncStatus: 'synced',
           lastSyncedAt: Date.now(),
+          cloudLoadedUid: uid,
         });
         await get().syncDeckToCloud(defaultDeck.id);
       }
@@ -558,6 +569,16 @@ export const useDeckStore = create<DeckState>((set, get) => ({
     }
   },
 
+  forceSyncCloud: async (uid: string) => {
+    if (get().cloudLoadedUid !== uid) {
+      console.warn('[decks] force sync skipped: decks have not been loaded yet');
+      return false;
+    }
+    if (!db) return false;
+    await get().uploadLocalDecksToCloud(uid);
+    return true;
+  },
+
   resetToGuestDecks: () => {
     deckSaveTimers.forEach((timer) => clearTimeout(timer));
     deckSaveTimers.clear();
@@ -567,6 +588,7 @@ export const useDeckStore = create<DeckState>((set, get) => ({
       activeDeckId: guest.activeDeckId,
       syncStatus: 'idle',
       lastSyncedAt: null,
+      cloudLoadedUid: null,
     });
   },
 

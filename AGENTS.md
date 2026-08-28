@@ -14,6 +14,7 @@ Whenever taking changes live, merging to `main`, or triggering a production depl
 2. **Quality Gate Verification Before Tagging**:
    - Run linter and typecheck: `npm run lint`
    - Run production build: `npm run build`
+   - Run Vitest store regression tests: `npm test`
    - Run E2E tests: `npx playwright test`
    - Ensure all tests pass with 0 errors before tagging.
 3. **Git Tagging & Push**:

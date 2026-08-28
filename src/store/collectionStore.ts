@@ -82,6 +82,7 @@ function loadGuestState(): { profiles: Record<string, CollectionProfile>; active
 interface CollectionState {
   profiles: Record<string, CollectionProfile>;
   activeProfileId: string;
+  cloudLoadedUid: string | null;
   syncStatus: SyncStatus;
   lastSyncedAt: number | null;
 
@@ -104,6 +105,7 @@ interface CollectionState {
   loadUserFromCloud: (uid: string) => Promise<boolean>;
   syncProfileToCloud: (profileId: string) => Promise<void>;
   uploadLocalProfilesToCloud: (uid: string) => Promise<void>;
+  forceSyncCloud: (uid: string) => Promise<boolean>;
   resetToGuest: () => void;
 
   exportCollectionJSON: () => string;
@@ -178,6 +180,7 @@ const initialGuest = loadGuestState();
 export const useCollectionStore = create<CollectionState>((set, get) => ({
   profiles: initialGuest.profiles,
   activeProfileId: initialGuest.activeProfileId,
+  cloudLoadedUid: null,
   syncStatus: 'idle',
   lastSyncedAt: null,
 
@@ -356,31 +359,45 @@ export const useCollectionStore = create<CollectionState>((set, get) => ({
           if (data?.id) cloudProfiles[data.id] = { ...data, cards: data.cards ?? {} };
         });
 
-        // Keep the binder the user was last looking at, rather than whichever
-        // document Firestore happened to return first.
-        const activeProfileId =
-          cachedActiveId && cloudProfiles[cachedActiveId] ? cachedActiveId : Object.keys(cloudProfiles)[0];
+        if (Object.keys(cloudProfiles).length > 0) {
+          // Keep the binder the user was last looking at, rather than whichever
+          // document Firestore happened to return first.
+          const activeProfileId =
+            cachedActiveId && cloudProfiles[cachedActiveId] ? cachedActiveId : Object.keys(cloudProfiles)[0];
 
-        set({ profiles: cloudProfiles, activeProfileId, syncStatus: 'synced', lastSyncedAt: Date.now() });
-        try {
-          localStorage.setItem(
-            `${USER_CACHE_KEY_PREFIX}${uid}`,
-            JSON.stringify({ profiles: cloudProfiles, activeProfileId })
-          );
-        } catch {}
-        return true;
+          set({
+            profiles: cloudProfiles,
+            activeProfileId,
+            syncStatus: 'synced',
+            lastSyncedAt: Date.now(),
+            cloudLoadedUid: uid,
+          });
+          try {
+            localStorage.setItem(
+              `${USER_CACHE_KEY_PREFIX}${uid}`,
+              JSON.stringify({ profiles: cloudProfiles, activeProfileId })
+            );
+          } catch {}
+          return true;
+        }
       }
 
       // Cloud is empty: migrate whatever the user built as a guest, else seed.
       const hasCards = Object.values(get().profiles).some((p) => Object.keys(p.cards || {}).length > 0);
       if (hasCards) {
+        set({ cloudLoadedUid: uid });
         await get().uploadLocalProfilesToCloud(uid);
       } else {
         const fresh = createDefaultProfile();
-        set({ profiles: { [fresh.id]: fresh }, activeProfileId: fresh.id });
+        set({
+          profiles: { [fresh.id]: fresh },
+          activeProfileId: fresh.id,
+          syncStatus: 'synced',
+          lastSyncedAt: Date.now(),
+          cloudLoadedUid: uid,
+        });
         await setDoc(doc(db, 'users', uid, 'binders', fresh.id), fresh);
       }
-      set({ syncStatus: 'synced', lastSyncedAt: Date.now() });
       return true;
     } catch (err) {
       console.error('Cloud load failed:', err);
@@ -391,8 +408,20 @@ export const useCollectionStore = create<CollectionState>((set, get) => ({
 
   syncProfileToCloud: async (profileId) => {
     const user = auth?.currentUser;
+    if (!user || !db) return;
+
+    // The gate. Between Firebase restoring the session and loadUserFromCloud
+    // returning, the user looks signed in while the store still holds the empty
+    // guest binder. A write here would replace their real binder with it.
+    if (get().cloudLoadedUid !== user.uid) {
+      console.warn(
+        '[collection] skipped a cloud write: binders for this account have not been loaded yet'
+      );
+      return;
+    }
+
     const profile = get().profiles[profileId];
-    if (!user || !db || !profile) return;
+    if (!profile) return;
 
     set({ syncStatus: 'syncing' });
     try {
@@ -421,11 +450,42 @@ export const useCollectionStore = create<CollectionState>((set, get) => ({
     }
   },
 
+  forceSyncCloud: async (uid) => {
+    if (get().cloudLoadedUid !== uid) {
+      console.warn('[collection] force sync skipped: binders have not been loaded yet');
+      return false;
+    }
+    if (!db) return false;
+    set({ syncStatus: 'syncing' });
+    try {
+      await Promise.all(
+        Object.values(get().profiles).map((p) => setDoc(doc(db!, 'users', uid, 'binders', p.id), p))
+      );
+      set({ syncStatus: 'synced', lastSyncedAt: Date.now() });
+      try {
+        localStorage.setItem(
+          `${USER_CACHE_KEY_PREFIX}${uid}`,
+          JSON.stringify({ profiles: get().profiles, activeProfileId: get().activeProfileId })
+        );
+      } catch {}
+      return true;
+    } catch (err) {
+      console.error('Failed to force sync binders to cloud:', err);
+      set({ syncStatus: 'error' });
+      return false;
+    }
+  },
+
   resetToGuest: () => {
     for (const t of saveTimers.values()) clearTimeout(t);
     saveTimers.clear();
     const guest = loadGuestState();
-    set({ ...guest, syncStatus: 'idle', lastSyncedAt: null });
+    set({
+      ...guest,
+      syncStatus: 'idle',
+      lastSyncedAt: null,
+      cloudLoadedUid: null,
+    });
   },
 
   exportCollectionJSON: () => {
