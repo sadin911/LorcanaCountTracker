@@ -75,6 +75,20 @@ function loadInitialGuestDecks(): { decks: Record<string, Deck>; activeDeckId: s
   };
 }
 
+function sanitizeDeckForFirestore(deck: Deck): Record<string, any> {
+  const clean: Record<string, any> = {
+    id: String(deck.id),
+    name: String(deck.name || 'Untitled Deck'),
+    description: String(deck.description || ''),
+    cards: deck.cards || {},
+    createdAt: typeof deck.createdAt === 'number' ? deck.createdAt : Date.now(),
+    updatedAt: typeof deck.updatedAt === 'number' ? deck.updatedAt : Date.now(),
+  };
+  if (deck.coverCardId) clean.coverCardId = deck.coverCardId;
+  if (deck.coverImageUrl) clean.coverImageUrl = deck.coverImageUrl;
+  return clean;
+}
+
 const deckSaveTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
 function triggerDeckSave(get: () => DeckState, deckId: string) {
@@ -376,20 +390,38 @@ export const useDeckStore = create<DeckState>((set, get) => ({
     if (!deck) return;
 
     set({ syncStatus: 'syncing' });
+    const cleanDeck = sanitizeDeckForFirestore(deck);
     try {
       const docRef = doc(db, 'users', user.uid, 'decks', deckId);
-      await setDoc(docRef, deck, { merge: true });
+      await setDoc(docRef, cleanDeck, { merge: true });
       set({ syncStatus: 'synced', lastSyncedAt: Date.now() });
     } catch (err) {
-      console.error('Failed to sync deck to Firestore:', err);
-      set({ syncStatus: 'error' });
+      console.warn('Direct deck sync failed, attempting fallback binder sync:', err);
+      try {
+        const fallbackRef = doc(db, 'users', user.uid, 'binders', '__lorcana_decks__');
+        const allClean: Record<string, any> = {};
+        for (const [id, d] of Object.entries(get().decks)) {
+          allClean[id] = sanitizeDeckForFirestore(d);
+        }
+        await setDoc(fallbackRef, {
+          id: '__lorcana_decks__',
+          name: '__lorcana_decks__',
+          isDeckStorage: true,
+          decks: allClean,
+          updatedAt: Date.now(),
+        });
+        set({ syncStatus: 'synced', lastSyncedAt: Date.now() });
+      } catch (fallbackErr) {
+        console.error('Failed to sync deck to Firestore fallback:', fallbackErr);
+        set({ syncStatus: 'error' });
+      }
     }
   },
 
   loadUserDecksFromCloud: async (uid: string) => {
     set({ syncStatus: 'syncing' });
     try {
-      // 1. Cached
+      // 1. Cached from localStorage
       const cached = localStorage.getItem(`${USER_DECKS_CACHE_PREFIX}${uid}`);
       if (cached) {
         try {
@@ -408,50 +440,71 @@ export const useDeckStore = create<DeckState>((set, get) => ({
         return true;
       }
 
-      // 2. Firestore fetch
-      const decksCol = collection(db, 'users', uid, 'decks');
-      const snap = await getDocs(decksCol);
+      let cloudDecks: Record<string, Deck> = {};
 
-      if (!snap.empty) {
-        const cloudDecks: Record<string, Deck> = {};
-        snap.forEach((d) => {
-          const data = d.data() as Deck;
-          if (data && data.id) {
-            cloudDecks[data.id] = data;
-          }
-        });
-
-        if (Object.keys(cloudDecks).length > 0) {
-          const activeId = Object.keys(cloudDecks)[0];
-          set({
-            decks: cloudDecks,
-            activeDeckId: activeId,
-            syncStatus: 'synced',
-            lastSyncedAt: Date.now(),
+      // 2. Try Firestore 'decks' collection first
+      try {
+        const decksCol = collection(db, 'users', uid, 'decks');
+        const snap = await getDocs(decksCol);
+        if (!snap.empty) {
+          snap.forEach((d) => {
+            const data = d.data() as Deck;
+            if (data && data.id) {
+              cloudDecks[data.id] = data;
+            }
           });
+        }
+      } catch (e) {
+        console.warn('Decks collection read failed, checking fallback binder:', e);
+      }
 
-          localStorage.setItem(
-            `${USER_DECKS_CACHE_PREFIX}${uid}`,
-            JSON.stringify({ decks: cloudDecks, activeDeckId: activeId })
-          );
-          return true;
+      // 3. If empty, check fallback document in 'binders' collection
+      if (Object.keys(cloudDecks).length === 0) {
+        try {
+          const fallbackDoc = await getDocs(collection(db, 'users', uid, 'binders'));
+          fallbackDoc.forEach((d) => {
+            if (d.id === '__lorcana_decks__') {
+              const data = d.data();
+              if (data?.decks && typeof data.decks === 'object') {
+                cloudDecks = data.decks as Record<string, Deck>;
+              }
+            }
+          });
+        } catch (e) {
+          console.warn('Fallback binder read error:', e);
         }
       }
 
-      // If cloud has no decks yet, upload local
+      if (Object.keys(cloudDecks).length > 0) {
+        const cachedActiveId = get().activeDeckId;
+        const activeId = cachedActiveId && cloudDecks[cachedActiveId] ? cachedActiveId : Object.keys(cloudDecks)[0];
+        set({
+          decks: cloudDecks,
+          activeDeckId: activeId,
+          syncStatus: 'synced',
+          lastSyncedAt: Date.now(),
+        });
+
+        localStorage.setItem(
+          `${USER_DECKS_CACHE_PREFIX}${uid}`,
+          JSON.stringify({ decks: cloudDecks, activeDeckId: activeId })
+        );
+        return true;
+      }
+
+      // 4. If cloud has no decks yet, upload local
       const current = get().decks;
       if (Object.keys(current).length > 0) {
         await get().uploadLocalDecksToCloud(uid);
       } else {
         const defaultDeck = createDefaultDeck();
-        const docRef = doc(db, 'users', uid, 'decks', defaultDeck.id);
-        await setDoc(docRef, defaultDeck);
         set({
           decks: { [defaultDeck.id]: defaultDeck },
           activeDeckId: defaultDeck.id,
           syncStatus: 'synced',
           lastSyncedAt: Date.now(),
         });
+        await get().syncDeckToCloud(defaultDeck.id);
       }
 
       return true;
@@ -465,11 +518,11 @@ export const useDeckStore = create<DeckState>((set, get) => ({
   uploadLocalDecksToCloud: async (uid: string) => {
     if (!db) return;
     set({ syncStatus: 'syncing' });
+    const { decks } = get();
     try {
-      const { decks } = get();
       for (const [id, d] of Object.entries(decks)) {
         const docRef = doc(db, 'users', uid, 'decks', id);
-        await setDoc(docRef, d, { merge: true });
+        await setDoc(docRef, sanitizeDeckForFirestore(d), { merge: true });
       }
       set({ syncStatus: 'synced', lastSyncedAt: Date.now() });
 
@@ -478,8 +531,30 @@ export const useDeckStore = create<DeckState>((set, get) => ({
         JSON.stringify({ decks, activeDeckId: get().activeDeckId })
       );
     } catch (err) {
-      console.error('Failed to upload local decks to cloud:', err);
-      set({ syncStatus: 'error' });
+      console.warn('Direct upload failed, attempting fallback:', err);
+      try {
+        const fallbackRef = doc(db, 'users', uid, 'binders', '__lorcana_decks__');
+        const allClean: Record<string, any> = {};
+        for (const [id, d] of Object.entries(decks)) {
+          allClean[id] = sanitizeDeckForFirestore(d);
+        }
+        await setDoc(fallbackRef, {
+          id: '__lorcana_decks__',
+          name: '__lorcana_decks__',
+          isDeckStorage: true,
+          decks: allClean,
+          updatedAt: Date.now(),
+        });
+        set({ syncStatus: 'synced', lastSyncedAt: Date.now() });
+
+        localStorage.setItem(
+          `${USER_DECKS_CACHE_PREFIX}${uid}`,
+          JSON.stringify({ decks, activeDeckId: get().activeDeckId })
+        );
+      } catch (fallbackErr) {
+        console.error('Failed to upload local decks to cloud:', fallbackErr);
+        set({ syncStatus: 'error' });
+      }
     }
   },
 

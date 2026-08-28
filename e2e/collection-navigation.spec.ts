@@ -12,7 +12,7 @@ test.describe('Collection Navigation & Core App State', () => {
     await expect(page.locator('header')).toBeVisible();
 
     // Verify statistics cards are rendered
-    const statElements = page.locator('header span, header p');
+    const statElements = page.locator('header span:visible, header p:visible');
     await expect(statElements.first()).toBeVisible();
 
     // Verify card grid is populated with cards
@@ -24,7 +24,7 @@ test.describe('Collection Navigation & Core App State', () => {
 
   test('displays profile switcher and switches profile tabs smoothly', async ({ page }) => {
     // Open profile menu if exists or check profile trigger
-    const profileTrigger = page.locator('header button[title*="Binder"], header button:has-text("Binder")').first();
+    const profileTrigger = page.locator('header button[title*="Binder"]:visible, header button:has-text("Binder"):visible').first();
     await expect(profileTrigger).toBeVisible();
   });
 });

@@ -152,3 +152,6 @@
 [2026-08-28 11:01] Major | Antigravity | Edit | src/constants/version.ts, CollectionHeader.tsx, DeckHeader.tsx - display app version in sync badges
 [2026-08-28 11:01] Major | Antigravity | Edit | firestore.rules - added security rule for /users/{uid}/decks/{deckId}
 [2026-08-28 11:01] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
+[2026-08-28 11:08] Major | Antigravity | Edit | CollectionHeader.tsx, DeckHeader.tsx - 2-row clean mobile header layout
+[2026-08-28 11:08] Major | Antigravity | Fix | src/store/deckStore.ts - sanitize undefined fields & added fallback sync to binders doc
+[2026-08-28 11:08] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed

@@ -77,7 +77,7 @@ test.describe('Mobile Viewport & Touch Gestures', () => {
     await page.waitForSelector('header');
 
     // Verify profile picker is clickable and opens modal
-    const profileBtn = page.locator('header button[title*="Binder"], header button:has-text("Binder")').first();
+    const profileBtn = page.locator('header button[title*="Binder"]:visible, header button:has-text("Binder"):visible').first();
     await expect(profileBtn).toBeVisible();
     await profileBtn.click();
 
