@@ -147,3 +147,4 @@
 [2026-08-28 10:19] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 20/20 passed
 [2026-08-28 10:33] Major | Antigravity | Edit | src/components/deck/DeckEditor.tsx - added List/Grid view toggle & visual card grid mode for Cards in Deck
 [2026-08-28 10:33] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 20/20 passed
+[2026-08-28 10:38] Major | Antigravity | Branch | created feature/card-pricing for card pricing metadata design
