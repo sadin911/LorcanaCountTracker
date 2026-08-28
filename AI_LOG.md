@@ -155,3 +155,5 @@
 [2026-08-28 11:08] Major | Antigravity | Edit | CollectionHeader.tsx, DeckHeader.tsx - 2-row clean mobile header layout
 [2026-08-28 11:08] Major | Antigravity | Fix | src/store/deckStore.ts - sanitize undefined fields & added fallback sync to binders doc
 [2026-08-28 11:08] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed
+[2026-08-28 11:12] Major | Antigravity | Fix | deckStore.ts - fix reserved firestore doc id (__lorcana_decks__ -> lorcana_decks_vault)
+[2026-08-28 11:12] Major | Antigravity | Command | npm run lint && npm run build && npx playwright test - 22/22 passed

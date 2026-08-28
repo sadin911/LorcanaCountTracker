@@ -351,7 +351,7 @@ export const useCollectionStore = create<CollectionState>((set, get) => ({
       if (!snap.empty) {
         const cloudProfiles: Record<string, CollectionProfile> = {};
         snap.forEach((d) => {
-          if (d.id === '__lorcana_decks__') return;
+          if (d.id === 'lorcana_decks_vault' || d.id === '__lorcana_decks__') return;
           const data = d.data() as CollectionProfile;
           if (data?.id) cloudProfiles[data.id] = { ...data, cards: data.cards ?? {} };
         });

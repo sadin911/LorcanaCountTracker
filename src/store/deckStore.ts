@@ -398,14 +398,14 @@ export const useDeckStore = create<DeckState>((set, get) => ({
     } catch (err) {
       console.warn('Direct deck sync failed, attempting fallback binder sync:', err);
       try {
-        const fallbackRef = doc(db, 'users', user.uid, 'binders', '__lorcana_decks__');
+        const fallbackRef = doc(db, 'users', user.uid, 'binders', 'lorcana_decks_vault');
         const allClean: Record<string, any> = {};
         for (const [id, d] of Object.entries(get().decks)) {
           allClean[id] = sanitizeDeckForFirestore(d);
         }
         await setDoc(fallbackRef, {
-          id: '__lorcana_decks__',
-          name: '__lorcana_decks__',
+          id: 'lorcana_decks_vault',
+          name: 'lorcana_decks_vault',
           isDeckStorage: true,
           decks: allClean,
           updatedAt: Date.now(),
@@ -463,7 +463,7 @@ export const useDeckStore = create<DeckState>((set, get) => ({
         try {
           const fallbackDoc = await getDocs(collection(db, 'users', uid, 'binders'));
           fallbackDoc.forEach((d) => {
-            if (d.id === '__lorcana_decks__') {
+            if (d.id === 'lorcana_decks_vault') {
               const data = d.data();
               if (data?.decks && typeof data.decks === 'object') {
                 cloudDecks = data.decks as Record<string, Deck>;
@@ -533,14 +533,14 @@ export const useDeckStore = create<DeckState>((set, get) => ({
     } catch (err) {
       console.warn('Direct upload failed, attempting fallback:', err);
       try {
-        const fallbackRef = doc(db, 'users', uid, 'binders', '__lorcana_decks__');
+        const fallbackRef = doc(db, 'users', uid, 'binders', 'lorcana_decks_vault');
         const allClean: Record<string, any> = {};
         for (const [id, d] of Object.entries(decks)) {
           allClean[id] = sanitizeDeckForFirestore(d);
         }
         await setDoc(fallbackRef, {
-          id: '__lorcana_decks__',
-          name: '__lorcana_decks__',
+          id: 'lorcana_decks_vault',
+          name: 'lorcana_decks_vault',
           isDeckStorage: true,
           decks: allClean,
           updatedAt: Date.now(),
