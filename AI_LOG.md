@@ -196,5 +196,13 @@
 [2026-08-31 00:33] Major | Antigravity | Write | src/utils/searchHelpers.test.ts - Vitest tests for set and number search
 [2026-08-31 00:33] Major | Antigravity | Edit | e2e/search-and-filters.spec.ts - Playwright E2E test for 1-13 search
 [2026-08-31 00:33] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.5.2
-[2026-08-31 00:33] Major | Antigravity | Release | v0.5.2 - Card Number & Set Code Search with Filter Awareness
+[2026-08-31 00:47] Major | Antigravity | Write | src/utils/collectionTextParser.ts - set & number card list parser
+[2026-08-31 00:47] Major | Antigravity | Write | src/utils/collectionTextParser.test.ts - parser Vitest unit tests
+[2026-08-31 00:47] Major | Antigravity | Edit | src/store/collectionStore.ts - added importCollectionText method
+[2026-08-31 00:47] Major | Antigravity | Write | src/store/collectionStore.importText.test.ts - store Vitest tests
+[2026-08-31 00:47] Major | Antigravity | Write | CollectionTextImportModal.tsx - gold-themed text import UI modal
+[2026-08-31 00:47] Major | Antigravity | Edit | CollectionHeader.tsx, CollectionBackupModal.tsx - import UI integrations
+[2026-08-31 00:47] Major | Antigravity | Edit | e2e/card-management.spec.ts - Playwright E2E test for text import
+[2026-08-31 00:47] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.6.0
+[2026-08-31 00:47] Major | Antigravity | Release | v0.6.0 - Bulk Collection Text Import (Set & Number List)
 

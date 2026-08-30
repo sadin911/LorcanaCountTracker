@@ -27,4 +27,32 @@ test.describe('Card Management & Modal Counter Actions', () => {
     await page.keyboard.press('Escape');
     await expect(modal).not.toBeVisible();
   });
+
+  test('opens Collection Text Import modal and imports cards via text', async ({ page }) => {
+    // Click visible Import button in header
+    const importBtn = page.locator('button:has-text("Import")').filter({ visible: true }).first();
+    await expect(importBtn).toBeVisible();
+    await importBtn.click();
+
+    // Verify modal appears
+    const modal = page.locator('.fixed.inset-0').filter({ hasText: /Import Cards from Text/i }).first();
+    await expect(modal).toBeVisible();
+
+    // Fill in text
+    const textarea = modal.locator('textarea');
+    await textarea.fill('Set13\n1,3\n20,5\n21');
+    await page.waitForTimeout(300);
+
+    // Verify live preview displays parsed counts
+    await expect(modal).toContainText('9 copies');
+    await expect(modal).toContainText('3 distinct');
+
+    // Click Import button
+    const submitBtn = modal.locator('button:has-text("Import 9 Cards")');
+    await expect(submitBtn).toBeVisible();
+    await submitBtn.click();
+
+    // Verify success feedback
+    await page.waitForTimeout(500);
+  });
 });

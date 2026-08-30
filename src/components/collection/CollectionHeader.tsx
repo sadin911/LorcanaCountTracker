@@ -6,6 +6,7 @@ import type { CollectionStats } from '../../types/collection';
 import { isFirebaseConfigured } from '../../utils/firebase';
 import { APP_VERSION } from '../../constants/version';
 import { CollectionBackupModal } from './CollectionBackupModal';
+import { CollectionTextImportModal } from './CollectionTextImportModal';
 import { ProfileManagerModal } from './ProfileManagerModal';
 import { PWAInstallModal } from '../common/PWAInstallModal';
 import { OTAUpdateButton } from '../common/OTAUpdateButton';
@@ -33,6 +34,7 @@ interface CollectionHeaderProps {
 export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProps) {
   const [showProfiles, setShowProfiles] = useState(false);
   const [showBackup, setShowBackup] = useState(false);
+  const [showTextImport, setShowTextImport] = useState(false);
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -161,8 +163,30 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
                           </div>
                         </div>
 
-                        <div className="pt-1">
+                        <div className="pt-1 space-y-1.5">
                           <OTAUpdateButton variant="menu" />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowUserMenu(false);
+                              setShowTextImport(true);
+                            }}
+                            className="w-full py-2 px-2.5 rounded-xl bg-[#1b2038] hover:bg-[#252c4d] border border-[#c8b07b]/40 text-xs font-semibold text-[#dfc792] transition-colors flex items-center justify-center gap-1.5"
+                          >
+                            <span>📥</span>
+                            <span>Import Cards from Text</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowUserMenu(false);
+                              setShowBackup(true);
+                            }}
+                            className="w-full py-2 px-2.5 rounded-xl bg-[#1b2038] hover:bg-[#252c4d] border border-[#c8b07b]/40 text-xs font-semibold text-slate-200 hover:text-[#dfc792] transition-colors flex items-center justify-center gap-1.5"
+                          >
+                            <span>💾</span>
+                            <span>Backup &amp; Restore</span>
+                          </button>
                         </div>
 
                         {!isInstalled && (
@@ -220,14 +244,26 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
               <CurrencySelector variant="compact" />
             </div>
 
-            <button
-              type="button"
-              onClick={() => setShowProfiles(true)}
-              className="text-[11px] text-[#dfc792] hover:text-[#f3e5c8] font-bold truncate max-w-[150px] flex items-center gap-1 bg-[#1b2038]/60 px-2 py-0.5 rounded-lg border border-[#c8b07b]/20"
-            >
-              <span>{activeProfile?.icon ?? '📘'}</span>
-              <span className="truncate">{activeProfile?.name ?? 'Binder'}</span>
-            </button>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setShowTextImport(true)}
+                title="Import cards from text"
+                className="text-[11px] text-[#dfc792] hover:text-[#f3e5c8] font-bold flex items-center gap-1 bg-[#1b2038] px-2 py-1 rounded-lg border border-[#c8b07b]/30 active:scale-95 transition-all shadow-sm"
+              >
+                <span>📥</span>
+                <span>Import</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowProfiles(true)}
+                className="text-[11px] text-[#dfc792] hover:text-[#f3e5c8] font-bold truncate max-w-[120px] flex items-center gap-1 bg-[#1b2038]/60 px-2 py-1 rounded-lg border border-[#c8b07b]/20"
+              >
+                <span>{activeProfile?.icon ?? '📘'}</span>
+                <span className="truncate">{activeProfile?.name ?? 'Binder'}</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -284,6 +320,17 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
                 {activeProfile?.name ?? 'Binder'}
               </span>
               <span className="text-amber-400/80 text-[10px]">▾</span>
+            </button>
+
+            {/* Import Cards from Text */}
+            <button
+              type="button"
+              onClick={() => setShowTextImport(true)}
+              title="Import cards from text (e.g. Set13 1,3)"
+              className="flex p-2 px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm items-center gap-1.5 min-h-[36px]"
+            >
+              <span className="text-sm">📥</span>
+              <span className="font-bold">Import</span>
             </button>
 
             {/* Backup / Export */}
@@ -444,7 +491,13 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
       </div>
 
       {showProfiles && <ProfileManagerModal onClose={() => setShowProfiles(false)} />}
-      {showBackup && <CollectionBackupModal onClose={() => setShowBackup(false)} />}
+      {showBackup && (
+        <CollectionBackupModal
+          onClose={() => setShowBackup(false)}
+          onOpenTextImport={() => setShowTextImport(true)}
+        />
+      )}
+      {showTextImport && <CollectionTextImportModal onClose={() => setShowTextImport(false)} />}
       {showInstallModal && (
         <PWAInstallModal
           onClose={() => setShowInstallModal(false)}

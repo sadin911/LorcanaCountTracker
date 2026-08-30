@@ -11,6 +11,23 @@ import type {
   SyncStatus,
 } from '../types/collection';
 import { totalCopies } from '../types/collection';
+import { ALL_CARDS } from '../data/catalogue';
+import { parseCollectionText } from '../utils/collectionTextParser';
+
+export interface CollectionTextImportOptions {
+  mode?: 'merge' | 'replace';
+  finish?: FinishKey;
+  profileId?: string;
+}
+
+export interface CollectionTextImportResult {
+  success: boolean;
+  message: string;
+  cardsImportedCount: number;
+  distinctCardsCount: number;
+  unmatchedLines: string[];
+  setsFound: string[];
+}
 
 const DEFAULT_PROFILE_ID = 'default-main-binder';
 const GUEST_STORAGE_KEY = 'lorcana_guest_profiles_v1';
@@ -110,6 +127,10 @@ interface CollectionState {
 
   exportCollectionJSON: () => string;
   importCollectionJSON: (jsonString: string) => { success: boolean; message: string };
+  importCollectionText: (
+    text: string,
+    options?: CollectionTextImportOptions
+  ) => CollectionTextImportResult;
 }
 
 // One debounce timer PER BINDER. A single shared timer (as in the Pokemon app)
@@ -567,6 +588,75 @@ export const useCollectionStore = create<CollectionState>((set, get) => ({
     return {
       success: true,
       message: `Restored ${ids.length} binder${ids.length === 1 ? '' : 's'} with ${cardTotal} card${cardTotal === 1 ? '' : 's'}.`,
+    };
+  },
+
+  importCollectionText: (text, options) => {
+    const mode = options?.mode ?? 'merge';
+    const finish = options?.finish ?? 'normal';
+    const profileId = options?.profileId ?? get().activeProfileId;
+    const profile = get().profiles[profileId];
+
+    if (!profile) {
+      return {
+        success: false,
+        message: 'Active binder not found.',
+        cardsImportedCount: 0,
+        distinctCardsCount: 0,
+        unmatchedLines: [],
+        setsFound: [],
+      };
+    }
+
+    const parseResult = parseCollectionText(text, ALL_CARDS);
+    if (parseResult.cards.length === 0) {
+      return {
+        success: false,
+        message:
+          parseResult.unmatchedLines.length > 0
+            ? 'No cards could be matched from the provided text.'
+            : 'Please provide card lines under a set header (e.g. Set13\n1,3\n20,5\n21).',
+        cardsImportedCount: 0,
+        distinctCardsCount: 0,
+        unmatchedLines: parseResult.unmatchedLines,
+        setsFound: parseResult.setsFound,
+      };
+    }
+
+    let cards = { ...profile.cards };
+    for (const item of parseResult.cards) {
+      const entry = cards[item.cardId] ?? emptyEntry(item.cardId);
+      const currentQty = entry.variants[finish] ?? 0;
+      const nextQty = mode === 'replace' ? item.quantity : currentQty + item.quantity;
+      const variants = pruneVariants({ ...entry.variants, [finish]: nextQty });
+      cards = putEntry(cards, item.cardId, { ...entry, variants });
+    }
+
+    const nextProfile: CollectionProfile = {
+      ...profile,
+      cards,
+      updatedAt: Date.now(),
+    };
+
+    set((state) => ({
+      profiles: {
+        ...state.profiles,
+        [profileId]: nextProfile,
+      },
+    }));
+
+    triggerSave(get, profileId);
+
+    const finishLabel = finish === 'foil' ? 'Foil' : 'Normal';
+    const modeLabel = mode === 'replace' ? 'set' : 'added';
+
+    return {
+      success: true,
+      message: `Successfully ${modeLabel} ${parseResult.totalQuantity} card${parseResult.totalQuantity === 1 ? '' : 's'} (${parseResult.distinctCardsCount} distinct) in ${finishLabel} finish across sets: ${parseResult.setsFound.join(', ')}.`,
+      cardsImportedCount: parseResult.totalQuantity,
+      distinctCardsCount: parseResult.distinctCardsCount,
+      unmatchedLines: parseResult.unmatchedLines,
+      setsFound: parseResult.setsFound,
     };
   },
 }));

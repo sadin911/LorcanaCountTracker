@@ -2,7 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useCollectionStore } from '../../store/collectionStore';
 
-export function CollectionBackupModal({ onClose }: { onClose: () => void }) {
+interface Props {
+  onClose: () => void;
+  onOpenTextImport?: () => void;
+}
+
+export function CollectionBackupModal({ onClose, onOpenTextImport }: Props) {
   const exportCollectionJSON = useCollectionStore((s) => s.exportCollectionJSON);
   const importCollectionJSON = useCollectionStore((s) => s.importCollectionJSON);
   const profiles = useCollectionStore((s) => s.profiles);
@@ -139,6 +144,23 @@ export function CollectionBackupModal({ onClose }: { onClose: () => void }) {
           </div>
         ) : (
           <div className="space-y-2">
+            {onOpenTextImport && (
+              <div className="p-2.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 flex items-center justify-between gap-2 text-xs">
+                <span className="text-slate-300 text-[11px]">
+                  Want to import cards by Set &amp; Number list (e.g. Set13, 1,3)?
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenTextImport();
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-[#c8b07b] hover:bg-[#dfc792] text-[#131627] text-[11px] font-bold shrink-0 transition-colors"
+                >
+                  Text Import
+                </button>
+              </div>
+            )}
             <input
               type="file"
               accept=".json,application/json"
