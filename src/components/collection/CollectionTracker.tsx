@@ -75,7 +75,10 @@ export function CollectionTracker({ onSwitchToDeck }: CollectionTrackerProps = {
   // Clearing the box should feel instant; typing can lag a frame behind.
   const deferredSearch = useDeferredValue(filters.search);
   const effectiveSearch = filters.search.trim() === '' ? '' : deferredSearch;
-  const cardMatcher = useMemo(() => createCardMatcher(effectiveSearch), [effectiveSearch]);
+  const cardMatcher = useMemo(
+    () => createCardMatcher(effectiveSearch, filters.selectedSet),
+    [effectiveSearch, filters.selectedSet]
+  );
 
   const { sets, stories } = useMemo(() => {
     const setCounts = new Map<string, { count: number; owned: number }>();

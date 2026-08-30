@@ -58,6 +58,8 @@ Thumbs.db
 coverage
 *.lcov
 .nyc_output
+playwright-report/
+test-results/
 
 # Build tool caches
 .vite

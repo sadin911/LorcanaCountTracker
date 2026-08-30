@@ -82,7 +82,11 @@ export function CollectionFilterBar({
             <input
               value={filters.search}
               onChange={(e) => onChange({ search: e.target.value })}
-              placeholder="Search cards, series, subtitle, #num…"
+              placeholder={
+                filters.selectedSet !== 'ALL'
+                  ? 'Search card name, #num (e.g. 1)…'
+                  : 'Search card name, 1-13, #num…'
+              }
               className="w-full pl-9 pr-9 py-2.5 sm:py-2 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 text-sm sm:text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-[#c8b07b] focus:ring-1 focus:ring-[#c8b07b]/40 transition-all min-h-[42px] sm:min-h-[38px]"
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-xs">🔍</span>

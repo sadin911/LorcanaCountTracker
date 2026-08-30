@@ -7,7 +7,7 @@ test.describe('Search & Filter System', () => {
   });
 
   test('filters cards by typing in search input', async ({ page }) => {
-    const searchInput = page.locator('input[placeholder*="Search cards"]');
+    const searchInput = page.locator('input[placeholder*="Search"]');
     await expect(searchInput).toBeVisible();
 
     // Type a specific card name query
@@ -25,6 +25,26 @@ test.describe('Search & Filter System', () => {
     if (await clearBtn.isVisible()) {
       await clearBtn.click();
       await expect(searchInput).toHaveValue('');
+    }
+  });
+
+  test('filters cards by set and number pattern (1-13)', async ({ page }) => {
+    const searchInput = page.locator('input[placeholder*="Search"]');
+    await expect(searchInput).toBeVisible();
+
+    // Search 1-13 (Card 1 of Set 13 or Card 13 of Set 1)
+    await searchInput.fill('1-13');
+    await page.waitForTimeout(400);
+
+    // Woody (13-1) or Minnie Mouse (1-13) should be displayed
+    const cardText = page.locator('main');
+    const hasWoodyOrMinnie = (await cardText.getByText('Woody').count()) > 0 || (await cardText.getByText('Minnie Mouse').count()) > 0;
+    expect(hasWoodyOrMinnie).toBe(true);
+
+    // Clear search
+    const clearBtn = page.locator('button[aria-label="Clear search"]');
+    if (await clearBtn.isVisible()) {
+      await clearBtn.click();
     }
   });
 

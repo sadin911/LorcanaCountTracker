@@ -126,7 +126,10 @@ export function DeckEditor({ deck }: Props) {
 
   const deferredSearch = useDeferredValue(search);
   const effectiveSearch = search.trim() === '' ? '' : deferredSearch;
-  const cardMatcher = useMemo(() => createCardMatcher(effectiveSearch), [effectiveSearch]);
+  const cardMatcher = useMemo(
+    () => createCardMatcher(effectiveSearch, selectedSet),
+    [effectiveSearch, selectedSet]
+  );
 
   // Filter Catalog Cards
   const filteredCatalog = useMemo(() => {
