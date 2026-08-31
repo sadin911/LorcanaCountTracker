@@ -205,4 +205,5 @@
 [2026-08-31 00:47] Major | Antigravity | Edit | e2e/card-management.spec.ts - Playwright E2E test for text import
 [2026-08-31 00:47] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.6.0
 [2026-08-31 00:47] Major | Antigravity | Release | v0.6.0 - Bulk Collection Text Import (Set & Number List)
+[2026-08-31 08:08] Major | Antigravity | Edit | Update mobile and desktop logo icon to public/logo.jpeg
 

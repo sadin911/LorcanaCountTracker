@@ -65,7 +65,7 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
 
   const badge = getSyncBadge(syncStatus, !!user);
 
-  const logoUrl = `${import.meta.env.BASE_URL}logo-br-2x-Sweb4xgr.png`;
+  const logoUrl = `${import.meta.env.BASE_URL}logo.jpeg`;
 
   return (
     <header

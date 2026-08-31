@@ -11,7 +11,7 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: [
         'favicon.svg',
-        'logo-br-2x-Sweb4xgr.png',
+        'logo.jpeg',
         'card-placeholder.svg',
       ],
       manifest: {
@@ -32,15 +32,15 @@ export default defineConfig({
             type: 'image/svg+xml',
           },
           {
-            src: '/logo-br-2x-Sweb4xgr.png',
+            src: '/logo.jpeg',
             sizes: '192x192',
-            type: 'image/png',
+            type: 'image/jpeg',
             purpose: 'any maskable',
           },
           {
-            src: '/logo-br-2x-Sweb4xgr.png',
+            src: '/logo.jpeg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/jpeg',
             purpose: 'any maskable',
           },
         ],

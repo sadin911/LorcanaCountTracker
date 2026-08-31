@@ -16,14 +16,14 @@
       "sizes": "any"
     },
     {
-      "src": "/logo-br-2x-Sweb4xgr.png",
-      "type": "image/png",
+      "src": "/logo.jpeg",
+      "type": "image/jpeg",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo-br-2x-Sweb4xgr.png",
-      "type": "image/png",
+      "src": "/logo.jpeg",
+      "type": "image/jpeg",
       "sizes": "512x512",
       "purpose": "any maskable"
     }

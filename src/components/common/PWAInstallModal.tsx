@@ -39,7 +39,7 @@ export function PWAInstallModal({
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#1b2038] to-[#252b4b] border border-[#c8b07b]/50 p-1.5 shadow-lg shadow-[#c8b07b]/20 flex items-center justify-center shrink-0">
               <img
-                src="/logo-br-2x-Sweb4xgr.png"
+                src="/logo.jpeg"
                 alt="Disney Lorcana Tracker"
                 className="w-full h-full object-contain"
               />

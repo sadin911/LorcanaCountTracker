@@ -5,7 +5,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/manifest.json',
   '/favicon.svg',
-  '/logo-br-2x-Sweb4xgr.png',
+  '/logo.jpeg',
   '/card-placeholder.svg'
 ];
 
