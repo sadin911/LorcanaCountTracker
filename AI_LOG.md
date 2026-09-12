@@ -213,4 +213,11 @@
 [2026-09-12 07:54] Major | Antigravity | Command | npm run data:prices - updated live market prices for 3,198 cards
 [2026-09-12 07:54] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.6.2
 [2026-09-12 07:54] Major | Antigravity | Release | v0.6.2 - Added Curator's Collection: Heroines Edition (CC1)
+[2026-09-12 08:07] Major | Antigravity | Edit | scripts/fetch-lorcana-cards.mjs - add HKDL and DLP special promo sets
+[2026-09-12 08:07] Major | Antigravity | Command | npm run data:cards - catalogue now 3,204 cards across 25 sets
+[2026-09-12 08:07] Major | Antigravity | Command | npm run data:images - processed 6 cards into WebP tiers
+[2026-09-12 08:07] Major | Antigravity | Command | npm run data:upload -- HKDL & DLP - uploaded cards to Cloudflare R2
+[2026-09-12 08:07] Major | Antigravity | Command | npm run data:prices - updated live market prices for 3,204 cards
+[2026-09-12 08:07] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.6.3
+[2026-09-12 08:07] Major | Antigravity | Release | v0.6.3 - Added Hong Kong Disneyland & Disneyland Paris Promos
 

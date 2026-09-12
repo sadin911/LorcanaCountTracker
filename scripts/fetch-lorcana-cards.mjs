@@ -22,8 +22,189 @@ const API = 'https://api.lorcast.com/v0';
 const OUT_DIR = path.resolve('src/data');
 const MAX_JSON_BYTES = 3 * 1024 * 1024;
 
-const EXPECTED_SETS = 23;
-const EXPECTED_CARDS = 3198;
+const EXPECTED_SETS = 25;
+const EXPECTED_CARDS = 3204;
+
+/**
+ * Custom special / park promo sets not yet indexed as dedicated sets in Lorcast API.
+ * Included here at build time so the app statically bundles them.
+ */
+const CUSTOM_PROMO_SETS = [
+  {
+    set: {
+      code: 'HKDL',
+      name: 'Hong Kong Disneyland',
+      releasedAt: '2026-08-28',
+    },
+    cards: [
+      {
+        id: 'HKDL-1',
+        name: 'Mickey Mouse',
+        version: 'Amber Champion',
+        setCode: 'HKDL',
+        setName: 'Hong Kong Disneyland',
+        story: 'Mickey Mouse & Friends',
+        collectorNumber: '1',
+        sortNum: 1,
+        sortSuffix: '',
+        rarity: 'Promo',
+        inks: ['Amber'],
+        inkwell: true,
+        cost: 4,
+        types: ['Character'],
+        classifications: ['Dreamborn', 'Hero'],
+        strength: 2,
+        willpower: 5,
+        lore: 1,
+        moveCost: null,
+        text: 'LEADING THE WAY Your other Amber characters get +2 Willpower.\nFRIENDLY CHORUS While you have 2 or more other Amber characters in play, this character gains Singer 8. (They count as cost 8 to sing songs.)',
+        keywords: ['Singer'],
+        illustrators: ['Lisa Parfenova'],
+        layout: 'normal',
+        finishes: ['foil'],
+      },
+      {
+        id: 'HKDL-2',
+        name: 'Buzz Lightyear',
+        version: 'Providing Cover',
+        setCode: 'HKDL',
+        setName: 'Hong Kong Disneyland',
+        story: 'Toy Story',
+        collectorNumber: '2',
+        sortNum: 2,
+        sortSuffix: '',
+        rarity: 'Promo',
+        inks: ['Emerald'],
+        inkwell: false,
+        cost: 4,
+        types: ['Character'],
+        classifications: ['Storyborn', 'Hero', 'Toy', 'Captain'],
+        strength: 4,
+        willpower: 2,
+        lore: 2,
+        moveCost: null,
+        text: 'ACTION FIGURE When you play this character, choose one of the following. If you have another Toy character in play, choose both instead:\n• You may return an action card with cost 2 or less from your discard to your hand.\n• You may play an action with cost 2 or less for free.',
+        keywords: [],
+        illustrators: ['Marcel Berg'],
+        layout: 'normal',
+        finishes: ['foil'],
+      },
+      {
+        id: 'HKDL-3',
+        name: 'Elsa',
+        version: 'The Fifth Spirit',
+        setCode: 'HKDL',
+        setName: 'Hong Kong Disneyland',
+        story: 'Frozen',
+        collectorNumber: '3',
+        sortNum: 3,
+        sortSuffix: '',
+        rarity: 'Promo',
+        inks: ['Amethyst'],
+        inkwell: true,
+        cost: 5,
+        types: ['Character'],
+        classifications: ['Dreamborn', 'Hero', 'Queen', 'Sorcerer'],
+        strength: 2,
+        willpower: 5,
+        lore: 1,
+        moveCost: null,
+        text: "Rush (This character can challenge the turn they're played.)\nEvasive (Only characters with Evasive can challenge this character.)\nCRYSTALLIZE When you play this character, exert chosen opposing character.",
+        keywords: ['Rush', 'Evasive'],
+        illustrators: ['Lisanne Koeteeuw'],
+        layout: 'normal',
+        finishes: ['foil'],
+      },
+    ],
+  },
+  {
+    set: {
+      code: 'DLP',
+      name: 'Disneyland Paris',
+      releasedAt: '2026-09-04',
+    },
+    cards: [
+      {
+        id: 'DLP-1',
+        name: 'Mickey Mouse',
+        version: "Champion d'Ambre",
+        setCode: 'DLP',
+        setName: 'Disneyland Paris',
+        story: 'Mickey Mouse & Friends',
+        collectorNumber: '1',
+        sortNum: 1,
+        sortSuffix: '',
+        rarity: 'Promo',
+        inks: ['Amber'],
+        inkwell: true,
+        cost: 4,
+        types: ['Character'],
+        classifications: ['Dreamborn', 'Hero'],
+        strength: 2,
+        willpower: 5,
+        lore: 1,
+        moveCost: null,
+        text: 'OUVRE LA VOIE Vos autres personnages Ambre gagnent +2 Volonté.\nCHŒUR AMICAL Tant que vous avez 2 autres personnages Ambre ou plus en jeu, ce personnage gagne Singer 8.',
+        keywords: ['Singer'],
+        illustrators: ['Lisa Parfenova'],
+        layout: 'normal',
+        finishes: ['foil'],
+      },
+      {
+        id: 'DLP-2',
+        name: "Buzz l'Éclair",
+        version: 'Couverture Tactique',
+        setCode: 'DLP',
+        setName: 'Disneyland Paris',
+        story: 'Toy Story',
+        collectorNumber: '2',
+        sortNum: 2,
+        sortSuffix: '',
+        rarity: 'Promo',
+        inks: ['Emerald'],
+        inkwell: false,
+        cost: 4,
+        types: ['Character'],
+        classifications: ['Storyborn', 'Hero', 'Toy', 'Captain'],
+        strength: 4,
+        willpower: 2,
+        lore: 2,
+        moveCost: null,
+        text: "FIGURINE D'ACTION Lorsque vous jouez ce personnage, choisissez une option. Si vous avez un autre personnage Jouet en jeu, choisissez les deux à la place :\n• Vous pouvez reprendre en main une carte Action de coût 2 ou moins de votre défausse.\n• Vous pouvez jouer gratuitement une carte Action de coût 2 ou moins.",
+        keywords: [],
+        illustrators: ['Marcel Berg'],
+        layout: 'normal',
+        finishes: ['foil'],
+      },
+      {
+        id: 'DLP-3',
+        name: 'Elsa',
+        version: 'Le Cinquième Esprit',
+        setCode: 'DLP',
+        setName: 'Disneyland Paris',
+        story: 'Frozen',
+        collectorNumber: '3',
+        sortNum: 3,
+        sortSuffix: '',
+        rarity: 'Promo',
+        inks: ['Amethyst'],
+        inkwell: true,
+        cost: 5,
+        types: ['Character'],
+        classifications: ['Dreamborn', 'Hero', 'Queen', 'Sorcerer'],
+        strength: 2,
+        willpower: 5,
+        lore: 1,
+        moveCost: null,
+        text: 'Charge (Ce personnage peut défier le tour où il est joué.)\nInsaisissable (Seuls les personnages avec Insaisissable peuvent défier ce personnage.)\nCRISTALLISATION Lorsque vous jouez ce personnage, épuisez le personnage adverse choisi.',
+        keywords: ['Charge', 'Insaisissable'],
+        illustrators: ['Lisanne Koeteeuw'],
+        layout: 'normal',
+        finishes: ['foil'],
+      },
+    ],
+  },
+];
 
 /**
  * Disney story ("Frozen", "Mickey Mouse & Friends") comes from LorcanaJSON, not
@@ -225,9 +406,28 @@ async function main() {
     if (missingImage) fail(`set ${s.code} has ${missingImage} cards without a large image`);
   }
 
+  for (const cs of CUSTOM_PROMO_SETS) {
+    if (!sets.some((s) => s.code === cs.set.code)) {
+      sets.push({
+        code: cs.set.code,
+        name: cs.set.name,
+        releasedAt: cs.set.releasedAt || null,
+        cardCount: cs.cards.length,
+      });
+      for (const c of cs.cards) cards.push(c);
+      console.log(
+        `   ${String(cs.set.code).padStart(8)} ${String(cs.cards.length).padStart(4)} cards (custom promo set)`
+      );
+    }
+  }
+
   const passCounts = { exact: 0, name: 0, override: 0, none: 0 };
   const ambiguouslyResolved = [];
   for (const card of cards) {
+    if (card.story) {
+      passCounts.exact++;
+      continue;
+    }
     const { story, pass, ambiguous } = resolveStory(card, storyIndex);
     card.story = story;
     passCounts[pass]++;

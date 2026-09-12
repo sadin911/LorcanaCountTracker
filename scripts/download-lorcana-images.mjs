@@ -110,6 +110,47 @@ async function main() {
       });
     }
   }
+
+  const CUSTOM_IMAGE_JOBS = [
+    {
+      setCode: 'HKDL',
+      num: '1',
+      url: 'https://inksighttcg.com/img/lorcana/fall2026/parks-promo-mickey-mouse-amber-champion.webp',
+      landscape: false,
+    },
+    {
+      setCode: 'HKDL',
+      num: '2',
+      url: 'https://inksighttcg.com/img/lorcana/fall2026/parks-promo-buzz-lightyear-providing-cover.webp',
+      landscape: false,
+    },
+    {
+      setCode: 'HKDL',
+      num: '3',
+      url: 'https://inksighttcg.com/img/lorcana/fall2026/parks-promo-elsa-the-fifth-spirit.webp',
+      landscape: false,
+    },
+    {
+      setCode: 'DLP',
+      num: '1',
+      url: 'https://inksighttcg.com/img/lorcana/fall2026/parks-promo-mickey-mouse-amber-champion.webp',
+      landscape: false,
+    },
+    {
+      setCode: 'DLP',
+      num: '2',
+      url: 'https://inksighttcg.com/img/lorcana/fall2026/parks-promo-buzz-lightyear-providing-cover.webp',
+      landscape: false,
+    },
+    {
+      setCode: 'DLP',
+      num: '3',
+      url: 'https://inksighttcg.com/img/lorcana/fall2026/parks-promo-elsa-the-fifth-spirit.webp',
+      landscape: false,
+    },
+  ];
+  jobs.push(...CUSTOM_IMAGE_JOBS);
+
   console.log(`📦 ${jobs.length} cards x ${TIERS.length} tiers\n`);
 
   let done = 0;

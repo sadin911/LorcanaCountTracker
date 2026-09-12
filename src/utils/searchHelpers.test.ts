@@ -25,6 +25,8 @@ describe('searchHelpers', () => {
       expect(parseSetAndNumberQuery('13-1')).toEqual({ setCode: '13', collectorNum: '1', isExplicitSet: false });
       expect(parseSetAndNumberQuery('1/13')).toEqual({ setCode: '1', collectorNum: '13', isExplicitSet: false });
       expect(parseSetAndNumberQuery('p1-5')).toEqual({ setCode: 'p1', collectorNum: '5', isExplicitSet: true });
+      expect(parseSetAndNumberQuery('hkdl-1')).toEqual({ setCode: 'hkdl', collectorNum: '1', isExplicitSet: true });
+      expect(parseSetAndNumberQuery('dlp-3')).toEqual({ setCode: 'dlp', collectorNum: '3', isExplicitSet: true });
     });
 
     it('parses prefixed set and number expressions', () => {

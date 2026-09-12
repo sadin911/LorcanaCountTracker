@@ -136,5 +136,17 @@
     "name": "PD1",
     "releasedAt": "2026-07-28",
     "cardCount": 8
+  },
+  {
+    "code": "HKDL",
+    "name": "Hong Kong Disneyland",
+    "releasedAt": "2026-08-28",
+    "cardCount": 3
+  },
+  {
+    "code": "DLP",
+    "name": "Disneyland Paris",
+    "releasedAt": "2026-09-04",
+    "cardCount": 3
   }
 ]

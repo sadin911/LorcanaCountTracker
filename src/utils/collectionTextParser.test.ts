@@ -39,7 +39,7 @@ describe('collectionTextParser', () => {
   ];
 
   describe('extractSetHeader', () => {
-    const knownSets = new Set(['1', '13', 'P1']);
+    const knownSets = new Set(['1', '13', 'P1', 'HKDL', 'DLP']);
 
     it('identifies valid set headers with various prefixes', () => {
       expect(extractSetHeader('Set13', knownSets)).toBe('13');
@@ -50,6 +50,9 @@ describe('collectionTextParser', () => {
       expect(extractSetHeader('Set: 13', knownSets)).toBe('13');
       expect(extractSetHeader('SetP1', knownSets)).toBe('P1');
       expect(extractSetHeader('P1', knownSets)).toBe('P1');
+      expect(extractSetHeader('HKDL', knownSets)).toBe('HKDL');
+      expect(extractSetHeader('Set HKDL', knownSets)).toBe('HKDL');
+      expect(extractSetHeader('s-dlp', knownSets)).toBe('DLP');
     });
 
     it('returns null for card lines or unknown words', () => {
