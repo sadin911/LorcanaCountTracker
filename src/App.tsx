@@ -1,11 +1,16 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { CollectionTracker } from './components/collection/CollectionTracker';
-import { DeckManager } from './components/deck/DeckManager';
-import { AdminPage } from './components/admin/AdminPage';
 import { BottomNav, type AppMode } from './components/layout/BottomNav';
 import { OTAUpdateBanner } from './components/common/OTAUpdateBanner';
 import { useAuthStore } from './store/authStore';
 import { usePricingStore } from './store/pricingStore';
+
+const DeckManager = lazy(() =>
+  import('./components/deck/DeckManager').then((m) => ({ default: m.DeckManager }))
+);
+const AdminPage = lazy(() =>
+  import('./components/admin/AdminPage').then((m) => ({ default: m.AdminPage }))
+);
 
 function getModeFromURL(): AppMode {
   if (typeof window === 'undefined') return 'collection';
@@ -104,13 +109,21 @@ function App() {
 
       {/* View Content */}
       <div className="flex-1 pb-16">
-        {appMode === 'admin' && <AdminPage />}
-        {appMode === 'deck' && (
-          <DeckManager onSwitchToCollection={() => handleSelectMode('collection')} />
-        )}
-        {appMode === 'collection' && (
-          <CollectionTracker onSwitchToDeck={() => handleSelectMode('deck')} />
-        )}
+        <Suspense
+          fallback={
+            <div className="min-h-[50vh] flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-amber-500/30 border-t-amber-400 rounded-full animate-spin" />
+            </div>
+          }
+        >
+          {appMode === 'admin' && <AdminPage />}
+          {appMode === 'deck' && (
+            <DeckManager onSwitchToCollection={() => handleSelectMode('collection')} />
+          )}
+          {appMode === 'collection' && (
+            <CollectionTracker onSwitchToDeck={() => handleSelectMode('deck')} />
+          )}
+        </Suspense>
       </div>
 
       {/* Bottom Navigation */}

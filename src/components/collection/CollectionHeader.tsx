@@ -1,16 +1,25 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useCollectionStore } from '../../store/collectionStore';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 import type { CollectionStats } from '../../types/collection';
 import { isFirebaseConfigured } from '../../utils/firebase';
 import { APP_VERSION } from '../../constants/version';
-import { CollectionBackupModal } from './CollectionBackupModal';
-import { CollectionTextImportModal } from './CollectionTextImportModal';
-import { ProfileManagerModal } from './ProfileManagerModal';
-import { PWAInstallModal } from '../common/PWAInstallModal';
 import { OTAUpdateButton } from '../common/OTAUpdateButton';
 import { CurrencySelector } from '../common/CurrencySelector';
+
+const ProfileManagerModal = lazy(() =>
+  import('./ProfileManagerModal').then((m) => ({ default: m.ProfileManagerModal }))
+);
+const CollectionBackupModal = lazy(() =>
+  import('./CollectionBackupModal').then((m) => ({ default: m.CollectionBackupModal }))
+);
+const CollectionTextImportModal = lazy(() =>
+  import('./CollectionTextImportModal').then((m) => ({ default: m.CollectionTextImportModal }))
+);
+const PWAInstallModal = lazy(() =>
+  import('../common/PWAInstallModal').then((m) => ({ default: m.PWAInstallModal }))
+);
 
 function getSyncBadge(status: string, hasUser: boolean) {
   const currentStatus = hasUser ? status : 'idle';
@@ -490,25 +499,27 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
         </div>
       </div>
 
-      {showProfiles && <ProfileManagerModal onClose={() => setShowProfiles(false)} />}
-      {showBackup && (
-        <CollectionBackupModal
-          onClose={() => setShowBackup(false)}
-          onOpenTextImport={() => setShowTextImport(true)}
-        />
-      )}
-      {showTextImport && <CollectionTextImportModal onClose={() => setShowTextImport(false)} />}
-      {showInstallModal && (
-        <PWAInstallModal
-          onClose={() => setShowInstallModal(false)}
-          onDirectInstall={async () => {
-            await promptInstall();
-            setShowInstallModal(false);
-          }}
-          canPromptDirectly={canPromptDirectly}
-          isIOS={isIOS}
-        />
-      )}
+      <Suspense fallback={null}>
+        {showProfiles && <ProfileManagerModal onClose={() => setShowProfiles(false)} />}
+        {showBackup && (
+          <CollectionBackupModal
+            onClose={() => setShowBackup(false)}
+            onOpenTextImport={() => setShowTextImport(true)}
+          />
+        )}
+        {showTextImport && <CollectionTextImportModal onClose={() => setShowTextImport(false)} />}
+        {showInstallModal && (
+          <PWAInstallModal
+            onClose={() => setShowInstallModal(false)}
+            onDirectInstall={async () => {
+              await promptInstall();
+              setShowInstallModal(false);
+            }}
+            canPromptDirectly={canPromptDirectly}
+            isIOS={isIOS}
+          />
+        )}
+      </Suspense>
     </header>
   );
 }

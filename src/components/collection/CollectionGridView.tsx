@@ -1,11 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useCollectionStore } from '../../store/collectionStore';
 import type { LorcanaCard } from '../../types/card';
 import type { SetProgress } from '../../types/collection';
 import { getSetBoosterImage } from '../../utils/boosterImages';
-import { BoosterPackPreviewModal } from './BoosterPackPreviewModal';
-import { CardCollectionModal } from './CardCollectionModal';
 import { CollectionCardItem } from './CollectionCardItem';
+
+const BoosterPackPreviewModal = lazy(() =>
+  import('./BoosterPackPreviewModal').then((m) => ({ default: m.BoosterPackPreviewModal }))
+);
+const CardCollectionModal = lazy(() =>
+  import('./CardCollectionModal').then((m) => ({ default: m.CardCollectionModal }))
+);
 
 const ITEMS_PER_PAGE = 60;
 
@@ -163,22 +168,24 @@ export function CollectionGridView({ cards, currentSetProgress, showFullColor, f
 
       {/* Keyed by id so opening a different card from the grid remounts the modal
           and resets any walk through related cards. */}
-      {showBooster && currentSetProgress && boosterImageUrl && (
-        <BoosterPackPreviewModal
-          setId={currentSetProgress.setCode}
-          setName={currentSetProgress.setName}
-          boosterImageUrl={boosterImageUrl}
-          totalCards={currentSetProgress.totalCards}
-          uniqueOwned={currentSetProgress.uniqueOwned}
-          totalCount={currentSetProgress.totalCount}
-          percentage={currentSetProgress.percentage}
-          onClose={() => setShowBooster(false)}
-        />
-      )}
+      <Suspense fallback={null}>
+        {showBooster && currentSetProgress && boosterImageUrl && (
+          <BoosterPackPreviewModal
+            setId={currentSetProgress.setCode}
+            setName={currentSetProgress.setName}
+            boosterImageUrl={boosterImageUrl}
+            totalCards={currentSetProgress.totalCards}
+            uniqueOwned={currentSetProgress.uniqueOwned}
+            totalCount={currentSetProgress.totalCount}
+            percentage={currentSetProgress.percentage}
+            onClose={() => setShowBooster(false)}
+          />
+        )}
 
-      {selectedCard && (
-        <CardCollectionModal key={selectedCard.id} card={selectedCard} onClose={() => setSelectedCard(null)} />
-      )}
+        {selectedCard && (
+          <CardCollectionModal key={selectedCard.id} card={selectedCard} onClose={() => setSelectedCard(null)} />
+        )}
+      </Suspense>
     </div>
   );
 }

@@ -1,17 +1,26 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useDeckStore } from '../../store/deckStore';
 import { useCollectionStore } from '../../store/collectionStore';
 import { useAuthStore } from '../../store/authStore';
 import { DeckHeader } from './DeckHeader';
-import { DeckEditor } from './DeckEditor';
-import { MissingCardsModal } from './MissingCardsModal';
-import { DeckImportExportModal } from './DeckImportExportModal';
-import { DeckCoverPickerModal } from './DeckCoverPickerModal';
 import { calculateMissingCards, calculateDeckStats } from '../../utils/deckCalculator';
 import { resolveCardImageUrl, handleCardImageError } from '../../utils/cardImage';
 import { ALL_CARDS } from '../../data/catalogue';
 import { LorcanaInkIcon, LorcanaInkwellIcon } from '../icons/LorcanaIcons';
 import type { LorcanaCard, Ink } from '../../types/card';
+
+const DeckEditor = lazy(() =>
+  import('./DeckEditor').then((m) => ({ default: m.DeckEditor }))
+);
+const MissingCardsModal = lazy(() =>
+  import('./MissingCardsModal').then((m) => ({ default: m.MissingCardsModal }))
+);
+const DeckImportExportModal = lazy(() =>
+  import('./DeckImportExportModal').then((m) => ({ default: m.DeckImportExportModal }))
+);
+const DeckCoverPickerModal = lazy(() =>
+  import('./DeckCoverPickerModal').then((m) => ({ default: m.DeckCoverPickerModal }))
+);
 
 function InkPill({ ink, className = 'w-3.5 h-3.5' }: { ink: Ink | string; className?: string }) {
   return <LorcanaInkIcon ink={ink} className={className} />;
@@ -88,10 +97,18 @@ export function DeckManager({ onSwitchToCollection }: Props) {
 
       {/* Main Content: If editing, show Editor; otherwise show Deck List */}
       {editingDeck ? (
-        <DeckEditor
-          deck={editingDeck}
-          onBackToDecks={() => setEditingDeckId(null)}
-        />
+        <Suspense
+          fallback={
+            <div className="min-h-[50vh] flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-amber-500/30 border-t-amber-400 rounded-full animate-spin" />
+            </div>
+          }
+        >
+          <DeckEditor
+            deck={editingDeck}
+            onBackToDecks={() => setEditingDeckId(null)}
+          />
+        </Suspense>
       ) : (
         <div className="flex-1 p-3 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6">
           {/* Hero Banner */}
@@ -388,35 +405,37 @@ export function DeckManager({ onSwitchToCollection }: Props) {
         </div>
       )}
 
-      {/* Missing Cards Modal */}
-      {missingDeck && (
-        <MissingCardsModal
-          deck={missingDeck}
-          report={calculateMissingCards(missingDeck, cardDataMap, userCollectionCards)}
-          activeProfileName={profile?.name ?? 'Main Binder'}
-          onClose={() => setSelectedMissingDeckId(null)}
-        />
-      )}
+      <Suspense fallback={null}>
+        {/* Missing Cards Modal */}
+        {missingDeck && (
+          <MissingCardsModal
+            deck={missingDeck}
+            report={calculateMissingCards(missingDeck, cardDataMap, userCollectionCards)}
+            activeProfileName={profile?.name ?? 'Main Binder'}
+            onClose={() => setSelectedMissingDeckId(null)}
+          />
+        )}
 
-      {/* Cover Picker Modal */}
-      {coverDeck && (
-        <DeckCoverPickerModal
-          deck={coverDeck}
-          onSelectCover={(cardId) => setDeckCover(coverDeck.id, cardId)}
-          onClose={() => setSelectedCoverDeckId(null)}
-        />
-      )}
+        {/* Cover Picker Modal */}
+        {coverDeck && (
+          <DeckCoverPickerModal
+            deck={coverDeck}
+            onSelectCover={(cardId) => setDeckCover(coverDeck.id, cardId)}
+            onClose={() => setSelectedCoverDeckId(null)}
+          />
+        )}
 
-      {/* Import / Export Modal */}
-      {showImportExport && (
-        <DeckImportExportModal
-          onClose={() => setShowImportExport(false)}
-          onDeckImported={(newId) => {
-            setEditingDeckId(newId);
-            setShowImportExport(false);
-          }}
-        />
-      )}
+        {/* Import / Export Modal */}
+        {showImportExport && (
+          <DeckImportExportModal
+            onClose={() => setShowImportExport(false)}
+            onDeckImported={(newId) => {
+              setEditingDeckId(newId);
+              setShowImportExport(false);
+            }}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

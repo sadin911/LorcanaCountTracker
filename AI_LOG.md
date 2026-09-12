@@ -220,4 +220,11 @@
 [2026-09-12 08:07] Major | Antigravity | Command | npm run data:prices - updated live market prices for 3,204 cards
 [2026-09-12 08:07] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.6.3
 [2026-09-12 08:07] Major | Antigravity | Release | v0.6.3 - Added Hong Kong Disneyland & Disneyland Paris Promos
+[2026-09-12 08:31] Major | Antigravity | Branch | created proposal/v1-roadmap for v1.0 release planning
+[2026-09-12 08:37] Major | Antigravity | Edit | AGENTS.md - add Section 5 Zero Data Loss & Storage Safety rule
+[2026-09-12 08:41] Major | Antigravity | Edit | src/App.tsx, src/components - lazy load modals & views with Suspense
+[2026-09-12 08:41] Major | Antigravity | Edit | vite.config.ts - configure manualChunks bundle splitting
+[2026-09-12 08:41] Major | Antigravity | Command | npm test & playwright - 27 Vitest & 34 E2E passed (0 errors)
+[2026-09-12 08:46] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.7.0
+[2026-09-12 08:46] Major | Antigravity | Release | v0.7.0 - App code-splitting & 96% bundle reduction
 

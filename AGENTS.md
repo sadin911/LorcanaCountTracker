@@ -68,3 +68,23 @@ Every agent MUST maintain [`AI_LOG.md`](file:///Users/sadin/Project/LorcanaCount
 - **Reserved Document IDs**: Never use Firestore document IDs starting and ending with double underscores `__.*__` (e.g. do NOT use `__lorcana_decks__`; use `lorcana_decks_vault`).
 - **Sanitize Undefined Values**: Firestore throws errors on `undefined` fields. Always strip `undefined` keys before writing to Firestore.
 - **Dual Fallback Sync**: In case user subcollection permissions (`/decks`) are restricted, maintain fallback persistence in the user's binder document (`/binders/lorcana_decks_vault`).
+
+---
+
+## 5. Zero Data Loss & Storage Safety (HIGHEST PRIORITY)
+
+Preventing user data loss is the **absolute #1 priority** across the entire codebase.
+
+1. **Strict Data Preservation**:
+   - Under NO circumstances may any refactoring, performance optimization, caching tweak, or storage migration delete, wipe, or overwrite user collections, cards, finishes, custom prices, or decks.
+2. **Safe Dual-Read Migration Pattern**:
+   - When introducing or migrating storage layers (e.g., `localStorage` to `IndexedDB`, or schema upgrades):
+     - **Dual Read**: Always check new storage first; if empty or missing, read from legacy storage seamlessly.
+     - **Non-Destructive Copy**: Copy data to the new store without deleting legacy storage until verified over multiple versions.
+     - **Emergency Fallback**: If the new storage layer errors or fails to initialize (e.g., Safari private browsing blocking IndexedDB), immediately fall back to legacy storage.
+3. **Write Guards & Cloud Initialization**:
+   - Never write empty or uninitialized guest state over populated cloud binders (`cloudLoadedUid` guard must remain strictly enforced).
+   - Never overwrite user data on network timeouts; keep local state intact and queue/retry.
+4. **Pre-mutation Integrity Checks**:
+   - Automated regression tests must verify that user binders and deck cards survive all migrations and store updates without dropped keys or corrupted counts.
+

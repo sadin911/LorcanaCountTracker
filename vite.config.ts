@@ -54,5 +54,31 @@ export default defineConfig({
     }),
   ],
   base: '/',
+  build: {
+    chunkSizeWarningLimit: 2500,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+            return 'vendor-react';
+          }
+          if (id.includes('node_modules/firebase/')) {
+            return 'vendor-firebase';
+          }
+          if (id.includes('src/data/market_prices.json')) {
+            return 'market-prices';
+          }
+          if (
+            id.includes('src/data/catalogue.ts') ||
+            id.includes('src/data/lorcanaCards.json') ||
+            id.includes('src/data/lorcanaSets.json') ||
+            id.includes('src/data/lorcanaStories.json')
+          ) {
+            return 'lorcana-catalogue';
+          }
+        },
+      },
+    },
+  },
 })
 
