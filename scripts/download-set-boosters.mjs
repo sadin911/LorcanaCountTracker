@@ -3,7 +3,7 @@
  * the setCode -> path map the app reads.
  *
  * Only the 13 numbered expansions are listed. The promo and special sets — P1,
- * P2, P3, cp, C2, D23, DIS, Coconut, PD1 — have no retail booster product at
+ * P2, P3, cp, C2, D23, DIS, CC1, Coconut, PD1 — have no retail booster product at
  * all: they are convention exclusives, challenge prizes and promo inserts. The
  * URLs previously listed for them pointed at unrelated products (a starter set,
  * another set's box) or reused one placeholder URL across several sets, so seven

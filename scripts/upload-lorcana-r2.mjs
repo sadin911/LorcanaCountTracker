@@ -22,16 +22,11 @@ const CONCURRENCY = 30;
 const ALL_SOURCE_DIRS = ['public/card-images', 'public/card-images-lg', 'public/set-boosters'];
 
 // The script has no skip-existing logic — every run re-PUTs every file it picks
-// up — so scoping matters when only one directory changed.
+// up — so scoping matters when only one directory or set changed.
+// Accepts directory filters (e.g. 'set-boosters', 'card-images') or setCode filters (e.g. 'CC1', '13').
 const FILTERS = process.argv.slice(2).filter((a) => !a.startsWith('-'));
-const SOURCE_DIRS = FILTERS.length
-  ? ALL_SOURCE_DIRS.filter((d) => FILTERS.some((f) => d.includes(f)))
-  : ALL_SOURCE_DIRS;
-
-if (FILTERS.length && !SOURCE_DIRS.length) {
-  console.error(`❌ no source dir matches ${FILTERS.join(', ')}. Known: ${ALL_SOURCE_DIRS.join(', ')}`);
-  process.exit(1);
-}
+const matchedDirs = ALL_SOURCE_DIRS.filter((d) => FILTERS.some((f) => d.includes(f)));
+const SOURCE_DIRS = matchedDirs.length ? matchedDirs : ALL_SOURCE_DIRS;
 
 const SECRET_FILE = 'secret.yaml';
 if (!fs.existsSync(SECRET_FILE)) {
@@ -79,9 +74,14 @@ async function upload(file) {
 }
 
 async function main() {
-  const files = SOURCE_DIRS.flatMap((d) => getAllFiles(path.resolve(d)));
+  let files = SOURCE_DIRS.flatMap((d) => getAllFiles(path.resolve(d)));
+  if (FILTERS.length && !matchedDirs.length) {
+    files = files.filter((f) =>
+      FILTERS.some((flt) => f.includes(`/${flt}/`) || f.includes(`\\${flt}\\`))
+    );
+  }
   if (!files.length) {
-    console.error(`❌ no .webp files found in ${SOURCE_DIRS.join(', ')}. Run \`npm run data:images\` first.`);
+    console.error(`❌ no .webp files found matching filters [${FILTERS.join(', ')}]. Run \`npm run data:images\` first.`);
     process.exit(1);
   }
   console.log(`📦 uploading ${files.length} objects to R2 bucket "${BUCKET_NAME}"`);

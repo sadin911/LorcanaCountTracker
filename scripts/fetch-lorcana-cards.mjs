@@ -22,8 +22,8 @@ const API = 'https://api.lorcast.com/v0';
 const OUT_DIR = path.resolve('src/data');
 const MAX_JSON_BYTES = 3 * 1024 * 1024;
 
-const EXPECTED_SETS = 22;
-const EXPECTED_CARDS = 3192;
+const EXPECTED_SETS = 23;
+const EXPECTED_CARDS = 3198;
 
 /**
  * Disney story ("Frozen", "Mickey Mouse & Friends") comes from LorcanaJSON, not
@@ -97,8 +97,8 @@ function nameKey(name, version) {
 
 /**
  * Two lookups. The exact one covers the 2,985 cards LorcanaJSON indexes under
- * Lorcast's own set codes; a name+version lookup covers the remaining 207, which
- * are the promo sets (P1, P2, P3, cp, C2, D23, DIS, Coconut, PD1) LorcanaJSON
+ * Lorcast's own set codes; a name+version lookup covers the remaining 213, which
+ * are the promo sets (P1, P2, P3, cp, C2, D23, DIS, CC1, Coconut, PD1) LorcanaJSON
  * numbers differently. Those are reprints, so name+version is a safe key —
  * except for two names that LorcanaJSON maps to two stories, which is what
  * `ambiguousNames` is for.

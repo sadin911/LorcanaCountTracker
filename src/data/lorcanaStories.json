@@ -5,15 +5,19 @@
   },
   {
     "name": "Aladdin",
-    "cardCount": 132
+    "cardCount": 133
   },
   {
     "name": "Frozen",
-    "cardCount": 123
+    "cardCount": 125
   },
   {
     "name": "Beauty and the Beast",
     "cardCount": 118
+  },
+  {
+    "name": "Peter Pan",
+    "cardCount": 107
   },
   {
     "name": "Hercules",
@@ -24,23 +28,19 @@
     "cardCount": 106
   },
   {
-    "name": "Peter Pan",
-    "cardCount": 106
-  },
-  {
     "name": "The Little Mermaid",
-    "cardCount": 100
+    "cardCount": 101
   },
   {
     "name": "The Lion King",
     "cardCount": 94
   },
   {
-    "name": "Encanto",
-    "cardCount": 92
+    "name": "Mulan",
+    "cardCount": 93
   },
   {
-    "name": "Mulan",
+    "name": "Encanto",
     "cardCount": 92
   },
   {

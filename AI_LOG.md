@@ -206,4 +206,11 @@
 [2026-08-31 00:47] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.6.0
 [2026-08-31 00:47] Major | Antigravity | Release | v0.6.0 - Bulk Collection Text Import (Set & Number List)
 [2026-08-31 08:08] Major | Antigravity | Edit | Update mobile and desktop logo icon to public/logo.jpeg
+[2026-09-12 07:54] Major | Antigravity | Edit | scripts/fetch-lorcana-cards.mjs - add CC1 set (Curator's Collection)
+[2026-09-12 07:54] Major | Antigravity | Command | npm run data:cards - updated cards to 3,198 across 23 sets
+[2026-09-12 07:54] Major | Antigravity | Command | npm run data:images - processed 6 CC1 card images into WebP tiers
+[2026-09-12 07:54] Major | Antigravity | Command | npm run data:upload -- CC1 - uploaded CC1 images to Cloudflare R2
+[2026-09-12 07:54] Major | Antigravity | Command | npm run data:prices - updated live market prices for 3,198 cards
+[2026-09-12 07:54] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.6.2
+[2026-09-12 07:54] Major | Antigravity | Release | v0.6.2 - Added Curator's Collection: Heroines Edition (CC1)
 
