@@ -229,3 +229,4 @@
 [2026-09-12 08:46] Major | Antigravity | Release | v0.7.0 - App code-splitting & 96% bundle reduction
 [2026-09-25 09:44] Major | Antigravity | Branch | checkout -b feat/voice-import (voice import feature)
 [2026-09-25 10:05] Major | Antigravity | Commit | feat/voice-import - Voice card collection import studio with TTS feedback
+[2026-09-25 10:09] Major | Antigravity | Command | npm run dev (http://localhost:5174/)
