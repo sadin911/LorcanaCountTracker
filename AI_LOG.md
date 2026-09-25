@@ -230,3 +230,6 @@
 [2026-09-25 09:44] Major | Antigravity | Branch | checkout -b feat/voice-import (voice import feature)
 [2026-09-25 10:05] Major | Antigravity | Commit | feat/voice-import - Voice card collection import studio with TTS feedback
 [2026-09-25 10:09] Major | Antigravity | Command | npm run dev (http://localhost:5174/)
+[2026-09-25 10:29] Major | Antigravity | Merge | feat/voice-import into main
+[2026-09-25 10:29] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.8.0
+[2026-09-25 10:29] Major | Antigravity | Release | v0.8.0 - Voice Card Collection Import Studio with TTS Feedback
