@@ -22,8 +22,8 @@ const API = 'https://api.lorcast.com/v0';
 const OUT_DIR = path.resolve('src/data');
 const MAX_JSON_BYTES = 3 * 1024 * 1024;
 
-const EXPECTED_SETS = 25;
-const EXPECTED_CARDS = 3204;
+const EXPECTED_SETS = 27;
+const EXPECTED_CARDS = 3271;
 
 /**
  * Custom special / park promo sets not yet indexed as dedicated sets in Lorcast API.
@@ -222,7 +222,55 @@ const MIN_STORIES = 60;
  * indexes it. The story gate prints ready-to-paste lines when that happens.
  * Shape: { [cardId]: 'Story Name' }.
  */
-const STORY_OVERRIDES = {};
+const STORY_OVERRIDES = {
+  // Set 14: Hyperia City
+  '14-11': 'Zootopia', // Nick Wilde – Inquisitive Harbormaster
+  '14-17': 'A Goofy Movie', // Powerline – Megastar
+  '14-18': 'Zootopia', // Lionheart – Incumbent Mayor
+  '14-19': 'Sleeping Beauty', // Aurora – Delightful Musician
+  '14-23': 'Mickey Mouse & Friends', // Mickey Mouse – Best in Town
+  '14-25': 'Zootopia', // Nick Wilde – Providing Backup
+  '14-29': 'Coco', // Remember Me
+  '14-35': 'Gargoyles', // Owen Burnett – Xanatos's Assistant
+  '14-37': 'Gargoyles', // David Xanatos – Arcane Industrialist
+  '14-38': 'Gargoyles', // Lexington – Fearless Flier
+  '14-44': 'Coco', // Mamá Coco – Visiting the Park
+  '14-52': 'The Sword in the Stone', // Merlin – Ink Drop Tinkerer
+  '14-58': 'The Sword in the Stone', // Archimedes – Messenger Owl
+  '14-60': 'Coco', // Everyone Knows Juanita
+  '14-64': 'The Sword in the Stone', // Magnificent, Marvelous
+  '14-73': 'TaleSpin', // Molly Cunningham – Remembers to Share
+  '14-78': 'Lady and the Tramp', // Jock – Enjoying the Sights
+  '14-85': 'Big Hero 6', // Baymax – Lab Assistant
+  '14-89': 'A Goofy Movie', // Max Goof – Karaoke Star
+  '14-91': 'Big Hero 6', // Fred – Big Stomper
+  '14-95': 'A Goofy Movie', // Above the Crowd
+  '14-97': 'Zootopia', // This Is Business
+  '14-104': 'Turning Red', // Abby Park – Intense Fan
+  '14-105': 'A Goofy Movie', // Goofy – Dancing Superstar
+  '14-110': 'Mickey Mouse & Friends', // Donald Duck – Taxi Driver
+  '14-113': '101 Dalmatians', // Cruella De Vil – Dodging Traffic
+  '14-116': 'A Goofy Movie', // Stacey – Powerline Superfan
+  '14-120': 'Coco', // Ernesto de la Cruz – Ruthless Musician
+  '14-122': 'Lady and the Tramp', // Tramp – Quick on His Feet
+  '14-125': 'Big Hero 6', // Wasabi – Called into Battle
+  '14-138': 'Cinderella', // Cinderella – Homespun Dressmaker
+  '14-146': 'The Sword in the Stone', // Madam Mim – Nosy Neighbor
+  '14-147': 'Zootopia', // Lionheart – Cleaning Up the City
+  '14-153': 'The Aristocats', // Duchess – Cosmopolitan Cat
+  '14-154': 'Zootopia', // Judy Hopps – Day Camp Instructor
+  '14-155': 'Mickey Mouse & Friends', // Minnie Mouse – Urban Visionary
+  '14-157': 'Cinderella', // Cinderella – Unintentional Icon
+  '14-161': 'Zootopia', // Doug – Lying in Wait
+  '14-164': 'Big Hero 6', // Intense Research
+  '14-182': 'The Aristocats', // Toulouse – Rough and Tumble
+  '14-186': 'The Aristocats', // Berlioz – Tiny Rascal
+  '14-187': 'The Aristocats', // Marie – Caught in the Act
+  '14-196': 'The Princess And The Frog', // Tiana – Party Hostess
+  '14-197': 'The Sword in the Stone', // Jousting Match
+  '14-241': 'Mickey Mouse & Friends', // Mickey Mouse – Best in Town
+  '14-242': 'Cinderella', // Cinderella – Unintentional Icon
+};
 
 /** Rarities that only ever exist as a foil printing. */
 const FOIL_ONLY_RARITIES = new Set(['Enchanted', 'Epic', 'Iconic']);

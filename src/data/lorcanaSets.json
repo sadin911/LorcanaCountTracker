@@ -36,12 +36,6 @@
     "cardCount": 9
   },
   {
-    "code": "P2",
-    "name": "Promo Set 2",
-    "releasedAt": "2024-08-09",
-    "cardCount": 39
-  },
-  {
     "code": "5",
     "name": "Shimmering Skies",
     "releasedAt": "2024-08-09",
@@ -52,6 +46,12 @@
     "name": "D23 Collection",
     "releasedAt": "2024-08-09",
     "cardCount": 9
+  },
+  {
+    "code": "P2",
+    "name": "Promo Set 2",
+    "releasedAt": "2024-08-09",
+    "cardCount": 39
   },
   {
     "code": "6",
@@ -114,16 +114,22 @@
     "cardCount": 242
   },
   {
+    "code": "CC1",
+    "name": "Curator's Collection: Heroines Edition",
+    "releasedAt": "2026-07-17",
+    "cardCount": 6
+  },
+  {
     "code": "13",
     "name": "Attack of the Vine!",
     "releasedAt": "2026-07-17",
     "cardCount": 245
   },
   {
-    "code": "CC1",
-    "name": "Curator's Collection: Heroines Edition",
+    "code": "P4",
+    "name": "Promo Set 4",
     "releasedAt": "2026-07-17",
-    "cardCount": 6
+    "cardCount": 10
   },
   {
     "code": "Coconut",
@@ -136,6 +142,12 @@
     "name": "PD1",
     "releasedAt": "2026-07-28",
     "cardCount": 8
+  },
+  {
+    "code": "14",
+    "name": "Hyperia City",
+    "releasedAt": "2026-10-16",
+    "cardCount": 57
   },
   {
     "code": "HKDL",

@@ -233,3 +233,8 @@
 [2026-09-25 10:29] Major | Antigravity | Merge | feat/voice-import into main
 [2026-09-25 10:29] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.8.0
 [2026-09-25 10:29] Major | Antigravity | Release | v0.8.0 - Voice Card Collection Import Studio with TTS Feedback
+[2026-09-25 10:47] Major | Antigravity | Command | npm run data:cards - added Set 14 & P4 (3,271 cards, 27 sets)
+[2026-09-25 10:47] Major | Antigravity | Command | npm run data:prices - updated prices for 3,130 cards
+[2026-09-25 10:47] Major | Antigravity | Command | npm run data:images && data:upload -- 14 P4 (134 images to R2)
+[2026-09-25 10:48] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.8.1
+[2026-09-25 10:48] Major | Antigravity | Release | v0.8.1 - Added Hyperia City (Set 14) and Promo Set 4 (P4)
