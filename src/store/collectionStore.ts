@@ -29,6 +29,25 @@ export interface CollectionTextImportResult {
   setsFound: string[];
 }
 
+export interface BatchCardImportItem {
+  cardId: string;
+  quantity: number;
+  finish?: FinishKey;
+}
+
+export interface BatchCardImportOptions {
+  mode?: 'merge' | 'replace';
+  defaultFinish?: FinishKey;
+  profileId?: string;
+}
+
+export interface BatchCardImportResult {
+  success: boolean;
+  message: string;
+  cardsImportedCount: number;
+  distinctCardsCount: number;
+}
+
 const DEFAULT_PROFILE_ID = 'default-main-binder';
 const GUEST_STORAGE_KEY = 'lorcana_guest_profiles_v1';
 const USER_CACHE_KEY_PREFIX = 'lorcana_user_cache_';
@@ -131,6 +150,10 @@ interface CollectionState {
     text: string,
     options?: CollectionTextImportOptions
   ) => CollectionTextImportResult;
+  importBatchCards: (
+    cardsList: BatchCardImportItem[],
+    options?: BatchCardImportOptions
+  ) => BatchCardImportResult;
 }
 
 // One debounce timer PER BINDER. A single shared timer (as in the Pokemon app)
@@ -657,6 +680,70 @@ export const useCollectionStore = create<CollectionState>((set, get) => ({
       distinctCardsCount: parseResult.distinctCardsCount,
       unmatchedLines: parseResult.unmatchedLines,
       setsFound: parseResult.setsFound,
+    };
+  },
+
+  importBatchCards: (cardsList, options) => {
+    const mode = options?.mode ?? 'merge';
+    const defaultFinish = options?.defaultFinish ?? 'normal';
+    const profileId = options?.profileId ?? get().activeProfileId;
+    const profile = get().profiles[profileId];
+
+    if (!profile) {
+      return {
+        success: false,
+        message: 'Active binder not found.',
+        cardsImportedCount: 0,
+        distinctCardsCount: 0,
+      };
+    }
+
+    if (!cardsList || cardsList.length === 0) {
+      return {
+        success: false,
+        message: 'No cards provided to import.',
+        cardsImportedCount: 0,
+        distinctCardsCount: 0,
+      };
+    }
+
+    let cards = { ...profile.cards };
+    let importedTotal = 0;
+    const distinctSet = new Set<string>();
+
+    for (const item of cardsList) {
+      const finish = item.finish ?? defaultFinish;
+      const entry = cards[item.cardId] ?? emptyEntry(item.cardId);
+      const currentQty = entry.variants[finish] ?? 0;
+      const nextQty = mode === 'replace' ? item.quantity : currentQty + item.quantity;
+      const variants = pruneVariants({ ...entry.variants, [finish]: nextQty });
+      cards = putEntry(cards, item.cardId, { ...entry, variants });
+      importedTotal += item.quantity;
+      distinctSet.add(item.cardId);
+    }
+
+    const nextProfile: CollectionProfile = {
+      ...profile,
+      cards,
+      updatedAt: Date.now(),
+    };
+
+    set((state) => ({
+      profiles: {
+        ...state.profiles,
+        [profileId]: nextProfile,
+      },
+    }));
+
+    triggerSave(get, profileId);
+
+    const modeLabel = mode === 'replace' ? 'set' : 'added';
+
+    return {
+      success: true,
+      message: `Successfully ${modeLabel} ${importedTotal} card${importedTotal === 1 ? '' : 's'} (${distinctSet.size} distinct) to binder "${profile.name}".`,
+      cardsImportedCount: importedTotal,
+      distinctCardsCount: distinctSet.size,
     };
   },
 }));
