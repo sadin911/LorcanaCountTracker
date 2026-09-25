@@ -44,6 +44,7 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
   const [showProfiles, setShowProfiles] = useState(false);
   const [showBackup, setShowBackup] = useState(false);
   const [showTextImport, setShowTextImport] = useState(false);
+  const [importInitialTab, setImportInitialTab] = useState<'voice' | 'text' | undefined>(undefined);
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -256,8 +257,11 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
             <div className="flex items-center gap-1.5 shrink-0">
               <button
                 type="button"
-                onClick={() => setShowTextImport(true)}
-                title="Import cards from text"
+                data-testid="import-button"
+                onClick={() => {
+                  setShowTextImport(true);
+                }}
+                title="Import cards (Voice & Text)"
                 className="text-[11px] text-[#dfc792] hover:text-[#f3e5c8] font-bold flex items-center gap-1 bg-[#1b2038] px-2 py-1 rounded-lg border border-[#c8b07b]/30 active:scale-95 transition-all shadow-sm"
               >
                 <span>📥</span>
@@ -331,11 +335,30 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
               <span className="text-amber-400/80 text-[10px]">▾</span>
             </button>
 
+            {/* Voice Card Collector */}
+            <button
+              type="button"
+              data-testid="voice-import-button"
+              onClick={() => {
+                setImportInitialTab('voice');
+                setShowTextImport(true);
+              }}
+              title="Voice card collector (Speak card numbers or names)"
+              className="flex p-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#dfc792]/15 via-[#c8b07b]/15 to-[#dfc792]/20 hover:from-[#dfc792]/25 hover:to-[#dfc792]/30 border border-[#c8b07b]/40 hover:border-[#dfc792] active:scale-95 text-xs text-[#dfc792] hover:text-[#f3e5c8] transition-all shadow-sm items-center gap-1.5 min-h-[36px] font-bold group"
+            >
+              <span className="text-sm group-hover:scale-110 transition-transform">🎙️</span>
+              <span>Voice</span>
+            </button>
+
             {/* Import Cards from Text */}
             <button
               type="button"
-              onClick={() => setShowTextImport(true)}
-              title="Import cards from text (e.g. Set13 1,3)"
+              data-testid="text-import-button"
+              onClick={() => {
+                setImportInitialTab('text');
+                setShowTextImport(true);
+              }}
+              title="Import cards from voice or text (e.g. Set13 1,3)"
               className="flex p-2 px-3 py-1.5 rounded-xl bg-[#1b2038] border border-[#c8b07b]/30 hover:border-[#c8b07b] active:scale-95 text-xs text-slate-300 hover:text-[#dfc792] transition-all shadow-sm items-center gap-1.5 min-h-[36px]"
             >
               <span className="text-sm">📥</span>
@@ -504,10 +527,21 @@ export function CollectionHeader({ stats, onSwitchToDeck }: CollectionHeaderProp
         {showBackup && (
           <CollectionBackupModal
             onClose={() => setShowBackup(false)}
-            onOpenTextImport={() => setShowTextImport(true)}
+            onOpenTextImport={() => {
+              setImportInitialTab('text');
+              setShowTextImport(true);
+            }}
           />
         )}
-        {showTextImport && <CollectionTextImportModal onClose={() => setShowTextImport(false)} />}
+        {showTextImport && (
+          <CollectionTextImportModal
+            initialTab={importInitialTab}
+            onClose={() => {
+              setShowTextImport(false);
+              setImportInitialTab(undefined);
+            }}
+          />
+        )}
         {showInstallModal && (
           <PWAInstallModal
             onClose={() => setShowInstallModal(false)}
