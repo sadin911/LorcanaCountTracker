@@ -21,7 +21,7 @@
     "code": "3",
     "name": "Into the Inklands",
     "releasedAt": "2024-02-23",
-    "cardCount": 226
+    "cardCount": 227
   },
   {
     "code": "4",
@@ -45,7 +45,7 @@
     "code": "D23",
     "name": "D23 Collection",
     "releasedAt": "2024-08-09",
-    "cardCount": 9
+    "cardCount": 16
   },
   {
     "code": "P2",
@@ -90,40 +90,40 @@
     "cardCount": 242
   },
   {
-    "code": "C2",
-    "name": "Lorcana Challenge Year 3",
-    "releasedAt": "2026-01-16",
-    "cardCount": 14
-  },
-  {
     "code": "DIS",
     "name": "EPCOT Festival of the Arts",
     "releasedAt": "2026-01-16",
     "cardCount": 3
   },
   {
+    "code": "C2",
+    "name": "Lorcana Challenge Year 3",
+    "releasedAt": "2026-01-16",
+    "cardCount": 14
+  },
+  {
     "code": "11",
     "name": "Winterspell",
     "releasedAt": "2026-02-13",
-    "cardCount": 242
+    "cardCount": 243
   },
   {
     "code": "12",
     "name": "Wilds Unknown",
     "releasedAt": "2026-05-08",
-    "cardCount": 242
+    "cardCount": 243
+  },
+  {
+    "code": "13",
+    "name": "Attack of the Vine!",
+    "releasedAt": "2026-07-17",
+    "cardCount": 247
   },
   {
     "code": "CC1",
     "name": "Curator's Collection: Heroines Edition",
     "releasedAt": "2026-07-17",
     "cardCount": 6
-  },
-  {
-    "code": "13",
-    "name": "Attack of the Vine!",
-    "releasedAt": "2026-07-17",
-    "cardCount": 245
   },
   {
     "code": "P4",
@@ -135,7 +135,7 @@
     "code": "Coconut",
     "name": "Format Coconut",
     "releasedAt": "2026-07-28",
-    "cardCount": 18
+    "cardCount": 24
   },
   {
     "code": "PD1",
@@ -144,10 +144,16 @@
     "cardCount": 8
   },
   {
+    "code": "Q3",
+    "name": "Hunny Rescue – Illumineer's Quest",
+    "releasedAt": "2026-10-02",
+    "cardCount": 37
+  },
+  {
     "code": "14",
     "name": "Hyperia City",
     "releasedAt": "2026-10-16",
-    "cardCount": 57
+    "cardCount": 242
   },
   {
     "code": "HKDL",

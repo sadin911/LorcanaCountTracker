@@ -21,12 +21,9 @@ import path from 'path';
 const CONCURRENCY = 30;
 const ALL_SOURCE_DIRS = ['public/card-images', 'public/card-images-lg', 'public/set-boosters'];
 
-// The script has no skip-existing logic — every run re-PUTs every file it picks
-// up — so scoping matters when only one directory or set changed.
-// Accepts directory filters (e.g. 'set-boosters', 'card-images') or setCode filters (e.g. 'CC1', '13').
+// Accepts directory filters (e.g. 'set-boosters', 'card-images') or setCode filters (e.g. 'CC1', '14', 'Q3').
 const FILTERS = process.argv.slice(2).filter((a) => !a.startsWith('-'));
-const matchedDirs = ALL_SOURCE_DIRS.filter((d) => FILTERS.some((f) => d.includes(f)));
-const SOURCE_DIRS = matchedDirs.length ? matchedDirs : ALL_SOURCE_DIRS;
+const SOURCE_DIRS = ALL_SOURCE_DIRS;
 
 const SECRET_FILE = 'secret.yaml';
 if (!fs.existsSync(SECRET_FILE)) {
@@ -75,10 +72,18 @@ async function upload(file) {
 
 async function main() {
   let files = SOURCE_DIRS.flatMap((d) => getAllFiles(path.resolve(d)));
-  if (FILTERS.length && !matchedDirs.length) {
-    files = files.filter((f) =>
-      FILTERS.some((flt) => f.includes(`/${flt}/`) || f.includes(`\\${flt}\\`))
-    );
+  if (FILTERS.length) {
+    files = files.filter((f) => {
+      const norm = f.replace(/\\/g, '/');
+      return FILTERS.some((flt) => {
+        if (flt === 'set-boosters') return norm.includes('/set-boosters/');
+        const match = norm.match(/\/(?:card-images|card-images-lg)\/([^/]+)\//);
+        if (match && match[1].toLowerCase() === flt.toLowerCase()) return true;
+        const boosterMatch = norm.match(/\/set-boosters\/([^/]+)\.webp/);
+        if (boosterMatch && boosterMatch[1].toLowerCase() === flt.toLowerCase()) return true;
+        return false;
+      });
+    });
   }
   if (!files.length) {
     console.error(`❌ no .webp files found matching filters [${FILTERS.join(', ')}]. Run \`npm run data:images\` first.`);

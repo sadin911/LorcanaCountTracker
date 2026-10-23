@@ -108,6 +108,7 @@ const SET_BOOSTER_SOURCES = [
     code: '12',
     name: 'Wilds Unknown',
     urls: [
+      'https://tcgplayer-cdn.tcgplayer.com/product/678167_in_1000x1000.jpg',
       'https://grimdice.co.uk/cdn/shop/files/00.grimTemplate_a695cac6-ce36-4d5d-a875-cec781c7b841_grande.jpg?v=1774093684'
     ]
   },
@@ -116,6 +117,14 @@ const SET_BOOSTER_SOURCES = [
     name: 'Attack of the Vine!',
     urls: [
       'https://tcgplayer-cdn.tcgplayer.com/product/690386_in_1000x1000.jpg'
+    ]
+  },
+  {
+    code: '14',
+    name: 'Hyperia City',
+    urls: [
+      'https://tcgplayer-cdn.tcgplayer.com/product/706241_in_1000x1000.jpg',
+      'https://tools.toywiz.com/_images/_webp/_products/me/hyperiacityboosterpack.webp'
     ]
   }
 ];
@@ -170,7 +179,17 @@ async function main() {
     }
 
     if (!success) {
-      console.error(`❌ Could not download booster pack for Set ${set.code} (${set.name})`);
+      const outFileName = `${set.code}.webp`;
+      const outFilePath = path.join(OUT_DIR, outFileName);
+      if (fs.existsSync(outFilePath)) {
+        const relPath = `/set-boosters/${outFileName}`;
+        boosterMap[set.code] = relPath;
+        boosterMap[set.code.toUpperCase()] = relPath;
+        boosterMap[set.code.toLowerCase()] = relPath;
+        console.log(`ℹ️ Preserved existing ${outFileName}`);
+      } else {
+        console.error(`❌ Could not download booster pack for Set ${set.code} (${set.name})`);
+      }
     }
   }
 

@@ -22,8 +22,8 @@ const API = 'https://api.lorcast.com/v0';
 const OUT_DIR = path.resolve('src/data');
 const MAX_JSON_BYTES = 3 * 1024 * 1024;
 
-const EXPECTED_SETS = 27;
-const EXPECTED_CARDS = 3271;
+const EXPECTED_SETS = 28;
+const EXPECTED_CARDS = 3511;
 
 /**
  * Custom special / park promo sets not yet indexed as dedicated sets in Lorcast API.
@@ -268,6 +268,10 @@ const STORY_OVERRIDES = {
   '14-187': 'The Aristocats', // Marie – Caught in the Act
   '14-196': 'The Princess And The Frog', // Tiana – Party Hostess
   '14-197': 'The Sword in the Stone', // Jousting Match
+  '14-20': 'Up', // Russel – Finding Adventure
+  '14-42': 'Coco', // Tia Victoria – Disapproving Ancestor
+  '14-51': 'Coco', // Mama Imelda – No-Nonsense Ancestor
+  '14-68': 'The Sword in the Stone', // Merlin's Shop and Smithy – Magical Markey
   '14-241': 'Mickey Mouse & Friends', // Mickey Mouse – Best in Town
   '14-242': 'Cinderella', // Cinderella – Unintentional Icon
 };

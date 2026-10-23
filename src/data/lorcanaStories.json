@@ -1,22 +1,26 @@
 [
   {
     "name": "Mickey Mouse & Friends",
-    "cardCount": 187
+    "cardCount": 193
   },
   {
     "name": "Aladdin",
-    "cardCount": 133
+    "cardCount": 134
   },
   {
     "name": "Frozen",
-    "cardCount": 127
+    "cardCount": 128
   },
   {
     "name": "Beauty and the Beast",
-    "cardCount": 120
+    "cardCount": 125
   },
   {
     "name": "Peter Pan",
+    "cardCount": 113
+  },
+  {
+    "name": "Lilo & Stitch",
     "cardCount": 107
   },
   {
@@ -24,36 +28,48 @@
     "cardCount": 106
   },
   {
-    "name": "Lilo & Stitch",
-    "cardCount": 106
+    "name": "The Little Mermaid",
+    "cardCount": 105
   },
   {
-    "name": "The Little Mermaid",
-    "cardCount": 101
+    "name": "Mulan",
+    "cardCount": 96
+  },
+  {
+    "name": "Lorcana",
+    "cardCount": 95
+  },
+  {
+    "name": "Encanto",
+    "cardCount": 94
   },
   {
     "name": "The Lion King",
     "cardCount": 94
   },
   {
-    "name": "Mulan",
-    "cardCount": 93
-  },
-  {
-    "name": "Encanto",
-    "cardCount": 92
-  },
-  {
     "name": "Moana",
-    "cardCount": 90
+    "cardCount": 91
   },
   {
     "name": "Tangled",
+    "cardCount": 87
+  },
+  {
+    "name": "The Sword in the Stone",
     "cardCount": 82
   },
   {
     "name": "Sleeping Beauty",
-    "cardCount": 75
+    "cardCount": 77
+  },
+  {
+    "name": "Zootopia",
+    "cardCount": 77
+  },
+  {
+    "name": "Big Hero 6",
+    "cardCount": 76
   },
   {
     "name": "DuckTales",
@@ -64,27 +80,19 @@
     "cardCount": 73
   },
   {
-    "name": "The Sword in the Stone",
-    "cardCount": 67
-  },
-  {
     "name": "Winnie the Pooh",
-    "cardCount": 67
+    "cardCount": 69
   },
   {
     "name": "Alice In Wonderland",
     "cardCount": 66
   },
   {
-    "name": "Lorcana",
-    "cardCount": 65
+    "name": "The Emperor's New Groove",
+    "cardCount": 64
   },
   {
     "name": "Robin Hood",
-    "cardCount": 62
-  },
-  {
-    "name": "The Emperor's New Groove",
     "cardCount": 62
   },
   {
@@ -92,47 +100,39 @@
     "cardCount": 60
   },
   {
-    "name": "Zootopia",
+    "name": "Raya and the Last Dragon",
     "cardCount": 58
   },
   {
-    "name": "Raya and the Last Dragon",
-    "cardCount": 56
+    "name": "101 Dalmatians",
+    "cardCount": 55
   },
   {
     "name": "Wreck-It Ralph",
     "cardCount": 55
   },
   {
-    "name": "Big Hero 6",
+    "name": "The Incredibles",
     "cardCount": 53
   },
   {
-    "name": "101 Dalmatians",
-    "cardCount": 51
-  },
-  {
-    "name": "The Incredibles",
-    "cardCount": 50
-  },
-  {
     "name": "The Princess And The Frog",
-    "cardCount": 49
+    "cardCount": 53
   },
   {
     "name": "Toy Story",
-    "cardCount": 49
+    "cardCount": 51
   },
   {
     "name": "Cinderella",
-    "cardCount": 48
-  },
-  {
-    "name": "Chip 'n Dale: Rescue Rangers",
-    "cardCount": 44
+    "cardCount": 49
   },
   {
     "name": "Darkwing Duck",
+    "cardCount": 45
+  },
+  {
+    "name": "Chip 'n Dale: Rescue Rangers",
     "cardCount": 44
   },
   {
@@ -144,39 +144,55 @@
     "cardCount": 41
   },
   {
+    "name": "A Goofy Movie",
+    "cardCount": 40
+  },
+  {
+    "name": "TaleSpin",
+    "cardCount": 39
+  },
+  {
+    "name": "Coco",
+    "cardCount": 37
+  },
+  {
     "name": "Brave",
     "cardCount": 35
   },
   {
     "name": "Monsters, Inc.",
-    "cardCount": 32
+    "cardCount": 34
   },
   {
     "name": "Pocahontas",
-    "cardCount": 32
+    "cardCount": 33
   },
   {
     "name": "The Jungle Book",
     "cardCount": 32
   },
   {
-    "name": "Mickey's Christmas Carol",
-    "cardCount": 28
+    "name": "Turning Red",
+    "cardCount": 31
   },
   {
-    "name": "A Goofy Movie",
-    "cardCount": 27
+    "name": "Gargoyles",
+    "cardCount": 29
+  },
+  {
+    "name": "Mickey's Christmas Carol",
+    "cardCount": 28
   },
   {
     "name": "The Fox and the Hound",
     "cardCount": 27
   },
   {
-    "name": "Turning Red",
+    "name": "Lady and the Tramp",
     "cardCount": 24
   },
   {
-    "name": "Gargoyles",
+    "name": "The Aristocats",
     "cardCount": 23
   },
   {
@@ -188,19 +204,11 @@
     "cardCount": 22
   },
   {
-    "name": "Lady and the Tramp",
-    "cardCount": 21
-  },
-  {
-    "name": "TaleSpin",
-    "cardCount": 20
+    "name": "Up",
+    "cardCount": 22
   },
   {
     "name": "The Sorcerer's Apprentice",
-    "cardCount": 20
-  },
-  {
-    "name": "Up",
     "cardCount": 20
   },
   {
@@ -214,10 +222,6 @@
   {
     "name": "Pinocchio",
     "cardCount": 18
-  },
-  {
-    "name": "The Aristocats",
-    "cardCount": 15
   },
   {
     "name": "The Legend of Sleepy Hollow",
@@ -244,12 +248,8 @@
     "cardCount": 6
   },
   {
-    "name": "Coco",
-    "cardCount": 4
-  },
-  {
     "name": "Mickey and the Beanstalk",
-    "cardCount": 2
+    "cardCount": 3
   },
   {
     "name": "Oswald the Lucky Rabbit",

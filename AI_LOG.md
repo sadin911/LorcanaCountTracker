@@ -238,3 +238,11 @@
 [2026-09-25 10:47] Major | Antigravity | Command | npm run data:images && data:upload -- 14 P4 (134 images to R2)
 [2026-09-25 10:48] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.8.1
 [2026-09-25 10:48] Major | Antigravity | Release | v0.8.1 - Added Hyperia City (Set 14) and Promo Set 4 (P4)
+[2026-09-29 08:56] Minor | Antigravity | Search | Research Regula SDK 9.8 vs 9.5 & RFID reading issues
+[2026-10-23 21:09] Major | Antigravity | Command | npm run data:cards - added complete Set 14 & Q3 (3,511 cards, 28 sets)
+[2026-10-23 21:10] Major | Antigravity | Command | npm run data:boosters - added Set 14 booster pack
+[2026-10-23 21:13] Major | Antigravity | Command | npm run data:images - processed 240 new cards into WebP tiers
+[2026-10-23 21:14] Major | Antigravity | Command | npm run data:prices - updated market prices for 3,373 cards
+[2026-10-23 21:15] Major | Antigravity | Command | npm run data:upload - uploaded 2,577 objects to Cloudflare R2
+[2026-10-23 21:16] Major | Antigravity | Edit | package.json, version.ts - bump version to v0.9.0
+[2026-10-23 21:16] Major | Antigravity | Release | v0.9.0 - Complete Hyperia City (Set 14), Hunny Rescue (Q3) & Cloud R2 Sync
